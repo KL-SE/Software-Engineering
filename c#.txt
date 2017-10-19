@@ -1,0 +1,153 @@
+public staff{
+private int id();
+private string name();
+//private datejoin(date);
+private boolean active();
+
+public int getid();
+
+
+static string getPassword();
+public string getName()
+//private getDateJoined(date);
+public boolean isActive();
+public suspend();
+public reinstate();
+static void(int setId);
+static void (string setName);
+static setDateJoined date(date); 
+}
+
+
+
+
+public MedicalStaff 
+{
+private workingdays[];
+private leaveDate[];
+
+public getAppointment [];
+public boolean (string isPasswordCorrect);
+public boolean (int isWorkingOn);
+public void (int boolean setWorkingOnDay);
+public void (setLeaveOnDate);
+}
+
+
+
+public Prescription 
+{
+private int prescribeID();
+private int patientID();
+//private starDate(date);
+private endDate(date);
+private medications[];
+
+public makePrescription(int MedicalStaff,int Patient,Prescription)
+public int getId();
+public getPrescriber(MedicalStaff);
+public getPatient(Patient);
+public getStartDate(date);
+public getEndDate(date);
+public getMedications[];
+public string getRemark[];
+public boolean isPrescriptionAtive();
+public void extendPrescription(int);
+public void endPrescription(string);
+public void removeMedication(string);
+public void seRremark(string);
+
+}
+
+
+
+class Medication 
+{
+private string code();
+private stirng name();
+
+
+public string getcode();
+public strign getName();
+ 
+}
+
+
+
+
+class Patient 
+{
+private int id;
+private string name;
+private string address;
+private dateOfBirth(date);
+
+public [] getPrescriptions ();
+public [] getAppointments();
+public [] getTests();
+public int getID();
+public string getName();
+public string getAddress();
+public string getDateOfBirth(date);
+public string void setName();
+public string void setAddress ();
+public string void setDareOfBirth (date);
+
+}
+
+
+
+public appointment {
+ privant int appointmentID();
+ private int medicalStaffID();
+ private int patientID();
+ private string appointmentDate(date);
+ priate string appointmentTime(time);
+ private boolean cancelled();
+ 
+ public int getId();
+ public string getMedicalStaff(MedicalStaff);
+ public string getPatient(Patient);
+ public string getAppointmentDate (date);
+ public string getAppointmentTime (time);
+ public void setAppointmentDate (date);
+ public void setAppointmentTime (time);
+ public boolean isCancelled ();
+ public boolean cancel();
+ 
+ 
+}
+
+
+
+public TestResult {
+private int testID ();
+private int patientID();
+private string testDescription ();
+private string testResult ();
+provate sting remark ();
+
+public int getTestId();
+public string getPatient(Patient);
+public string getDescription();
+public string getResult();
+public string getRemark();
+
+
+}
+
+public receptionist {
+
+private boolean admin();
+
+public boolean isAdmin();
+public void giveAdmin();
+public void removeAdmin ();
+public boolean registerStaff(string, boolean);
+public boolean registerPatient (string, date)
+
+
+}
+
+
+
