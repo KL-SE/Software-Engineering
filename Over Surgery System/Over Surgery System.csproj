@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{06B57831-6BD6-461A-904E-15CC4D290ABD}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>OverSurgerySystem</RootNamespace>
+    <AssemblyName>Over Surgery System</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\Base\Address.cs" />
+    <Compile Include="Core\Patients\Appointment.cs" />
+    <Compile Include="Core\Base\ContactNumber.cs" />
+    <Compile Include="Core\Patients\PrescriptionMedication.cs" />
+    <Compile Include="Database\Database.cs" />
+    <Compile Include="Database\DatabaseDefinition.cs" />
+    <Compile Include="Database\DatabaseObject.cs" />
+    <Compile Include="Database\DatabaseQuery.cs" />
+    <Compile Include="Database\QueryComparator.cs" />
+    <Compile Include="Database\QueryElement.cs" />
+    <Compile Include="Core\Base\Identification.cs" />
+    <Compile Include="Core\Staffs\LeaveDate.cs" />
+    <Compile Include="Core\Staffs\MedicalStaff.cs" />
+    <Compile Include="Core\Patients\Patient.cs" />
+    <Compile Include="Core\Patients\Prescription.cs" />
+    <Compile Include="Core\Patients\Medication.cs" />
+    <Compile Include="Core\Base\PersonalDetails.cs" />
+    <Compile Include="Core\Staffs\Receptionist.cs" />
+    <Compile Include="Core\Staffs\Staff.cs" />
+    <Compile Include="Core\Patients\TestResult.cs" />
+    <Compile Include="Core\Staffs\WorkingDays.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="Manager\AddressManager.cs" />
+    <Compile Include="Manager\DetailsManager.cs" />
+    <Compile Include="Manager\Manager.cs" />
+    <Compile Include="Manager\PatientsManager.cs" />
+    <Compile Include="Manager\StaffsManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MySql.Data, Version=6.9.10.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
