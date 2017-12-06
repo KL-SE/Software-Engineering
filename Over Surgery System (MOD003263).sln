@@ -7,6 +7,45 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Over Surgery System", "Over
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Over Surgery System (Test)", "Over Surgery System (Test)\Over Surgery System (Test).csproj", "{1971754C-2171-4692-A53D-0A506C4DCAE1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Over Surgery System (UI)", "Over Surgery System (UI)\Over Surgery System (UI).csproj", "{D11106BE-858A-495F-9726-037FF7A8E0BC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{E15AA59A-4004-4499-910E-0BFBB7E77DD8}"
+	ProjectSection(SolutionItems) = preProject
+		Documents\Class Diagram.vsdx = Documents\Class Diagram.vsdx
+		Documents\class_diagram.cs = Documents\class_diagram.cs
+		Documents\database.sql = Documents\database.sql
+		Documents\Use Case Diagram.vsdx = Documents\Use Case Diagram.vsdx
+		Documents\User Story.docx = Documents\User Story.docx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Interaction Diagrams", "Interaction Diagrams", "{49FDD199-3572-4F48-B15C-75A5DCD635DD}"
+	ProjectSection(SolutionItems) = preProject
+		Documents\Interaction Diagrams\Cancel Appointment.vsdx = Documents\Interaction Diagrams\Cancel Appointment.vsdx
+		Documents\Interaction Diagrams\Check Availability of GP & Nurse.vsdx = Documents\Interaction Diagrams\Check Availability of GP & Nurse.vsdx
+		Documents\Interaction Diagrams\Check GP & Nurse On Duty.vsdx = Documents\Interaction Diagrams\Check GP & Nurse On Duty.vsdx
+		Documents\Interaction Diagrams\Extend Prescriptions.vsdx = Documents\Interaction Diagrams\Extend Prescriptions.vsdx
+		Documents\Interaction Diagrams\Login.vsdx = Documents\Interaction Diagrams\Login.vsdx
+		Documents\Interaction Diagrams\Make Appointment.vsdx = Documents\Interaction Diagrams\Make Appointment.vsdx
+		Documents\Interaction Diagrams\Modify Appointment Details.vsdx = Documents\Interaction Diagrams\Modify Appointment Details.vsdx
+		Documents\Interaction Diagrams\Print Patient Test Results.vsdx = Documents\Interaction Diagrams\Print Patient Test Results.vsdx
+		Documents\Interaction Diagrams\Register a New Patient.vsdx = Documents\Interaction Diagrams\Register a New Patient.vsdx
+		Documents\Interaction Diagrams\View Patient Details.vsdx = Documents\Interaction Diagrams\View Patient Details.vsdx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Use Case Description Extensions", "Use Case Description Extensions", "{C4715A0A-3AAB-4E5D-9913-61ECDC059756}"
+	ProjectSection(SolutionItems) = preProject
+		Documents\Use Case Description Extensions\Cancel Appointment.docx = Documents\Use Case Description Extensions\Cancel Appointment.docx
+		Documents\Use Case Description Extensions\Check Availability of GP & Nurse.docx = Documents\Use Case Description Extensions\Check Availability of GP & Nurse.docx
+		Documents\Use Case Description Extensions\Check GP & Nurses on Duty.docx = Documents\Use Case Description Extensions\Check GP & Nurses on Duty.docx
+		Documents\Use Case Description Extensions\Extend Presciptions.docx = Documents\Use Case Description Extensions\Extend Presciptions.docx
+		Documents\Use Case Description Extensions\Login.docx = Documents\Use Case Description Extensions\Login.docx
+		Documents\Use Case Description Extensions\Make Appointment.docx = Documents\Use Case Description Extensions\Make Appointment.docx
+		Documents\Use Case Description Extensions\Modify Appointment Details.docx = Documents\Use Case Description Extensions\Modify Appointment Details.docx
+		Documents\Use Case Description Extensions\Print Patient Test Results.docx = Documents\Use Case Description Extensions\Print Patient Test Results.docx
+		Documents\Use Case Description Extensions\Register a New Patient.docx = Documents\Use Case Description Extensions\Register a New Patient.docx
+		Documents\Use Case Description Extensions\View Patient Details.docx = Documents\Use Case Description Extensions\View Patient Details.docx
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +60,17 @@ Global
 		{1971754C-2171-4692-A53D-0A506C4DCAE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1971754C-2171-4692-A53D-0A506C4DCAE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1971754C-2171-4692-A53D-0A506C4DCAE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D11106BE-858A-495F-9726-037FF7A8E0BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D11106BE-858A-495F-9726-037FF7A8E0BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D11106BE-858A-495F-9726-037FF7A8E0BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D11106BE-858A-495F-9726-037FF7A8E0BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{49FDD199-3572-4F48-B15C-75A5DCD635DD} = {E15AA59A-4004-4499-910E-0BFBB7E77DD8}
+		{C4715A0A-3AAB-4E5D-9913-61ECDC059756} = {E15AA59A-4004-4499-910E-0BFBB7E77DD8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {83AC7C64-A916-48C9-AD76-7084309E51A7}
