@@ -12,8 +12,13 @@
         <Grid.LayoutTransform>
             <ScaleTransform ScaleX="0.5" ScaleY="0.5" CenterX=".5" CenterY=".5" />
         </Grid.LayoutTransform>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
         
-        <Frame Source="Persistent/MenuBanner.xaml"/>
-        <Frame Source="Pages/LoginPage.xaml" Margin="0,320,0,0"/>
+        <Frame Source="Persistent/MenuBanner.xaml" Grid.Row="0"/>
+        <Frame Source="Pages/LoginPage.xaml" Grid.Row="1"/>
     </Grid>
 </Window>
