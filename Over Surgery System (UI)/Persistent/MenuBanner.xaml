@@ -23,7 +23,6 @@
             VerticalAlignment   = "Top"
             HorizontalAlignment = "Left"
             Margin              = "115,71,0,0"
-            TextWrapping        = "Wrap"
             Text                = "Over Surgery System"
             FontSize            = "96"
             FontWeight          = "Bold"
@@ -34,8 +33,7 @@
                     Direction   = "325"
                     Color       = "Black"
                     Opacity     = "0.4"
-                    BlurRadius  = "5"
-            />
+                    BlurRadius  = "5"/>
             </TextBlock.Effect>
         </TextBlock>
 
@@ -44,7 +42,6 @@
             VerticalAlignment   = "Top"
             HorizontalAlignment = "Left"
             Margin              = "254,182,0,0"
-            TextWrapping        = "Wrap"
             Text                = "Menu Name Here"
             FontSize            = "58"
             FontStyle           = "Italic"
@@ -55,104 +52,88 @@
                     Direction   = "320"
                     Color       = "Black"
                     Opacity     = "0.4"
-                    BlurRadius  = "4"
-            />
+                    BlurRadius  = "4"/>
             </TextBlock.Effect>
         </TextBlock>
-
-        <Separator
-            VerticalAlignment       = "Top"
-            HorizontalAlignment     = "Right"
-            Width                   = "300"
-            Height                  = "96"
-            Margin                  = "0,111,436,0"
-            RenderTransformOrigin   = "0.5,0.5"
-        >
-            <Separator.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="-90"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </Separator.RenderTransform>
-        </Separator>
+        
+        <Rectangle
+            VerticalAlignment   = "Top"
+            HorizontalAlignment = "Right"
+            Height              = "280"
+            Width               = "1"
+            Fill                = "Gray"
+            Stroke              = "Gray"
+            Margin              = "0,20,585,0"/>
 
         <TextBlock
             Name                = "Welcome"
             VerticalAlignment   = "Top"
             HorizontalAlignment = "Right"
             Margin              = "0,128,341,0"
-            TextWrapping        = "Wrap"
             Text                = "Welcome, "
             FontSize            = "38"
             FontStyle           = "Italic"
             FontFamily          = "Arial"
-            FontWeight          = "Bold"
-        />
+            FontWeight          = "Bold"/>
 
         <TextBlock
             Name                = "Username"
             VerticalAlignment   = "Top"
             HorizontalAlignment = "Right"
             Margin              = "0,128,57,0"
-            TextWrapping        = "Wrap"
             Text                = "Your Name Here"
             FontSize            = "38"
             FontStyle           = "Italic"
             FontFamily          = "Arial"
-            Width               = "284"
-        />
+            Width               = "284"/>
 
         <TextBlock
             Name                = "StaffIdDesc"
             VerticalAlignment   = "Top"
             HorizontalAlignment = "Right"
             Margin              = "0,177,344,0"
-            TextWrapping        = "Wrap"
             Text                = "Staff ID: "
             FontSize            = "29"
             FontFamily          = "Arial"
-            FontWeight          = "Bold"
-        />
+            FontWeight          = "Bold"/>
 
         <TextBlock
             Name                = "StaffId"
             VerticalAlignment   = "Top"
             HorizontalAlignment = "Right"
             Margin              = "0,177,55,0"
-            TextWrapping        = "Wrap"
             Text                = "Staff ID Here"
             FontSize            = "29"
             FontFamily          = "Arial"
-            Width               = "284"
-        />
+            Width               = "284"/>
 
         <TextBlock
             Name                = "LogoutButton"
             VerticalAlignment   = "Bottom"
             HorizontalAlignment = "Right"
-            Margin              = "0,0,35,25"
-            TextWrapping        = "Wrap"
+            Margin              = "0,0,40,25"
             Text                = "Logout"
             FontSize            = "24"
             FontFamily          = "Arial"
-            FontWeight          = "Bold"
-        />
+            FontWeight          = "Bold"/>
         
-        <Separator
+        <Rectangle
             VerticalAlignment   = "Bottom"
             HorizontalAlignment = "Left"
-            Height              = "100"
-            Margin              = "50,0,0,-47"
-            Width               = "1199"/>
+            Height              = "1"
+            Margin              = "50,0,0,0"
+            Width               = "1199"
+            Fill                = "Gray"
+            Stroke              = "Gray"/>
         
-        <Separator
+        <Rectangle
             VerticalAlignment   = "Bottom"
             HorizontalAlignment = "Right"
-            Height              = "100"
-            Margin              = "0,0,50,-47"
-            Width               = "450"/>
+            Height              = "1"
+            Margin              = "0,0,50,0"
+            Width               = "450"
+            Fill                = "Gray"
+            Stroke              = "Gray"/>
 
     </Grid>
 </Page>
