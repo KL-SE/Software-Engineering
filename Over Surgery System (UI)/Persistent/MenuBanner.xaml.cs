@@ -23,12 +23,12 @@ namespace OverSurgerySystem.UI.Persistent
         public MenuBanner()
         {
             InitializeComponent();
-            Loaded += Initialize;
+            Loaded += OnLoad;
 
             LogoutButton.MouseLeftButtonDown += new MouseButtonEventHandler( DoLogout );
         }
 
-        public void Initialize( object sender , RoutedEventArgs e)
+        public void OnLoad( object sender , RoutedEventArgs e )
         {
         }
 

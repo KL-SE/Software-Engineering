@@ -16,20 +16,21 @@ using System.Windows.Shapes;
 namespace OverSurgerySystem.UI.Pages
 {
     /// <summary>
-    /// Interaction logic for LoginPage.xaml
+    /// Interaction logic for MainMenu.xaml
     /// </summary>
-    public partial class LoginPage : Page
+    public partial class MainMenu : Page
     {
-        public LoginPage()
+        object passed_parameter;
+        public MainMenu( object passed_parameter )
         {
             InitializeComponent();
-            LoginButton.Click += new RoutedEventHandler( DoLogin );
+            Loaded += OnLoad;
+            this.passed_parameter = passed_parameter;
         }
 
-        private void DoLogin( object sender , RoutedEventArgs e )
+        public void OnLoad( object sender , RoutedEventArgs e )
         {
-            NavigationService MainPage = NavigationService.GetNavigationService( this );
-            MainPage.Navigate( new MainMenu( "Something" ) );
+            TestBox.Text = (string) passed_parameter;
         }
     }
 }

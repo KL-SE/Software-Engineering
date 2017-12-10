@@ -12,20 +12,13 @@
       Title                 = "LoginPage">
 
     <Grid>
-        <Grid.Background>
-            <LinearGradientBrush StartPoint="0,0" EndPoint="0.01,1">
-                <GradientStop Offset="0.0" Color="White"    />
-                <GradientStop Offset="2.5" Color="SkyBlue"  />
-            </LinearGradientBrush>
-        </Grid.Background>
-
         <Grid
             VerticalAlignment   = "Center"
             HorizontalAlignment = "Center"
             Width               = "Auto"
             Height              = "Auto"
-            Margin              = "0,0,0,100"
-        >
+            Margin              = "0,0,0,100">
+            
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
@@ -47,8 +40,7 @@
                 Margin              = "0,0,15,0"
                 Padding             = "10,5,10,5"
                 Grid.Row            = "0"
-                Grid.Column         = "0"
-            />
+                Grid.Column         = "0"/>
 
             <TextBox
                 VerticalAlignment   = "Top"
@@ -62,8 +54,7 @@
                 Padding             = "10,5,10,5"
                 Grid.Row            = "0"
                 Grid.Column         = "1"
-                BorderThickness     = "3"
-            />
+                BorderThickness     = "3"/>
 
             <TextBlock
                 VerticalAlignment   = "Top"
@@ -75,8 +66,7 @@
                 Margin              = "0,20,15,0"
                 Padding             = "10,5,10,5"
                 Grid.Row            = "1"
-                Grid.Column         = "0"
-            />
+                Grid.Column         = "0"/>
 
             <PasswordBox
                 VerticalAlignment   = "Top"
@@ -88,8 +78,7 @@
                 Padding             = "10,5,10,5"
                 Grid.Row            = "1"
                 Grid.Column         = "1"
-                BorderThickness     = "3"
-            />
+                BorderThickness     = "3"/>
 
             <Grid
                 HorizontalAlignment = "Center"
@@ -98,8 +87,7 @@
                 Margin              = "-50,20,-50,0"
                 Grid.Row            = "2"
                 Grid.Column         = "0"
-                Grid.ColumnSpan     = "2"
-            >
+                Grid.ColumnSpan     = "2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
@@ -115,19 +103,20 @@
                     Width               = "365"
                     FontSize            = "45"
                     Margin              = "0,0,15,0"
+                    Padding             = "0,10,0,10"
                     Grid.Row            = "0"
-                    Grid.Column         = "0"
-                />
+                    Grid.Column         = "0"/>
 
                 <Button
+                    Name                = "LoginButton"
                     Content             = "Login"
                     HorizontalAlignment = "Left"
                     Width               = "365"
                     FontSize            = "45"
                     Margin              = "15,0,0,0"
+                    Padding             = "0,10,0,10"
                     Grid.Row            = "0"
-                    Grid.Column         = "1"
-                />
+                    Grid.Column         = "1"/>
             </Grid>
         </Grid>
     </Grid>

@@ -6,11 +6,30 @@
         xmlns:local="clr-namespace:OverSurgerySystem.UI"
         mc:Ignorable    = "d"
         Title           = "MainWindow"
-        Width           = "975"
-        Height          = "580">
-    <Grid>
+        Name            = "MainWinObject"
+        Width           = "960"
+        Height          = "540">
+    <Window.Resources>
+        <Style TargetType="{x:Type Grid}">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0.01,1">
+                        <GradientStop Offset="0.0" Color="White"    />
+                        <GradientStop Offset="2.5" Color="SkyBlue"  />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid SizeChanged="OnSizeChanged">
         <Grid.LayoutTransform>
-            <ScaleTransform ScaleX="0.5" ScaleY="0.5" CenterX=".5" CenterY=".5" />
+            <ScaleTransform
+                x:Name  = "ApplicationScaleTransform"
+                CenterX = "0"
+                CenterY = "0"
+                ScaleX  = "{Binding ElementName=MainWinObject, Path=ScaleValue}"
+                ScaleY  = "{Binding ElementName=MainWinObject, Path=ScaleValue}"/>
         </Grid.LayoutTransform>
 
         <Grid.RowDefinitions>
@@ -19,6 +38,11 @@
         </Grid.RowDefinitions>
         
         <Frame Source="Persistent/MenuBanner.xaml" Grid.Row="0"/>
-        <Frame Source="Pages/LoginPage.xaml" Grid.Row="1"/>
+        <Frame
+            Grid.Row                = "1"
+            Name                    = "MainPage"
+            Source                  = "{Binding}"
+            NavigationUIVisibility  = "Hidden">
+        </Frame>
     </Grid>
 </Window>
