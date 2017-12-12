@@ -12,6 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using OverSurgerySystem.UI.Persistent;
+using OverSurgerySystem.UI.Pages.MainMenuVariants;
+using OverSurgerySystem.Core.Base;
+using OverSurgerySystem.Core.Staffs;
 
 namespace OverSurgerySystem.UI.Pages
 {
@@ -20,17 +24,34 @@ namespace OverSurgerySystem.UI.Pages
     /// </summary>
     public partial class MainMenu : Page
     {
-        object passed_parameter;
-        public MainMenu( object passed_parameter )
+        public static MainMenu instance;
+        public static MainMenu Instance
+        {
+            private set
+            {
+                instance = value;
+            }
+            get
+            {
+                if( instance == null )
+                    instance = new MainMenu();
+
+                return instance;
+            }
+        }
+
+        static MainMenu() { }
+        private MainMenu()
         {
             InitializeComponent();
-            Loaded += OnLoad;
-            this.passed_parameter = passed_parameter;
+            Loaded                  += OnLoad;
+            MenuButtons.Navigating  += App.PreventNavigation;
         }
 
         public void OnLoad( object sender , RoutedEventArgs e )
         {
-            TestBox.Text = (string) passed_parameter;
+            App.SetTitle( "Main Menu" );
+            App.GoToMainMenu();
         }
     }
 }

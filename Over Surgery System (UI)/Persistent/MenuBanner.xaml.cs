@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using OverSurgerySystem.UI.Pages;
 
 namespace OverSurgerySystem.UI.Persistent
 {
@@ -20,26 +21,60 @@ namespace OverSurgerySystem.UI.Persistent
     /// </summary>
     public partial class MenuBanner : Page
     {
-        public MenuBanner()
+        public static MenuBanner instance;
+        public static MenuBanner Instance
+        {
+            private set
+            {
+                instance = value;
+            }
+            get
+            {
+                if( instance == null )
+                    instance = new MenuBanner();
+
+                return instance;
+            }
+        }
+
+        static MenuBanner() { }
+        private MenuBanner()
         {
             InitializeComponent();
             Loaded += OnLoad;
 
-            LogoutButton.MouseLeftButtonDown += new MouseButtonEventHandler( DoLogout );
+            LogoutButton.MouseLeftButtonDown    += CheckLogin;
+            ExitButton.MouseLeftButtonDown      += DoExit;
+            MaximizeButton.MouseLeftButtonDown  += DoRestore;
+            MinimizeButton.MouseLeftButtonDown  += DoMinimize;
         }
 
-        public void OnLoad( object sender , RoutedEventArgs e )
+        public void UpdateLoginText()
         {
+            if( App.LoggedInStaff != null )
+            {
+                Welcome.Text            = "Welcome, ";
+                LogoutButton.Text       = "Logout";
+                Username.Visibility     = Visibility.Visible;
+                StaffId.Visibility      = Visibility.Visible;
+                StaffIdDesc.Visibility  = Visibility.Visible;
+                Username.Text           = String.Format( "{0} {1}" , App.LoggedInStaff.Details.FirstName , App.LoggedInStaff.Details.LastName );
+                StaffId.Text            = App.LoggedInStaff.StringId;
+            }
+            else
+            {
+                Welcome.Text            = "Welcome!";
+                LogoutButton.Text       = "Log In";
+                Username.Visibility     = Visibility.Collapsed;
+                StaffId.Visibility      = Visibility.Collapsed;
+                StaffIdDesc.Visibility  = Visibility.Collapsed;
+            }
         }
 
-        private void DoLogout( object sender , MouseButtonEventArgs e )
-        {
-            Welcome.Text            = "Welcome!";
-            PageName.Text           = "Sample Page";
-            Username.Visibility     = Visibility.Collapsed;
-            StaffId.Visibility      = Visibility.Collapsed;
-            StaffIdDesc.Visibility  = Visibility.Collapsed;
-            LogoutButton.Text       = "Log In";
-        }
+        public void OnLoad( object sender       , RoutedEventArgs e         )   { UpdateLoginText();    }
+        private void CheckLogin( object sender  , MouseButtonEventArgs e    )   { App.DoLogout();       }
+        private void DoExit( object sender      , MouseButtonEventArgs e    )   { App.Close();          }
+        private void DoRestore( object sender   , MouseButtonEventArgs e    )   { App.Restore();        }
+        private void DoMinimize( object sender  , MouseButtonEventArgs e    )   { App.Minimize();       }
     }
 }

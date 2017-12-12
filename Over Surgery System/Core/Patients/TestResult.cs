@@ -1,16 +1,37 @@
 ﻿using MySql.Data.MySqlClient;
 using OverSurgerySystem.Manager;
+using System;
 
 namespace OverSurgerySystem.Core.Patients
 {
     public class TestResult : DatabaseObject
     {
-        public Patient Patient          { private set; get; }
-        public string MedicalLicenseNo  { private set; get; }
-        public string Name              { private set; get; }
-        public string Description       { private set; get; }
-        public string Result            { private set; get; }
-        public string Remark            { private set; get; }
+        public Patient Patient          { set; get; }
+        public string MedicalLicenseNo  { set; get; }
+        public string Name              { set; get; }
+        public string Description       { set; get; }
+        public string Result            { set; get; }
+        public string Remark            { set; get; }
+
+        public string StringId
+        {
+            get
+            {
+                return "TEST" + Id.ToString( "D6" );
+            }
+        }
+
+        public static int GetIdFromString( string StrId )
+        {
+            try
+            {
+                return Int32.Parse( StrId.Substring( 4 ) );
+            }
+            catch
+            {
+                return INVALID_ID;
+            }
+        }
         
         // Inherited Functions
         public override void Delete()
@@ -30,11 +51,12 @@ namespace OverSurgerySystem.Core.Patients
             query.Add( Database.Tables.TestResults.Result           );
             query.Add( Database.Tables.TestResults.Remark           );
 
-            MySqlDataReader reader = DoLoad( query );
+            MySqlDataReader reader  = DoLoad( query );
+            int patientId           = INVALID_ID;
             
             if( Loaded )
             {
-                Patient             = PatientsManager.GetPatient( reader.GetInt32( 0 ) );
+                patientId           = reader.GetInt32( 0 );
                 MedicalLicenseNo    = reader.GetString( 1 );
                 Name                = reader.GetString( 2 );
                 Description         = reader.GetString( 3 );
@@ -44,6 +66,7 @@ namespace OverSurgerySystem.Core.Patients
             }
 
             reader.Close();
+            Patient = PatientsManager.GetPatient( patientId );
         }
 
         public override void Save()

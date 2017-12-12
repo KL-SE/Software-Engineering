@@ -1,0 +1,117 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:OverSurgerySystem.UI.Styles"
+                    xmlns:core="clr-namespace:OverSurgerySystem.UI.Pages.Core">
+    
+    <Style TargetType="{x:Type TextBlock}">
+        <Setter Property="Height"               Value="80"          />
+        <Setter Property="Margin"               Value="10,10,10,10" />
+        <Setter Property="Padding"              Value="10,5,10,5"   />
+        <Setter Property="FontSize"             Value="45"          />
+        <Setter Property="FontWeight"           Value="Bold"        />
+        <Setter Property="VerticalAlignment"    Value="Center"      />
+        <Setter Property="HorizontalAlignment"  Value="Right"       />
+    </Style>
+    
+    <Style TargetType="{x:Type TextBox}">
+        <Setter Property="MinHeight"            Value="80"          />
+        <Setter Property="Width"                Value="900"         />
+        <Setter Property="Margin"               Value="10,10,10,10" />
+        <Setter Property="Padding"              Value="10,5,10,5"   />
+        <Setter Property="FontSize"             Value="45"          />
+        <Setter Property="FontStyle"            Value="Italic"      />
+        <Setter Property="HorizontalAlignment"  Value="Left"        />
+        <Setter Property="BorderBrush"          Value="DarkGray"    />
+        <Setter Property="BorderThickness"      Value="3"           />
+    </Style>
+
+    <Style TargetType="{x:Type core:LookupTextBox}">
+        <Setter Property="MinHeight"            Value="80"          />
+        <Setter Property="Width"                Value="900"         />
+        <Setter Property="Margin"               Value="10,10,10,10" />
+        <Setter Property="Padding"              Value="10,5,10,5"   />
+        <Setter Property="FontSize"             Value="45"          />
+        <Setter Property="FontStyle"            Value="Italic"      />
+        <Setter Property="HorizontalAlignment"  Value="Left"        />
+        <Setter Property="BorderBrush"          Value="DarkGray"    />
+        <Setter Property="BorderThickness"      Value="3"           />
+    </Style>
+
+    <Style TargetType="{x:Type PasswordBox}">
+        <Setter Property="Height"               Value="80"          />
+        <Setter Property="Width"                Value="900"         />
+        <Setter Property="Margin"               Value="10,10,10,10" />
+        <Setter Property="Padding"              Value="10,5,10,5"   />
+        <Setter Property="FontSize"             Value="45"          />
+        <Setter Property="FontStyle"            Value="Italic"      />
+        <Setter Property="HorizontalAlignment"  Value="Left"        />
+        <Setter Property="BorderBrush"          Value="DarkGray"    />
+        <Setter Property="BorderThickness"      Value="3"           />
+    </Style>
+    
+    <Style TargetType="{x:Type DatePicker}">
+        <Setter Property="Height"               Value="80"          />
+        <Setter Property="Width"                Value="700"         />
+        <Setter Property="Margin"               Value="10,10,10,10" />
+        <Setter Property="Padding"              Value="10,5,10,5"   />
+        <Setter Property="FontSize"             Value="45"          />
+        <Setter Property="FontStyle"            Value="Italic"      />
+        <Setter Property="HorizontalAlignment"  Value="Left"        />
+        <Setter Property="Background"           Value="White"       />
+        <Setter Property="BorderBrush"          Value="DarkGray"    />
+        <Setter Property="BorderThickness"      Value="3"           />
+    </Style>
+    
+    <Style TargetType="{x:Type Menu}">
+        <Setter Property="Height"               Value="80"          />
+        <Setter Property="Width"                Value="900"         />
+        <Setter Property="Margin"               Value="10,10,10,10" />
+        <Setter Property="FontSize"             Value="45"          />
+        <Setter Property="FontStyle"            Value="Italic"      />
+        <Setter Property="HorizontalAlignment"  Value="Left"        />
+        <Setter Property="BorderBrush"          Value="DarkGray"    />
+        <Setter Property="BorderThickness"      Value="3"           />
+    </Style>
+    
+    <Style TargetType="{x:Type MenuItem}">
+        <Setter Property="Height"       Value="74"          />
+        <Setter Property="Width"        Value="894"         />
+        <Setter Property="FontSize"     Value="45"          />
+        <Setter Property="Padding"      Value="10,0,10,0"   />
+    </Style>
+
+    <Style TargetType="{x:Type Image}">
+        <Setter Property="Height" Value="55"       />
+        <Setter Property="Margin" Value="0,0,0,5"  />
+    </Style>
+    
+    <Style TargetType="{x:Type Button}">
+        <Setter Property="Height"               Value="80"          />
+        <Setter Property="Width"                Value="180"         />
+        <Setter Property="Margin"               Value="10,10,10,10" />
+        <Setter Property="Padding"              Value="10,5,10,5"   />
+        <Setter Property="FontSize"             Value="35"          />
+        <Setter Property="FontWeight"           Value="Bold"        />
+        <Setter Property="Background"           Value="White"       />
+        <Setter Property="BorderBrush"          Value="DarkGray"    />
+        <Setter Property="BorderThickness"      Value="3"           />
+    </Style>
+    
+    <Style x:Key="BiggerCalendar" TargetType="{x:Type Calendar}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Calendar}">
+                    <Viewbox
+                            Height="800"
+                            Width="800">
+                        <CalendarItem x:Name="PART_CalendarItem"
+                                  Background="{TemplateBinding Background}"
+                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                  BorderThickness="{TemplateBinding BorderThickness}"/>
+                    </Viewbox>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+</ResourceDictionary>

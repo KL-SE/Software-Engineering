@@ -7,6 +7,7 @@ namespace OverSurgerySystem.Core.Staffs
 {
     public class MedicalStaff : Staff
     {
+        public bool Nurse               {         set; get; }
         public string LicenseNo         {         set; get; }
         public WorkingDays WorkingDays  { private set; get; }
         List<LeaveDate> leaveDates;
@@ -15,6 +16,12 @@ namespace OverSurgerySystem.Core.Staffs
         public List<Appointment> GetAppointments()      { return PatientsManager.GetAppointmentsByStaff( this );    }
         public List<TestResult> GetTests()              { return PatientsManager.GetTestResultsByStaff( this );     }
 
+        public MedicalStaff() : base()
+        {
+            WorkingDays = new WorkingDays( this );
+            LeaveDates  = new List<LeaveDate>();
+        }
+
         // Custom comparator since MedicalStaff's identifying column is their staff_id, not the regular id.
         QueryComparator Identifier
         {
@@ -22,7 +29,7 @@ namespace OverSurgerySystem.Core.Staffs
             {
                 QueryComparator idComparator    = new QueryComparator();
                 idComparator.Source             = new QueryElement( Database.Tables.Receptionists.StaffId );
-                idComparator.Operand            = new QueryElement( null , Id );
+                idComparator.Operand            = this;
                 idComparator.Equal              = true;
                 return idComparator;
             }
@@ -38,6 +45,10 @@ namespace OverSurgerySystem.Core.Staffs
         // Inherited Functions
         public override void Delete()
         {
+            WorkingDays.Delete();
+            foreach( LeaveDate leaveDate in LeaveDates )
+                leaveDate.Delete();
+
             DatabaseQuery query = new DatabaseQuery( Database.Tables.MEDICAL_STAFFS );
             query.Comparator    = Identifier;
             DoDelete( query );
@@ -49,28 +60,37 @@ namespace OverSurgerySystem.Core.Staffs
             base.Load();
             DatabaseQuery query = new DatabaseQuery( Database.Tables.MEDICAL_STAFFS );
             query.Comparator    = Identifier;
-            query.Add( Database.Tables.MedicalStaffs.LicenseNo );
+            query.Add( Database.Tables.MedicalStaffs.IsNurse    );
+            query.Add( Database.Tables.MedicalStaffs.LicenseNo  );
             
             MySqlDataReader reader = DoLoad( query );
             
             if( Loaded )
             {
-                // GetWorkingDaysByStaff should return only one result, because each staff has maximum of one WorkingDays entry.
-                LicenseNo   = reader.GetString( 0 );
-                WorkingDays = StaffsManager.GetWorkingDaysByStaff( this )[0];
-                LeaveDates  = StaffsManager.GetLeaveDatesByStaff( this );
+                Nurse       = reader.GetByte( 0 ) != 0 ? true : false;
+                LicenseNo   = reader.GetString( 1 );
             }
             
             reader.Close();
+
+            // GetWorkingDaysByStaff should return only one result, because each staff has maximum of one WorkingDays entry.
+            WorkingDays = StaffsManager.GetWorkingDaysByStaff( this )[0];
+            LeaveDates  = StaffsManager.GetLeaveDatesByStaff( this );
         }
 
         public override void Save()
         {
             base.Save();
             DatabaseQuery query = new DatabaseQuery( Database.Tables.MEDICAL_STAFFS );
-            query.Add( Database.Tables.MedicalStaffs.StaffId    , Id        );
-            query.Add( Database.Tables.MedicalStaffs.LicenseNo  , LicenseNo );
+            query.Comparator    = Identifier;
+            query.Add( Database.Tables.MedicalStaffs.StaffId    , Id            );
+            query.Add( Database.Tables.MedicalStaffs.IsNurse    , Nurse ? 1 : 0 );
+            query.Add( Database.Tables.MedicalStaffs.LicenseNo  , LicenseNo     );
             DoSave( query );
+
+            WorkingDays.Save();
+            foreach( LeaveDate leaveDate in LeaveDates )
+                leaveDate.Save();
         }
     }
 }

@@ -66,18 +66,188 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Pages\Address\EditAddress.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Appointments\EditAppointment.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\Appointments\FindAppointment.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\Common\EditDetails.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Pages\LoginPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\MainMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\MainMenuVariants\MenuButtonsAdmin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\MainMenuVariants\MenuButtonsMedical.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\MainMenuVariants\MenuButtonsReceptionist.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Patients\EditPatient.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\Patients\FindPatient.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\Prescriptions\EditPrescription.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\Prescriptions\FindPrescription.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\Staffs\EditStaff.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Staffs\FindStaff.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\SubmenuVariants\ManagePatients.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\SubmenuVariants\ManagePrescriptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\SubmenuVariants\ManageTestResults.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\SubmenuVariants\ManageStaffs.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\SubmenuVariants\ManageAppointments.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TestResults\EditTestResult.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\TestResults\FindTestResult.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Persistent\MenuBanner.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Styles\AccentStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\BannerStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\FindItemStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\EditItemStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\MenuStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Pages\Address\EditAddress.xaml.cs">
+      <DependentUpon>EditAddress.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Appointments\EditAppointment.xaml.cs">
+      <DependentUpon>EditAppointment.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Appointments\FindAppointment.xaml.cs">
+      <DependentUpon>FindAppointment.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Common\EditDetails.xaml.cs">
+      <DependentUpon>EditDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Core\EditorPage.cs" />
+    <Compile Include="Pages\Core\FinderPage.cs" />
+    <Compile Include="Pages\Core\LookupTextBox.cs" />
     <Compile Include="Pages\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\MainMenu.xaml.cs">
+      <DependentUpon>MainMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\MainMenuVariants\MenuButtonsAdmin.xaml.cs">
+      <DependentUpon>MenuButtonsAdmin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\MainMenuVariants\MenuButtonsMedical.xaml.cs">
+      <DependentUpon>MenuButtonsMedical.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\MainMenuVariants\MenuButtonsReceptionist.xaml.cs">
+      <DependentUpon>MenuButtonsReceptionist.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Patients\EditPatient.xaml.cs">
+      <DependentUpon>EditPatient.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Patients\FindPatient.xaml.cs">
+      <DependentUpon>FindPatient.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Prescriptions\EditPrescription.xaml.cs">
+      <DependentUpon>EditPrescription.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Prescriptions\FindPrescription.xaml.cs">
+      <DependentUpon>FindPrescription.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Staffs\EditStaff.xaml.cs">
+      <DependentUpon>EditStaff.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Staffs\FindStaff.xaml.cs">
+      <DependentUpon>FindStaff.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SubmenuVariants\ManagePatients.xaml.cs">
+      <DependentUpon>ManagePatients.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SubmenuVariants\ManagePrescriptions.xaml.cs">
+      <DependentUpon>ManagePrescriptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SubmenuVariants\ManageTestResults.xaml.cs">
+      <DependentUpon>ManageTestResults.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SubmenuVariants\ManageStaffs.xaml.cs">
+      <DependentUpon>ManageStaffs.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SubmenuVariants\ManageAppointments.xaml.cs">
+      <DependentUpon>ManageAppointments.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TestResults\EditTestResult.xaml.cs">
+      <DependentUpon>EditTestResult.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TestResults\FindTestResult.xaml.cs">
+      <DependentUpon>FindTestResult.xaml</DependentUpon>
     </Compile>
     <Compile Include="Persistent\MenuBanner.xaml.cs">
       <DependentUpon>MenuBanner.xaml</DependentUpon>
@@ -113,6 +283,52 @@
       <Name>Over Surgery System</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\add_test_result.png" />
+    <Resource Include="Resources\manage_appointments.png" />
+    <Resource Include="Resources\manage_patients.png" />
+    <Resource Include="Resources\manage_staffs.png" />
+    <Resource Include="Resources\staffs_availability.png" />
+    <Resource Include="Resources\staffs_on_duty.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\note.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\print_test_result.png" />
+    <Resource Include="Resources\search.png" />
+    <Resource Include="Resources\find_patient.png" />
+    <Resource Include="Resources\find_staff.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\find_appointment.png" />
+    <Resource Include="Resources\find_prescription.png" />
+    <Resource Include="Resources\find_test_result.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\manage_prescriptions.png" />
+    <Resource Include="Resources\manage_test_results.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\add_appointment.png" />
+    <Resource Include="Resources\add_patient.png" />
+    <Resource Include="Resources\add_prescription.png" />
+    <Resource Include="Resources\add_staff.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\cross.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\add_leave_date.png" />
+    <Resource Include="Resources\maximize_restore.png" />
+    <Resource Include="Resources\minimize.png" />
+  </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\main_menu.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\save.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

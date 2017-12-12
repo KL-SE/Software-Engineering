@@ -8,20 +8,40 @@ namespace OverSurgerySystem.Core.Patients
 {
     public class Prescription : DatabaseObject
     {
-        public MedicalStaff Prescriber  { private set; get; }
-        public Patient Patient          { private set; get; }
-        public string Name              {         set; get; }
-        public string Remark            {         set; get; }
+        public MedicalStaff Prescriber  { set; get; }
+        public Patient Patient          { set; get; }
+        public string Name              { set; get; }
+        public string Remark            { set; get; }
         DateTime startDate;
         DateTime endDate;
         
-        List<Medication> medications;
+        List<PrescriptionMedication> medications;
+
+        public string StringId
+        {
+            get
+            {
+                return "PRE" + Id.ToString( "D6" );
+            }
+        }
+
+        public static int GetIdFromString( string StrId )
+        {
+            try
+            {
+                return Int32.Parse( StrId.Substring( 3 ) );
+            }
+            catch
+            {
+                return INVALID_ID;
+            }
+        }
 
         public Prescription() : base()
         {
             StartDate   = DateTime.MaxValue;
             EndDate     = DateTime.MaxValue;
-            Medications = new List<Medication>();
+            medications = new List<PrescriptionMedication>();
         }
 
         // Prescription's start date & time
@@ -94,24 +114,51 @@ namespace OverSurgerySystem.Core.Patients
         // Prescription's medications
         public IList<Medication> Medications
         {
-            private set
-            {
-                medications = Medications as List<Medication>;
-            }
-
             get
             {
-                return medications.AsReadOnly();
+                List<Medication> results = new List<Medication>();
+                foreach( PrescriptionMedication med in medications )
+                    results.Add( med.Base );
+
+                return results.AsReadOnly();
             }
         }
-        
-        // Factory Function
-        public static Prescription Make( MedicalStaff staff , Patient patient )
+
+        public bool HaveMedication( Medication medication )
         {
-            Prescription prescription   = new Prescription();
-            prescription.Prescriber     = staff;
-            prescription.Patient        = patient;
-            return prescription;
+            foreach( PrescriptionMedication pMed in medications )
+            {
+                if( medication.Id == pMed.Base.Id )
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool AddMedication( Medication medication )
+        {
+            if( medication.Valid )
+            {
+                if( !HaveMedication( medication ) )
+                {
+                    medications.Add( new PrescriptionMedication( this , medication ) );
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void RemoveMedication( Medication medication )
+        {
+            for( int index = 0 ; index < medications.Count ; index++ )
+            {
+                if( medication.Id == medications[index].Base.Id )
+                {
+                    medications.RemoveAt( index );
+                    return;
+                }
+            }
         }
         
         // Inherited Functions
@@ -132,12 +179,14 @@ namespace OverSurgerySystem.Core.Patients
             query.Add( Database.Tables.Prescriptions.StartDate      );
             query.Add( Database.Tables.Prescriptions.EndDate        );
             
-            MySqlDataReader reader = DoLoad( query );
+            MySqlDataReader reader  = DoLoad( query );
+            int prescriberId        = INVALID_ID;
+            int patientId           = INVALID_ID;
             
             if( Loaded )
             {
-                Prescriber      = StaffsManager.GetMedicalStaff( reader.GetInt32( 0 ) );
-                Patient         = PatientsManager.GetPatient( reader.GetInt32( 1 ) );
+                prescriberId    = reader.GetInt32( 0 );
+                patientId       = reader.GetInt32( 1 );
                 Name            = reader.GetString( 2 );
                 Remark          = reader.GetString( 3 );
                 StartDate       = reader.GetDateTime( 4 );
@@ -146,7 +195,9 @@ namespace OverSurgerySystem.Core.Patients
             }
 
             reader.Close();
-            // TODO: Implement fetching prescription's medications.
+            Prescriber  = StaffsManager.GetMedicalStaff( prescriberId );
+            Patient     = PatientsManager.GetPatient( patientId );
+            medications = PatientsManager.GetMedicationsForPrescription( this );
         }
 
         public override void Save()

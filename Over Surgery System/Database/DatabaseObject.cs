@@ -3,7 +3,7 @@ using MySql.Data.MySqlClient;
 
 namespace OverSurgerySystem
 {
-    public abstract class DatabaseObject
+    public abstract class DatabaseObject : IDatabaseQuery
     {
         // A placeholder integer that represents an invalid id.
         public const int INVALID_ID             = -1;
@@ -184,6 +184,13 @@ namespace OverSurgerySystem
         {
             if( !Valid )
                 Save();
+        }
+
+        // Returns the ID as part of our IDatabaseQuery interface's mandatory methods
+        public string Stringify()
+        {
+            Validate();
+            return String.Format( "'{0}'" , Id );
         }
         
         // Functions that must be overriden by the base class.

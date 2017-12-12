@@ -4,120 +4,109 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:OverSurgerySystem.UI.Pages"
-      mc:Ignorable          = "d" 
-      VerticalAlignment     = "Top"
+      mc:Ignorable          = "d"
+      VerticalAlignment     = "Center"
       HorizontalAlignment   = "Center"
-      Width                 = "1920"
-      Height                = "760"
       Title                 = "LoginPage">
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <TextBlock
+            VerticalAlignment   = "Top"
+            HorizontalAlignment = "Right"
+            Text                = "Staff ID:"
+            FontSize            = "45"
+            FontWeight          = "Bold"
+            Margin              = "0,0,15,0"
+            Padding             = "10,5,10,5"
+            Grid.Row            = "0"
+            Grid.Column         = "0"/>
+
+        <TextBox
+            Name                = "IdField"
+            VerticalAlignment   = "Top"
+            HorizontalAlignment = "Left"
+            Text                = "Your Staff ID Here"
+            FontSize            = "45"
+            FontStyle           = "Italic"
+            Width               = "500"
+            Margin              = "15,0,0,0"
+            Padding             = "10,5,10,5"
+            Grid.Row            = "0"
+            Grid.Column         = "1"
+            BorderThickness     = "3"/>
+
+        <TextBlock
+            VerticalAlignment   = "Top"
+            HorizontalAlignment = "Right"
+            Text                = "Password:"
+            FontSize            = "45"
+            FontWeight          = "Bold"
+            Margin              = "0,20,15,0"
+            Padding             = "10,5,10,5"
+            Grid.Row            = "1"
+            Grid.Column         = "0"/>
+
+        <PasswordBox
+            Name                = "PasswordField"
+            VerticalAlignment   = "Top"
+            HorizontalAlignment = "Left"
+            FontSize            = "45"
+            FontStyle           = "Italic"
+            Width               = "500"
+            Margin              = "15,20,0,0"
+            Padding             = "10,5,10,5"
+            Grid.Row            = "1"
+            Grid.Column         = "1"
+            BorderThickness     = "3"/>
+
         <Grid
-            VerticalAlignment   = "Center"
             HorizontalAlignment = "Center"
             Width               = "Auto"
             Height              = "Auto"
-            Margin              = "0,0,0,100">
-            
+            Margin              = "-50,20,-50,0"
+            Grid.Row            = "2"
+            Grid.Column         = "0"
+            Grid.ColumnSpan     = "2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            
+
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            
-            <TextBlock
-                VerticalAlignment   = "Top"
+
+            <Button
+                Content             = "Forgot Password"
                 HorizontalAlignment = "Right"
-                TextWrapping        = "Wrap"
-                Text                = "Staff ID:"
+                Width               = "365"
                 FontSize            = "45"
-                FontWeight          = "Bold"
                 Margin              = "0,0,15,0"
-                Padding             = "10,5,10,5"
+                Padding             = "0,10,0,10"
                 Grid.Row            = "0"
                 Grid.Column         = "0"/>
 
-            <TextBox
-                VerticalAlignment   = "Top"
+            <Button
+                Name                = "LoginButton"
+                Content             = "Login"
                 HorizontalAlignment = "Left"
-                TextWrapping        = "Wrap"
-                Text                = "Your Staff ID Here"
+                Width               = "365"
                 FontSize            = "45"
-                FontStyle           = "Italic"
-                Width               = "500"
                 Margin              = "15,0,0,0"
-                Padding             = "10,5,10,5"
+                Padding             = "0,10,0,10"
                 Grid.Row            = "0"
-                Grid.Column         = "1"
-                BorderThickness     = "3"/>
-
-            <TextBlock
-                VerticalAlignment   = "Top"
-                HorizontalAlignment = "Right"
-                TextWrapping        = "Wrap"
-                Text                = "Password:"
-                FontSize            = "45"
-                FontWeight          = "Bold"
-                Margin              = "0,20,15,0"
-                Padding             = "10,5,10,5"
-                Grid.Row            = "1"
-                Grid.Column         = "0"/>
-
-            <PasswordBox
-                VerticalAlignment   = "Top"
-                HorizontalAlignment = "Left"
-                FontSize            = "45"
-                FontStyle           = "Italic"
-                Width               = "500"
-                Margin              = "15,20,0,0"
-                Padding             = "10,5,10,5"
-                Grid.Row            = "1"
-                Grid.Column         = "1"
-                BorderThickness     = "3"/>
-
-            <Grid
-                HorizontalAlignment = "Center"
-                Width               = "Auto"
-                Height              = "Auto"
-                Margin              = "-50,20,-50,0"
-                Grid.Row            = "2"
-                Grid.Column         = "0"
-                Grid.ColumnSpan     = "2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                
-                <Button
-                    Content             = "Forgot Password"
-                    HorizontalAlignment = "Right"
-                    Width               = "365"
-                    FontSize            = "45"
-                    Margin              = "0,0,15,0"
-                    Padding             = "0,10,0,10"
-                    Grid.Row            = "0"
-                    Grid.Column         = "0"/>
-
-                <Button
-                    Name                = "LoginButton"
-                    Content             = "Login"
-                    HorizontalAlignment = "Left"
-                    Width               = "365"
-                    FontSize            = "45"
-                    Margin              = "15,0,0,0"
-                    Padding             = "0,10,0,10"
-                    Grid.Row            = "0"
-                    Grid.Column         = "1"/>
-            </Grid>
+                Grid.Column         = "1"/>
         </Grid>
     </Grid>
 </Page>

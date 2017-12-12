@@ -1,0 +1,135 @@
+﻿<core:EditorPage
+    x:TypeArguments="patients:Appointment"
+    x:Class="OverSurgerySystem.UI.Pages.Appointments.EditAppointment"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:OverSurgerySystem.UI.Pages.Appointments"
+    xmlns:core="clr-namespace:OverSurgerySystem.UI.Pages.Core"
+    xmlns:patients="clr-namespace:OverSurgerySystem.Core.Patients"
+    mc:Ignorable="d" 
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    Title="EditAppointment">
+
+    <Page.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Over Surgery System (UI);component/Styles/EditItemStyles.xaml"/>
+    </Page.Resources>
+
+    <StackPanel
+        VerticalAlignment   = "Center"
+        HorizontalAlignment = "Center">
+        
+        <Button Name="EndButton" Height="90" Width="575" HorizontalAlignment="Right">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/cross.png"/>
+                <TextBlock
+                    Name="EndText"
+                    Text="Cancel Appointment"
+                    VerticalAlignment="Center"/>
+            </StackPanel>
+        </Button>
+                
+        <StackPanel
+            Orientation         = "Horizontal"
+            HorizontalAlignment = "Right">
+            <StackPanel>
+                <TextBlock Text="Appointment ID:"/>
+                <TextBlock Text="Patient:"/>
+                <TextBlock Text="Staff:"/>
+                <TextBlock Text="Remark:"/>
+                <TextBlock Name="IncludeCancelledText" Text="Include Cancelled:"/>
+                <TextBlock Name="DateCreatedText" Text="Date Created:"/>
+                <TextBlock Name="AppointmentDateText" Text="Appointment Date:"/>
+                <TextBlock Name="AppointmentTimeText" Text="Appointment Time:"/>
+            </StackPanel>
+
+            <StackPanel>
+                <TextBox Name="AppointmentIdBox"/>
+                
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Name="PatientIdBox" IsEnabled="False" Width="700"/>
+                    <Button Name="PatientIdButton" Content="Find"/>
+                </StackPanel>
+                
+                <StackPanel Orientation="Horizontal">
+                    <core:LookupTextBox x:Name="StaffIdBox" IsEnabled="False" Width="700"/>
+                    <Button Name="StaffIdButton" Content="Find"/>
+                </StackPanel>
+                
+                <TextBox Name="RemarkBox" TextWrapping="WrapWithOverflow" MaxLength="100"/>
+                
+                <Menu Name="IncludeCancelled">
+                    <MenuItem Name="IncludeCancelledHeader" Header="No">
+                        <MenuItem Name="SetIncludeCancelled" Header="Yes"/>
+                        <MenuItem Name="SetExcludeCancelled" Header="No"/>
+                    </MenuItem>
+                </Menu>
+                
+                <StackPanel Orientation="Horizontal">
+                    <DatePicker Name="CreationDatePicker" CalendarStyle="{StaticResource BiggerCalendar}"/>
+                    <Button Name="ClearCreationDateButton" Content="Clear"/>
+                </StackPanel>
+                
+                <StackPanel Orientation="Horizontal">
+                    <DatePicker Name="AppointmentDatePicker" CalendarStyle="{StaticResource BiggerCalendar}"/>
+                    <Button Name="ClearAppointmentDateButton" Content="Clear"/>
+                </StackPanel>
+                
+                <StackPanel Name="AppointmentTimePanel" Orientation="Horizontal">
+                    <TextBox Name="TimeHourBox" Width="285" MaxLength="2"/>
+                    <TextBox Name="TimeMinBox"  Width="285" MaxLength="2"/>
+                    <Menu Name="TimeMPicker" Width="285">
+                        <MenuItem Name="TimeMPickerHeader" Header="- Select -">
+                            <MenuItem Name="SetAsAM" Header="A.M."/>
+                            <MenuItem Name="SetAsPM" Header="P.M."/>
+                        </MenuItem>
+                    </Menu>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <TextBlock
+            Name                = "MsgBox"
+            Foreground          = "Red"
+            HorizontalAlignment = "Right"
+            Visibility          = "Collapsed"/>
+
+        <StackPanel
+            Orientation         = "Horizontal"
+            HorizontalAlignment = "Right">
+            <Button
+                Name="CancelButton"
+                Width="435"
+                Height="110"
+                Margin="20,20,10,20"
+                Padding="20,0,0,0">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/cross.png"/>
+                    <TextBlock
+                        Text="Cancel"
+                        FontSize="45"
+                        VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button
+                Name="ConfirmButton"
+                Width="435"
+                Height="110"
+                Margin="20,20,10,20"
+                Padding="20,0,0,0">
+                <StackPanel Orientation="Horizontal">
+                    <Image
+                        Name="ConfirmButtonImg"
+                        Source="pack://application:,,,/Over Surgery System (UI);component/Resources/save.png"/>
+                    <TextBlock
+                        Name="ConfirmButtonText"
+                        Text="Save"
+                        FontSize="45"
+                        VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</core:EditorPage>

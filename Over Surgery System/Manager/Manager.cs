@@ -48,7 +48,13 @@ namespace OverSurgerySystem.Manager
             T obj = new T();
             obj.Load( id );
             if( obj.Loaded )
-                all.Add( obj.Id , obj );
+            {
+                Add( obj );
+            }
+            else
+            {
+                obj.Id = DatabaseObject.INVALID_ID;
+            }
 
             return obj;
         }
@@ -58,6 +64,9 @@ namespace OverSurgerySystem.Manager
         public T Get( int id )
         {
             T obj;
+            if( id == DatabaseObject.INVALID_ID )
+                return new T();
+
             if( all.TryGetValue( id , out obj ) )
                 return obj;
 
@@ -72,18 +81,20 @@ namespace OverSurgerySystem.Manager
             query.Add( Database.Tables.Generic.ID );
 
             List<T> results         = new List<T>();
-            Console.WriteLine( query.Select );
+            List<int> all_ids       = new List<int>();
             MySqlCommand command    = new MySqlCommand( query.Select , Database.Connection );
             MySqlDataReader reader  = command.ExecuteReader();
 
             while( reader.Read() )
             {
-                int id  = reader.GetInt32( 0 );
-                T obj   = Get( id );
-                results.Add( obj );
+                int id = reader.GetInt32( 0 );
+                all_ids.Add( id );
             }
 
             reader.Close();
+            foreach( int id in all_ids )
+                results.Add( Get( id ) );
+
             return results;
         }
     }
@@ -102,14 +113,20 @@ namespace OverSurgerySystem.Manager
         }
 
         // Filter a list based on types.
-        public static List<T> FilterType<T>( IEnumerable<DatabaseObject> list ) where T: DatabaseObject
+        public static List<O> FilterType<T,O>( IEnumerable<DatabaseObject> list ) where T: DatabaseObject where O: DatabaseObject
         {
-            List<T> results = new List<T>();
+            List<O> results = new List<O>();
             foreach( DatabaseObject obj in list )
                 if( obj is T )
-                    results.Add( ( T )( obj ) );
+                    results.Add( ( O )( obj ) );
 
             return results;
+        }
+
+        // Filter a list based on types.
+        public static List<T> FilterType<T>( IEnumerable<DatabaseObject> list ) where T: DatabaseObject
+        {
+            return FilterType<T,T>( list );
         }
 
         // Convenience comparators
@@ -144,34 +161,46 @@ namespace OverSurgerySystem.Manager
         {
             QueryComparator comparator  = new QueryComparator();
             comparator.Source           = new QueryElement( columnName  );
-            comparator.Operand          = new QueryElement( subquery    );
+            comparator.Operand          = subquery;
             return comparator;
         }
 
         public static DatabaseQuery GetInLikeQuery( string tableName , string columnName , object value )
         {
-            DatabaseQuery subquery  = new DatabaseQuery( tableName );
-            subquery.Comparator     = ManagerHelper.GetLikeComparator( columnName , value );
+            DatabaseQuery subquery      = new DatabaseQuery( tableName );
+            subquery.Comparator         = ManagerHelper.GetLikeComparator( columnName , value );
+            subquery.Comparator.Like    = true;
             subquery.Add( Database.Tables.Generic.ID );
             return subquery;
         }
 
         public static DatabaseQuery GetInEqualQuery( string tableName , string columnName , object value )
         {
-            DatabaseQuery subquery  = new DatabaseQuery( tableName );
-            subquery.Comparator     = ManagerHelper.GetEqualComparator( columnName , value );
+            DatabaseQuery subquery      = new DatabaseQuery( tableName );
+            subquery.Comparator         = ManagerHelper.GetEqualComparator( columnName , value );
+            subquery.Comparator.Equal   = true;
             subquery.Add( Database.Tables.Generic.ID );
             return subquery;
         }
 
         public static QueryComparator GetInLikeComparator( string columnName , string secondaryTable , string secondaryColumn , object value )
         {
-            return GetInComparator( columnName , GetInLikeQuery( secondaryTable , secondaryColumn , value ) );
+            DatabaseQuery subquery      = new DatabaseQuery( secondaryTable );
+            subquery.Comparator         = ManagerHelper.GetEqualComparator( secondaryColumn , value );
+            subquery.Comparator.Like    = true;
+            subquery.Add( columnName );
+            
+            return GetInComparator( Database.Tables.Generic.ID , subquery );
         }
 
         public static QueryComparator GetInEqualComparator( string columnName , string secondaryTable , string secondaryColumn , object value )
         {
-            return GetInComparator( columnName , GetInEqualQuery( secondaryTable , secondaryColumn , value ) );
+            DatabaseQuery subquery      = new DatabaseQuery( secondaryTable );
+            subquery.Comparator         = ManagerHelper.GetEqualComparator( secondaryColumn , value );
+            subquery.Comparator.Equal   = true;
+            subquery.Add( columnName );
+
+            return GetInComparator( Database.Tables.Generic.ID , subquery );
         }
     }
 }

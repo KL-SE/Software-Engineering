@@ -20,10 +20,19 @@ namespace OverSurgerySystem.Core.Base
         public List<ContactNumber> ContactNumbers   { set; get; }
 
         // Default Constructor
-        public PersonalDetails()
+        public PersonalDetails() : base()
         {
             Identifications = new List<Identification>();
             ContactNumbers  = new List<ContactNumber>();
+        }
+        
+        // Person's full name, which is a combination of their first and last name
+        public string FullName
+        {
+            get
+            {
+                return String.Format( "{0} {1}" , FirstName , LastName );
+            }
         }
         
         // Person's full address, which is basically a combination of their individual address components
@@ -77,14 +86,15 @@ namespace OverSurgerySystem.Core.Base
             query.Add( Database.Tables.PersonalDetails.DateOfBirth  );
             query.Add( Database.Tables.PersonalDetails.Sex          );
 
-            MySqlDataReader reader = DoLoad( query );
+            MySqlDataReader reader  = DoLoad( query );
+            int postcodeId          = INVALID_ID;
             
             if( Loaded )
             {
                 FirstName       = reader.GetString( 0 );
                 LastName        = reader.GetString( 1 );
                 Address         = reader.GetString( 2 );
-                Postcode        = AddressManager.GetPostcode( reader.GetInt32( 3 ) );
+                postcodeId      = reader.GetInt32( 3 );
                 DateOfBirth     = reader.GetDateTime( 4 );
                 Sex             = reader.GetChar( 5 );
                 DetailsManager.Add( this );
@@ -92,6 +102,7 @@ namespace OverSurgerySystem.Core.Base
 
             reader.Close();
 
+            Postcode        = AddressManager.GetPostcode( postcodeId );
             Identifications = DetailsManager.GetIdentificationsWithOwner( this );
             ContactNumbers  = DetailsManager.GetContactNumbersWithOwner( this );
         }

@@ -7,14 +7,35 @@ namespace OverSurgerySystem.Core.Patients
 {
     public class Appointment : DatabaseObject
     {
-        public MedicalStaff MedicalStaff    { private set; get; }
-        public Patient Patient              { private set; get; }
-        public bool Cancelled               {         set; get; }
+        public MedicalStaff MedicalStaff    { set; get; }
+        public Patient Patient              { set; get; }
+        public string Remark                { set; get; }
+        public bool Cancelled               { set; get; }
         DateTime dateAppointed;
 
         public Appointment() : base()
         {
-            DateAppointed = DateTime.MaxValue;
+            DateAppointed = DateTime.Now;
+        }
+
+        public string StringId
+        {
+            get
+            {
+                return "AP" + Id.ToString( "D6" );
+            }
+        }
+
+        public static int GetIdFromString( string StrId )
+        {
+            try
+            {
+                return Int32.Parse( StrId.Substring( 2 ) );
+            }
+            catch
+            {
+                return INVALID_ID;
+            }
         }
         
         // Appointment's date & time.
@@ -39,15 +60,6 @@ namespace OverSurgerySystem.Core.Patients
                 return !Cancelled && DateTime.Now < DateAppointed;
             }
         }
-        
-        // Factory Function
-        public static Appointment Make( MedicalStaff staff , Patient patient )
-        {
-            Appointment appointment     = new Appointment();
-            appointment.MedicalStaff    = staff;
-            appointment.Patient         = patient;
-            return appointment;
-        }
 
         // Inherited Functions
         public override void Delete()
@@ -62,21 +74,27 @@ namespace OverSurgerySystem.Core.Patients
             DatabaseQuery query = new DatabaseQuery( Database.Tables.APPOINTMENTS );
             query.Add( Database.Tables.Appointments.MedicalStaffId  );
             query.Add( Database.Tables.Appointments.PatientId       );
-            query.Add( Database.Tables.Appointments.Cancelled       );
+            query.Add( Database.Tables.Appointments.Remark          );
             query.Add( Database.Tables.Appointments.DateAppointed   );
+            query.Add( Database.Tables.Appointments.Cancelled       );
             
-            MySqlDataReader reader = DoLoad( query );
+            MySqlDataReader reader  = DoLoad( query );
+            int staffId             = INVALID_ID;
+            int patientId           = INVALID_ID;
             
             if( Loaded )
             {
-                MedicalStaff    = StaffsManager.GetMedicalStaff( reader.GetInt32( 0 ) );
-                Patient         = PatientsManager.GetPatient( reader.GetInt32( 1 ) );
-                Cancelled       = reader.GetByte( 2 ) > 0 ? true : false;
+                staffId         = reader.GetInt32( 0 );
+                patientId       = reader.GetInt32( 1 );
+                Remark          = reader.GetString( 2 );
                 DateAppointed   = reader.GetDateTime( 3 );
+                Cancelled       = reader.GetByte( 4 ) > 0 ? true : false;
                 PatientsManager.Add( this );
             }
 
             reader.Close();
+            MedicalStaff    = StaffsManager.GetMedicalStaff( staffId );
+            Patient         = PatientsManager.GetPatient( patientId );
         }
 
         public override void Save()
@@ -84,8 +102,9 @@ namespace OverSurgerySystem.Core.Patients
             DatabaseQuery query = new DatabaseQuery( Database.Tables.APPOINTMENTS );
             query.Add( Database.Tables.Appointments.MedicalStaffId  , MedicalStaff      );
             query.Add( Database.Tables.Appointments.PatientId       , Patient           );
-            query.Add( Database.Tables.Appointments.Cancelled       , Cancelled ? 1 : 0 );
+            query.Add( Database.Tables.Appointments.Remark          , Remark            );
             query.Add( Database.Tables.Appointments.DateAppointed   , DateAppointed     );
+            query.Add( Database.Tables.Appointments.Cancelled       , Cancelled ? 1 : 0 );
             DoSave( query );
             PatientsManager.Add( this );
         }

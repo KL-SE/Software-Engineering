@@ -1,0 +1,125 @@
+﻿<core:EditorPage
+    x:TypeArguments="base:PersonalDetails"
+    x:Class="OverSurgerySystem.UI.Pages.Common.EditDetails"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:OverSurgerySystem.UI.Pages.Common"
+    xmlns:core="clr-namespace:OverSurgerySystem.UI.Pages.Core"
+    xmlns:base="clr-namespace:OverSurgerySystem.Core.Base"
+    mc:Ignorable="d" 
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    Title="EditDetails">
+
+    <Page.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Over Surgery System (UI);component/Styles/EditItemStyles.xaml"/>
+    </Page.Resources>
+
+    <StackPanel
+        VerticalAlignment   = "Center"
+        HorizontalAlignment = "Center">
+        <StackPanel Orientation="Horizontal">
+            <StackPanel>
+                <TextBlock Text="First Name:"/>
+                <TextBlock Text="Last Name:"/>
+                <TextBlock Text="Address:"/>
+                <TextBlock Text="Postcode:"/>
+                <TextBlock Text="City:"/>
+                <TextBlock Text="State:"/>
+                <TextBlock Text="Country:"/>
+                <TextBlock Text="Date of Birth:"/>
+                <TextBlock Text="Sex:" Name="UserSexText"/>
+                <TextBlock Text="Identification Numbers:"/>
+            </StackPanel>
+
+            <StackPanel>
+                <TextBox Name="FirstNameBox"/>
+                <TextBox Name="LastNameBox"/>
+                <TextBox Name="AddressBox"/>
+                <StackPanel Orientation="Horizontal">
+                    <core:LookupTextBox x:Name="PostcodeBox" Width="700"/>
+                    <Button Name="PostcodeButton" Content="Edit"/>
+                </StackPanel>
+                <TextBox Name="CityBox" IsEnabled="False"/>
+                <TextBox Name="StateBox" IsEnabled="False"/>
+                <TextBox Name="CountryBox" IsEnabled="False"/>
+                <StackPanel Orientation="Horizontal">
+                    <DatePicker Name="DateOfBirthPicker" CalendarStyle="{StaticResource BiggerCalendar}"/>
+                    <Button Name="ClearDobButton" Content="Clear"/>
+                </StackPanel>
+                <Menu Name="UserSexPicker">
+                    <MenuItem Name="UserSexHeader" Header="- Select -"/>
+                </Menu>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Name="IdentificationBox" Width="700"/>
+                    <Button Name="IdentificationButton" Content="Add"/>
+                </StackPanel>
+                <StackPanel Name="IdentificationsList">
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+        
+        <!-- This is placed as a separate panel because we will add more text boxes for each identification added. Similarly, text blocks will be added for contact numbers -->
+        <StackPanel
+            Orientation         = "Horizontal"
+            HorizontalAlignment = "Right">
+
+            <StackPanel>
+                <TextBlock Text="Contact Numbers:"/>
+            </StackPanel>
+
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Name="ContactNoBox" Width="700"/>
+                    <Button Name="ContactNoButton" Content="Add"/>
+                </StackPanel>
+                <StackPanel Name="ContactNoList">
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <TextBlock
+            Name                = "MsgBox"
+            Foreground          = "Red"
+            HorizontalAlignment = "Right"
+            Visibility          = "Collapsed"/>
+
+        <StackPanel
+            Orientation         = "Horizontal"
+            HorizontalAlignment = "Right">
+            <Button
+                Name="CancelButton"
+                Width="435"
+                Height="110"
+                Margin="20,20,10,20"
+                Padding="20,0,0,0">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/cross.png"/>
+                    <TextBlock
+                        Text="Cancel"
+                        FontSize="45"
+                        VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button
+                Name="ConfirmButton"
+                Width="435"
+                Height="110"
+                Margin="20,20,10,20"
+                Padding="20,0,0,0">
+                <StackPanel Orientation="Horizontal">
+                    <Image
+                        Name="ConfirmButtonImg"
+                        Source="pack://application:,,,/Over Surgery System (UI);component/Resources/save.png"/>
+                    <TextBlock
+                        Name="ConfirmButtonText"
+                        Text="Save"
+                        FontSize="45"
+                        VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</core:EditorPage>

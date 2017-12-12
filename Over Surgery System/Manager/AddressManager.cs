@@ -40,7 +40,12 @@ namespace OverSurgerySystem.Manager
         public static List<City>        GetCitiesByState( int stateId       )   { return CityManager.Merge( Database.Tables.CITIES              , ManagerHelper.GetEqualComparator( Database.Tables.Cities.StateId      , stateId   ) ); }
         public static List<State>       GetStatesByName( string name        )   { return StateManager.Merge( Database.Tables.STATES             , ManagerHelper.GetLikeComparator( Database.Tables.States.Name          , name      ) ); }
         public static List<State>       GetStatesByCountry( int countryId   )   { return StateManager.Merge( Database.Tables.STATES             , ManagerHelper.GetLikeComparator( Database.Tables.States.CountryId     , countryId ) ); }
-        public static List<Country>     GetCountriesByName( string name     )   { return CountryManager.Merge( Database.Tables.COUNTRIES        , ManagerHelper.GetEqualComparator( Database.Tables.Countries.Name      , name      ) ); }
+        public static List<Country>     GetCountriesByName( string name     )   { return CountryManager.Merge( Database.Tables.COUNTRIES        , ManagerHelper.GetLikeComparator( Database.Tables.Countries.Name       , name      ) ); }
+        
+        public static List<PostalCode>  GetPostcodesByExactCode( string code    )   { return PostcodeManager.Merge( Database.Tables.POSTAL_CODES    , ManagerHelper.GetEqualComparator( Database.Tables.PostalCodes.Code    , code      ) ); }
+        public static List<City>        GetCitiesByExactName( string name       )   { return CityManager.Merge( Database.Tables.CITIES              , ManagerHelper.GetEqualComparator( Database.Tables.Cities.Name         , name      ) ); }
+        public static List<State>       GetStatesByExactName( string name       )   { return StateManager.Merge( Database.Tables.STATES             , ManagerHelper.GetEqualComparator( Database.Tables.States.Name         , name      ) ); }
+        public static List<Country>     GetCountriesByExactName( string name    )   { return CountryManager.Merge( Database.Tables.COUNTRIES        , ManagerHelper.GetEqualComparator( Database.Tables.Countries.Name      , name      ) ); }
         
         public static List<PostalCode>  GetPostcodesByCity( City city       )   { return GetPostcodesByCity( city.Id );     }
         public static List<City>        GetCitiesByState( State state       )   { return GetCitiesByState( state.Id );      }

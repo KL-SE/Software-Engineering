@@ -132,6 +132,7 @@
             public static class MedicalStaffs
             {
                 public const string StaffId     = "staff_id";
+                public const string IsNurse     = "is_nurse";
                 public const string LicenseNo   = "license_no";
             }
         
@@ -146,6 +147,7 @@
             {
                 public const string MedicalStaffId  = "medical_staff_id";
                 public const string PatientId       = "patient_id";
+                public const string Remark          = "remark";
                 public const string DateAppointed   = "date_appointed";
                 public const string Cancelled       = "cancelled";
             }

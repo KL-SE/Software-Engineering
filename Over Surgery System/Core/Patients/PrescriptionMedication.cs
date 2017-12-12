@@ -8,6 +8,13 @@ namespace OverSurgerySystem.Core.Patients
         public Prescription Prescription    { private set; get; }
         public Medication Base              { private set; get; }
         
+        public PrescriptionMedication() : base() { }
+        public PrescriptionMedication( Prescription prescription , Medication medication ) : base()
+        {
+            Prescription    = prescription;
+            Base            = medication;
+        }
+        
         // Inherited Functions
         public override void Delete()
         {
@@ -21,19 +28,23 @@ namespace OverSurgerySystem.Core.Patients
             DatabaseQuery query = new DatabaseQuery( Database.Tables.PRESCRIPTION_MEDICATIONS );
             query.Add( Database.Tables.PrescriptionMedications.PrescriptionId   );
             query.Add( Database.Tables.PrescriptionMedications.MedicationId     );
-
-            MySqlDataReader reader = DoLoad( query );
+            
+            MySqlDataReader reader  = DoLoad( query );
+            int prescriptionId      = INVALID_ID;
+            int baseId              = INVALID_ID;
             
             if( Loaded )
             {
-                Prescription    = PatientsManager.GetPrescription( reader.GetInt32( 0 ) );
-                Base            = PatientsManager.GetMedication( reader.GetInt32( 1 ) );
+                prescriptionId  = reader.GetInt32( 0 );
+                baseId          = reader.GetInt32( 1 );
                 Code            = Base.Code;
                 Name            = Base.Name;
                 PatientsManager.Add( this );
             }
 
             reader.Close();
+            Prescription    = PatientsManager.GetPrescription( prescriptionId );
+            Base            = PatientsManager.GetMedication( baseId );
         }
 
         public override void Save()

@@ -1,0 +1,57 @@
+﻿<core:EditorPage
+    x:TypeArguments="staffs:Staff"
+    x:Class="OverSurgerySystem.UI.Pages.Staffs.EditStaff"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:OverSurgerySystem.UI.Pages.Staffs"
+    xmlns:core="clr-namespace:OverSurgerySystem.UI.Pages.Core"
+    xmlns:staffs="clr-namespace:OverSurgerySystem.Core.Staffs"
+    mc:Ignorable="d" 
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    Title="EditStaff">
+
+    <Page.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Over Surgery System (UI);component/Styles/EditItemStyles.xaml"/>
+    </Page.Resources>
+
+    <StackPanel
+        VerticalAlignment   = "Center"
+        HorizontalAlignment = "Center">
+        <StackPanel
+            Orientation         = "Horizontal"
+            HorizontalAlignment = "Right">
+            <StackPanel>
+                <TextBlock Text="Staff ID:"/>
+                <TextBlock Text="Staff Type:"/>
+                <TextBlock Text="Active:"/>
+                <TextBlock Name="PasswordText" Text="Password:"/>
+                <TextBlock Text="Medical Licence Number:"/>
+            </StackPanel>
+
+            <StackPanel>
+                <TextBox Name="StaffIdBox"/>
+                <Menu Name="StaffType">
+                    <MenuItem Name="StaffTypeHeader" Header="Select a staff type">
+                        <MenuItem Name="SetAsAdmin"         Header="Administrator"/>
+                        <MenuItem Name="SetAsReceptionist"  Header="Receptionist"/>
+                        <MenuItem Name="SetAsGP"            Header="General Practitioner"/>
+                        <MenuItem Name="SetAsNurse"         Header="Nurse"/>
+                    </MenuItem>
+                </Menu>
+                <Menu Name="StaffMode">
+                    <MenuItem Name="StaffModeHeader" Header="Yes">
+                        <MenuItem Name="SetAsActive"    Header="Yes"/>
+                        <MenuItem Name="SetAsInactive"  Header="No"/>
+                    </MenuItem>
+                </Menu>
+                <PasswordBox Name="PasswordField"/>
+                <TextBox Name="MedicalLicenceBox"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Frame Name="DetailsEditor" HorizontalAlignment="Right" Focusable="False"/>
+    </StackPanel>
+</core:EditorPage>

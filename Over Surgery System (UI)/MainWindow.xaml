@@ -4,45 +4,45 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OverSurgerySystem.UI"
-        mc:Ignorable    = "d"
-        Title           = "MainWindow"
-        Name            = "MainWinObject"
-        Width           = "960"
-        Height          = "540">
+        mc:Ignorable            = "d"
+        Title                   = "MainWindow"
+        Name                    = "MainWinObject"
+        Width                   = "960"
+        Height                  = "720"
+        WindowStartupLocation   = "CenterScreen"
+        WindowState             = "Normal"
+        WindowStyle             = "SingleBorderWindow"
+        ResizeMode              = "CanResizeWithGrip">
+
     <Window.Resources>
-        <Style TargetType="{x:Type Grid}">
-            <Setter Property="Background">
-                <Setter.Value>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="0.01,1">
-                        <GradientStop Offset="0.0" Color="White"    />
-                        <GradientStop Offset="2.5" Color="SkyBlue"  />
-                    </LinearGradientBrush>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <ResourceDictionary Source="pack://application:,,,/Over Surgery System (UI);component/Styles/AccentStyles.xaml"/>
     </Window.Resources>
 
-    <Grid SizeChanged="OnSizeChanged">
-        <Grid.LayoutTransform>
-            <ScaleTransform
-                x:Name  = "ApplicationScaleTransform"
-                CenterX = "0"
-                CenterY = "0"
-                ScaleX  = "{Binding ElementName=MainWinObject, Path=ScaleValue}"
-                ScaleY  = "{Binding ElementName=MainWinObject, Path=ScaleValue}"/>
-        </Grid.LayoutTransform>
-
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-        </Grid.RowDefinitions>
+    <ScrollViewer
+        SizeChanged                     = "OnSizeChanged"
+        VerticalScrollBarVisibility     = "Auto"
+        HorizontalScrollBarVisibility   = "Auto">
         
-        <Frame Source="Persistent/MenuBanner.xaml" Grid.Row="0"/>
-        <Frame
-            Grid.Row                = "1"
-            Name                    = "MainPage"
-            Source                  = "{Binding}"
-            NavigationUIVisibility  = "Hidden">
-        </Frame>
-    </Grid>
+        <ScrollViewer.LayoutTransform>
+            <ScaleTransform
+                    x:Name  = "ApplicationScaleTransform"
+                    CenterX = "0"
+                    CenterY = "0"
+                    ScaleX  = "{Binding ElementName=MainWinObject, Path=ScaleValue}"
+                    ScaleY  = "{Binding ElementName=MainWinObject, Path=ScaleValue}"/>
+        </ScrollViewer.LayoutTransform>
+
+        <DockPanel MaxWidth="1920">
+            <Frame
+                DockPanel.Dock          = "Top"
+                Name                    = "Banner"
+                NavigationUIVisibility  = "Hidden"/>
+
+            <Frame
+                DockPanel.Dock          = "Top"
+                Name                    = "MainPage"
+                NavigationUIVisibility  = "Hidden"
+                Padding                 = "25,75,25,75"/>
+        </DockPanel>
+    </ScrollViewer>
 </Window>

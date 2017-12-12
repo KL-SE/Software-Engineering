@@ -3,7 +3,7 @@
 namespace OverSurgerySystem
 {
     // Element of a databse query.
-    public class QueryElement
+    public class QueryElement : IDatabaseQuery
     {
         public string Column    { set; get; }
         public object Value     { set; get; }
@@ -25,15 +25,8 @@ namespace OverSurgerySystem
             Value   = new QueryElement( columnName , null );
         }
 
-        // Constructor for a sub-query
-        public QueryElement( DatabaseQuery subquery )
-        {
-            Column  = null;
-            Value   = subquery;
-        }
-
         // Convert an object into an SQL query value:
-        public virtual string Stringify()
+        public string Stringify()
         {
             // Format the value appropraitely.
             if( Value is DateTime )
@@ -46,21 +39,15 @@ namespace OverSurgerySystem
                 QueryElement actualValue = ( QueryElement )( Value );
                 return actualValue.Column;
             }
-            else if( Value is DatabaseObject )
+            else if( Value is IDatabaseQuery )
             {
-                DatabaseObject actualValue = ( DatabaseObject )( Value );
-                actualValue.Validate();
-                
-                return String.Format( "'{0}'" , actualValue.Id );
-            }
-            else if( Value is DatabaseQuery )
-            {
-                DatabaseQuery actualValue = ( DatabaseQuery )( Value );
-                return String.Format( "({0})" , actualValue.Select );
+                IDatabaseQuery actualValue = ( IDatabaseQuery )( Value );
+                return actualValue.Stringify();
             }
             else
             {
-                return String.Format( "'{0}'" , Value );
+                string strValue = Value.ToString();
+                return String.Format( "'{0}'" , strValue.Replace( "\'" , "\\'" ) );
             }
         }
 

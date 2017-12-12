@@ -29,16 +29,18 @@ namespace OverSurgerySystem.Core.Base
             query.Add( Database.Tables.Identifications.Value        );
             query.Add( Database.Tables.Identifications.DetailsId    );
 
-            MySqlDataReader reader = DoLoad( query );
+            MySqlDataReader reader  = DoLoad( query );
+            int ownerId             = INVALID_ID;
             
             if( Loaded )
             {
                 Value   = reader.GetString( 0 );
-                Owner   = DetailsManager.GetPersonalDetail( reader.GetInt32( 1 ) );
+                ownerId = reader.GetInt32( 1 );
                 DetailsManager.Add( this );
             }
 
             reader.Close();
+            Owner = DetailsManager.GetPersonalDetail( ownerId );
         }
 
         public override void Save()

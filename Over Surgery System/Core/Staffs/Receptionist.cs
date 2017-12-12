@@ -15,7 +15,7 @@ namespace OverSurgerySystem.Core.Staffs
             {
                 QueryComparator idComparator    = new QueryComparator();
                 idComparator.Source             = new QueryElement( Database.Tables.Receptionists.StaffId );
-                idComparator.Operand            = new QueryElement( null , Id );
+                idComparator.Operand            = this;
                 idComparator.Equal              = true;
                 return idComparator;
             }

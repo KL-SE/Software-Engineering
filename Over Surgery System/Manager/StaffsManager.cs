@@ -50,12 +50,13 @@ namespace OverSurgerySystem.Manager
         }
 
         // Redirected getters~
-        public static List<Staff> GetStaffsByDetails( int id            )   { return StaffManager.Merge( Database.Tables.STAFFS , ManagerHelper.GetEqualComparator( Database.Tables.Staffs.DetailsId    , id                                                                                            ) ); }
-        public static List<Staff> GetStaffsByFirstName( string name     )   { return StaffManager.Merge( Database.Tables.STAFFS , ManagerHelper.GetInLikeComparator( Database.Tables.Staffs.DetailsId   , Database.Tables.PERSONAL_DETAILS  , Database.Tables.PersonalDetails.FirstName     , name      ) ); }
-        public static List<Staff> GetStaffsByLastName( string name      )   { return StaffManager.Merge( Database.Tables.STAFFS , ManagerHelper.GetInLikeComparator( Database.Tables.Staffs.DetailsId   , Database.Tables.PERSONAL_DETAILS  , Database.Tables.PersonalDetails.LastName      , name      ) ); }
-        public static List<Staff> GetStaffsByAddress( string address    )   { return StaffManager.Merge( Database.Tables.STAFFS , ManagerHelper.GetInLikeComparator( Database.Tables.Staffs.DetailsId   , Database.Tables.PERSONAL_DETAILS  , Database.Tables.PersonalDetails.Address       , address   ) ); }
-        public static List<Staff> GetStaffsByDateOfBirth( DateTime dob  )   { return StaffManager.Merge( Database.Tables.STAFFS , ManagerHelper.GetInEqualComparator( Database.Tables.Staffs.DetailsId  , Database.Tables.PERSONAL_DETAILS  , Database.Tables.PersonalDetails.DateOfBirth   , dob       ) ); }
-        public static List<Staff> GetStaffsByPostcode( int id           )   { return StaffManager.Merge( Database.Tables.STAFFS , ManagerHelper.GetInEqualComparator( Database.Tables.Staffs.DetailsId  , Database.Tables.PERSONAL_DETAILS  , Database.Tables.PersonalDetails.PostcodeId    , id        ) ); }
+        public static List<Staff> GetStaffsByDetails( int id            )   { return StaffManager.Merge( Database.Tables.STAFFS , ManagerHelper.GetEqualComparator( Database.Tables.Staffs.DetailsId        , id                                                                                            ) ); }
+        public static List<Staff> GetStaffsByFirstName( string name     )   { return StaffManager.Merge( Database.Tables.STAFFS , ManagerHelper.GetInLikeComparator( Database.Tables.Staffs.DetailsId       , Database.Tables.PERSONAL_DETAILS  , Database.Tables.PersonalDetails.FirstName     , name      ) ); }
+        public static List<Staff> GetStaffsByLastName( string name      )   { return StaffManager.Merge( Database.Tables.STAFFS , ManagerHelper.GetInLikeComparator( Database.Tables.Staffs.DetailsId       , Database.Tables.PERSONAL_DETAILS  , Database.Tables.PersonalDetails.LastName      , name      ) ); }
+        public static List<Staff> GetStaffsByAddress( string address    )   { return StaffManager.Merge( Database.Tables.STAFFS , ManagerHelper.GetInLikeComparator( Database.Tables.Staffs.DetailsId       , Database.Tables.PERSONAL_DETAILS  , Database.Tables.PersonalDetails.Address       , address   ) ); }
+        public static List<Staff> GetStaffsByDateOfBirth( DateTime dob  )   { return StaffManager.Merge( Database.Tables.STAFFS , ManagerHelper.GetInEqualComparator( Database.Tables.Staffs.DetailsId      , Database.Tables.PERSONAL_DETAILS  , Database.Tables.PersonalDetails.DateOfBirth   , dob       ) ); }
+        public static List<Staff> GetStaffsBySex( char sex              )   { return StaffManager.Merge( Database.Tables.STAFFS , ManagerHelper.GetInEqualComparator( Database.Tables.Patients.DetailsId    , Database.Tables.PERSONAL_DETAILS  , Database.Tables.PersonalDetails.Sex           , sex       ) ); }
+        public static List<Staff> GetStaffsByPostcode( int id           )   { return StaffManager.Merge( Database.Tables.STAFFS , ManagerHelper.GetInEqualComparator( Database.Tables.Staffs.DetailsId      , Database.Tables.PERSONAL_DETAILS  , Database.Tables.PersonalDetails.PostcodeId    , id        ) ); }
         public static List<Staff> GetStaffsByPostcode( string code      )
         {
             DatabaseQuery nestedQuery = new DatabaseQuery( Database.Tables.PERSONAL_DETAILS )
@@ -63,14 +64,11 @@ namespace OverSurgerySystem.Manager
                 Comparator = new QueryComparator()
                 {
                     Source  = new QueryElement( Database.Tables.PersonalDetails.PostcodeId ),
-                    Operand = new QueryElement
+                    Operand = ManagerHelper.GetInEqualQuery
                     (
-                        ManagerHelper.GetInEqualQuery
-                        (
-                            Database.Tables.POSTAL_CODES,
-                            Database.Tables.PostalCodes.Code,
-                            code
-                        )
+                        Database.Tables.POSTAL_CODES,
+                        Database.Tables.PostalCodes.Code,
+                        code
                     )
                 }
             };
@@ -230,6 +228,9 @@ namespace OverSurgerySystem.Manager
         public static List<MedicalStaff>    GetMedicalStaffNotOnLeaveOn( DateTime date )                    { return GetMedicalStaffLeavesFrom( date , date , true  );  }
         public static List<LeaveDate>       GetLeaveDatesByStaff( MedicalStaff staff )                      { return GetLeaveDatesByStaff( staff.Id );                  }
         public static List<WorkingDays>     GetWorkingDaysByStaff( MedicalStaff staff )                     { return GetWorkingDaysByStaff( staff.Id );                 }
+
+        public static List<MedicalStaff>    RemoveNurses( List<MedicalStaff> list )                 { return ManagerHelper.Filter( list , e => !e.Nurse );  }
+        public static List<MedicalStaff>    RemoveGeneralPractitioners( List<MedicalStaff> list )   { return ManagerHelper.Filter( list , e => e.Nurse );   }
     }
 
     [Serializable]
@@ -255,12 +256,12 @@ namespace OverSurgerySystem.Manager
 
             query.Add( Database.Tables.Staffs.Type );
             
+            Staff obj               = null;
             MySqlCommand command    = new MySqlCommand( query.Select , Database.Connection );
             MySqlDataReader reader  = command.ExecuteReader();
 
             if( reader.Read() )
             {
-                Staff obj;
                 char type = reader.GetChar( 0 );
 
                 if( type.ToString().ToUpper().Equals( "M" ) )
@@ -272,12 +273,14 @@ namespace OverSurgerySystem.Manager
                 else
                     throw new UnknownStaffTypeError();
 
-                obj.Load( id );
-                if( obj.Loaded )
-                    Add( ( T )( obj ) );
+                obj.Id = id;
             }
 
-            return null;
+            reader.Close();
+            if( obj != null )
+                obj.Load();
+
+            return ( T )( obj );
         }
     }
 }

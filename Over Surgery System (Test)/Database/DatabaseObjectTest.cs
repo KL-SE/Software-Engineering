@@ -14,9 +14,9 @@ namespace OverSurgerySystem_Test
             DatabaseObject dbObject = new City();
 
             Assert.IsFalse( dbObject.Loaded );
-            Assert.AreEqual( DatabaseObject.INVALID_ID  , dbObject.Id           );
-            Assert.AreEqual( DateTime.MinValue          , dbObject.LastSaved    );
-            Assert.AreEqual( DateTime.MinValue          , dbObject.CreatedOn    );
+            Assert.AreEqual( DatabaseObject.INVALID_ID          , dbObject.Id           );
+            Assert.AreEqual( DatabaseObject.INVALID_DATETIME    , dbObject.LastSaved    );
+            Assert.AreEqual( DatabaseObject.INVALID_DATETIME    , dbObject.CreatedOn    );
         }
     }
 }

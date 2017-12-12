@@ -6,7 +6,7 @@ using MySql.Data.MySqlClient;
 namespace OverSurgerySystem
 {
     // Database query builder thingy
-    public class DatabaseQuery
+    public class DatabaseQuery : IDatabaseQuery
     {  
         private string columns;
         private string values;
@@ -143,6 +143,12 @@ namespace OverSurgerySystem
                 string sqlStatement         = String.Format( "DELETE FROM {0}{1}" , Table , comparatorStatement );
                 return sqlStatement;
             }
+        }
+
+        // Convert to string
+        public string Stringify()
+        {
+            return String.Format( "({0})" , Select );
         }
     }
 }

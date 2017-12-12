@@ -1,6 +1,7 @@
 ﻿using System;
 using MySql.Data.MySqlClient;
 using OverSurgerySystem.Core.Base;
+using OverSurgerySystem.Manager;
 
 namespace OverSurgerySystem.Core.Staffs
 {
@@ -14,14 +15,36 @@ namespace OverSurgerySystem.Core.Staffs
 
     public class Staff : DatabaseObject
     {
-        public string Password          {         set; get; }
-        public DateTime DateJoined      {         set; get; }
-        public PersonalDetails Details  { private set; get; }
-        public bool Active              {         set; get; }
+        public string Password          { set; get; }
+        public DateTime DateJoined      { set; get; }
+        public PersonalDetails Details  { set; get; }
+        public bool Active              { set; get; }
+
+        public string StringId
+        {
+            get
+            {
+                return "S" + Id.ToString( "D8" );
+            }
+        }
+
+        public static int GetIdFromString( string StrId )
+        {
+            try
+            {
+                return Int32.Parse( StrId.Substring( 1 ) );
+            }
+            catch
+            {
+                return INVALID_ID;
+            }
+        }
 
         // Avoid other part of the code from instantiating the Staff class.
         public Staff()
         {
+            Active  = true;
+            Details = new PersonalDetails();
             if( !( this is MedicalStaff || this is Receptionist ) )
                 throw new UnknownStaffTypeError();
         }
@@ -41,21 +64,29 @@ namespace OverSurgerySystem.Core.Staffs
             query.Add( Database.Tables.Staffs.DetailsId     );
             query.Add( Database.Tables.Staffs.Active        );
             
-            MySqlDataReader reader = DoLoad( query );
+            MySqlDataReader reader  = DoLoad( query );
+            int detailsId           = INVALID_ID;
             
-            Details     = new PersonalDetails();
-            Password    = reader.GetString( 0 );
-            Details.Id  = reader.GetInt32( 1 );
-            DateJoined  = reader.GetDateTime( 0 );
-            Active      = reader.GetByte( 0 ) > 0 ? true : false;
+            if( reader.HasRows )
+            {
+                Password    = reader.GetString( 0 );
+                DateJoined  = reader.GetDateTime( 1 );
+                detailsId   = reader.GetInt32( 2 );
+                Active      = reader.GetByte( 3 ) > 0 ? true : false;
+            }
             
             reader.Close();
-            Details.Load();
+            Details = DetailsManager.GetPersonalDetail( detailsId );
         }
 
         public override void Save()
         {
+            char staffType  = '\0';
+            if( this is MedicalStaff ) staffType = 'M'; else
+            if( this is Receptionist ) staffType = 'R';
+
             DatabaseQuery query = new DatabaseQuery( Database.Tables.STAFFS );
+            query.Add( Database.Tables.Staffs.Type          , staffType         );
             query.Add( Database.Tables.Staffs.Password      , Password          );
             query.Add( Database.Tables.Staffs.DateJoined    , DateJoined        );
             query.Add( Database.Tables.Staffs.DetailsId     , Details           );

@@ -12,14 +12,14 @@ namespace OverSurgerySystem.Core.Base
         public State State
         {
             set { City.State = value;   }
-            get { return City.State;    }
+            get { return City?.State;   }
         }
         
         // Location's country
         public Country Country
         {
             set { City.State.Country = value;   }
-            get { return City.State.Country;    }
+            get { return City?.State?.Country;  }
         }
 
         // Implicit string converter
@@ -42,16 +42,18 @@ namespace OverSurgerySystem.Core.Base
             query.Add( Database.Tables.PostalCodes.Code     );
             query.Add( Database.Tables.PostalCodes.CityId   );
 
-            MySqlDataReader reader = DoLoad( query );
+            MySqlDataReader reader  = DoLoad( query );
+            int cityId              = INVALID_ID;
             
             if( Loaded )
             {
                 Postcode    = reader.GetString( 0 );
-                City        = AddressManager.GetCity( reader.GetInt32( 1 ) );
+                cityId      = reader.GetInt32( 1 );
                 AddressManager.Add( this );
             }
 
             reader.Close();
+            City = AddressManager.GetCity( cityId );
         }
 
         public override void Save()
@@ -73,7 +75,7 @@ namespace OverSurgerySystem.Core.Base
         public Country Country
         {
             set { State.Country = value;    }
-            get { return State.Country;     }
+            get { return State?.Country;    }
         }
 
         // Implicit string converter
@@ -99,17 +101,18 @@ namespace OverSurgerySystem.Core.Base
             query.Add( Database.Tables.Cities.Name      );
             query.Add( Database.Tables.Cities.StateId   );
 
-            MySqlDataReader reader = DoLoad( query );
+            MySqlDataReader reader  = DoLoad( query );
+            int stateId             = INVALID_ID;
             
             if( Loaded )
             {
                 Name    = reader.GetString( 0 );
-                State   = AddressManager.GetState( reader.GetInt32( 1 ) );
+                stateId = reader.GetInt32( 1 );
                 AddressManager.Add( this );
             }
 
             reader.Close();
-            AddressManager.Add( this );
+            State = AddressManager.GetState( stateId );
         }
 
         public override void Save()
@@ -150,17 +153,18 @@ namespace OverSurgerySystem.Core.Base
             query.Add( Database.Tables.States.Name      );
             query.Add( Database.Tables.States.CountryId );
 
-            MySqlDataReader reader = DoLoad( query );
+            MySqlDataReader reader  = DoLoad( query );
+            int countryId           = INVALID_ID;
             
             if( Loaded )
             {
-                Name    = reader.GetString( 0 );
-                Country = AddressManager.GetCountry( reader.GetInt32( 1 ) );
+                Name        = reader.GetString( 0 );
+                countryId   = reader.GetInt32( 1 );
                 AddressManager.Add( this );
             }
             
             reader.Close();
-            AddressManager.Add( this );
+            Country = AddressManager.GetCountry( countryId );
         }
 
         public override void Save()

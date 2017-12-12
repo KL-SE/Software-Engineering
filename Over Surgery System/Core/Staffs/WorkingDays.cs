@@ -20,11 +20,17 @@ namespace OverSurgerySystem.Core.Staffs
         };
         
         public MedicalStaff Owner { private set; get; } // Owner of this object
-        List<bool> days;                                // Array that stores whether staff is working on a day of the week.
+        bool[] days;                                    // Array that stores whether staff is working on a day of the week.
 
         public WorkingDays() : base()
         {
-            days = new List<bool>( Day.TOTAL );
+            days = new bool[Day.TOTAL];
+        }
+
+        public WorkingDays( MedicalStaff owner )
+        {
+            days = new bool[Day.TOTAL];
+            Owner = owner;
         }
 
         // Properties to access specific days of a week.
@@ -124,12 +130,13 @@ namespace OverSurgerySystem.Core.Staffs
             query.Add( Database.Tables.WorkingDays.Thursday     );
             query.Add( Database.Tables.WorkingDays.Friday       );
             query.Add( Database.Tables.WorkingDays.Saturday     );
-
-            MySqlDataReader reader = DoLoad( query );
+            
+            MySqlDataReader reader  = DoLoad( query );
+            int ownerId             = INVALID_ID;
             
             if( Loaded )
             {
-                Owner       = StaffsManager.GetMedicalStaff( reader.GetInt32( 0 ) );
+                ownerId     = reader.GetInt32( 0 );
                 Sunday      = reader.GetByte( 1 ) > 0 ? true : false;
                 Monday      = reader.GetByte( 2 ) > 0 ? true : false;
                 Tuesday     = reader.GetByte( 3 ) > 0 ? true : false;
@@ -141,6 +148,7 @@ namespace OverSurgerySystem.Core.Staffs
             }
 
             reader.Close();
+            Owner = StaffsManager.GetMedicalStaff( ownerId );
         }
 
         public override void Save()

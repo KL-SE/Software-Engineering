@@ -3,7 +3,7 @@
 namespace OverSurgerySystem
 {
     // Comparator of a databse query.
-    public class QueryComparator : QueryElement
+    public class QueryComparator : IDatabaseQuery
     {
         public static class Modes
         {
@@ -16,8 +16,8 @@ namespace OverSurgerySystem
         }
         
         private int mode;
-        public QueryElement Source  { set; get; }
-        public QueryElement Operand { set; get; }
+        public IDatabaseQuery Source  { set; get; }
+        public IDatabaseQuery Operand { set; get; }
 
         // Mode operators
         public void SetMode( int m , bool value )
@@ -143,7 +143,7 @@ namespace OverSurgerySystem
         }
 
         // Function to apply brackets to an inner comparator if it has a dfferent sign than the current comparator.
-        public string Bracketify( QueryElement element )
+        public string Bracketify( IDatabaseQuery element )
         {
             if( element is QueryComparator )
             {
@@ -159,9 +159,9 @@ namespace OverSurgerySystem
         }
 
         // Convert the comparator values into string.
-        public override string Stringify()
+        public string Stringify()
         {
-            bool isOperandQuery     = Operand.Value is DatabaseQuery;
+            bool isOperandQuery     = Operand is DatabaseQuery;
             string sourceString     = Bracketify( Source );
             string operandString    = Bracketify( Operand );
             string operatorString   = isOperandQuery ? "IN" : "";

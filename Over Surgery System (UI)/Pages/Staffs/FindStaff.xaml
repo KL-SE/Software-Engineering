@@ -1,0 +1,55 @@
+﻿<core:FinderPage
+    x:TypeArguments="staffs:Staff"
+    x:Class="OverSurgerySystem.UI.Pages.Staffs.FindStaff"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:OverSurgerySystem.UI.Pages.Staffs"
+    xmlns:core="clr-namespace:OverSurgerySystem.UI.Pages.Core"
+    xmlns:staffs="clr-namespace:OverSurgerySystem.Core.Staffs"
+    mc:Ignorable="d" 
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    Title="FindStaff">
+
+    <Page.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Over Surgery System (UI);component/Styles/FindItemStyles.xaml"/>
+    </Page.Resources>
+
+    <StackPanel HorizontalAlignment="Center">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Name="BackButton" Width="300">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png"/>
+                    <TextBlock
+                        Text="Back"
+                        VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Name="ResetButton">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/search.png"/>
+                    <TextBlock
+                        Text="Search Again"
+                        VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Border Style="{StaticResource HeaderBorder}" Width="250"><TextBlock Style="{StaticResource HeaderText}" Text="Staff ID"     /></Border>
+            <Border Style="{StaticResource HeaderBorder}" Width="450"><TextBlock Style="{StaticResource HeaderText}" Text="Name"         /></Border>
+            <Border Style="{StaticResource HeaderBorder}" Width="750"><TextBlock Style="{StaticResource HeaderText}" Text="Address"      /></Border>
+            <Border Style="{StaticResource HeaderBorder}" Width="250"><TextBlock Style="{StaticResource HeaderText}" Text="Birth Date"   /></Border>
+        </StackPanel>
+        <StackPanel Name="ResultsList" Background="White">
+            <!-- Template for future reference. This dummy row will be removed by FindStaff.xaml.cs at runtime. -->
+            <StackPanel Style="{StaticResource RowEffect}" Orientation="Horizontal">
+                <Border Style="{StaticResource RowBorder}" Width="250"><TextBlock Style="{StaticResource ShortRowText}" Text="S00000000001" /></Border>
+                <Border Style="{StaticResource RowBorder}" Width="450"><TextBlock Style="{StaticResource LongRowText }" Text="Name"         /></Border>
+                <Border Style="{StaticResource RowBorder}" Width="750"><TextBlock Style="{StaticResource LongRowText }" Text="Address"      /></Border>
+                <Border Style="{StaticResource RowBorder}" Width="250"><TextBlock Style="{StaticResource ShortRowText}" Text="Birth Date"   /></Border>
+            </StackPanel>
+        </StackPanel>
+    </StackPanel>
+</core:FinderPage>

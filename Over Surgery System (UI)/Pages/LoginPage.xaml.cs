@@ -12,6 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using OverSurgerySystem.UI.Persistent;
+using OverSurgerySystem.Core.Base;
+using OverSurgerySystem.Core.Staffs;
 
 namespace OverSurgerySystem.UI.Pages
 {
@@ -23,13 +26,19 @@ namespace OverSurgerySystem.UI.Pages
         public LoginPage()
         {
             InitializeComponent();
-            LoginButton.Click += new RoutedEventHandler( DoLogin );
+            Loaded += OnLoad;
+
+            LoginButton.Click += DoLogin;
+        }
+
+        public void OnLoad( object sender , RoutedEventArgs e )
+        {
+            App.SetTitle( "Log In" );
         }
 
         private void DoLogin( object sender , RoutedEventArgs e )
         {
-            NavigationService MainPage = NavigationService.GetNavigationService( this );
-            MainPage.Navigate( new MainMenu( "Something" ) );
+            App.DoLogin( IdField.Text , null );
         }
     }
 }

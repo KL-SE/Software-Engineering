@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{06B57831-6BD6-461A-904E-15CC4D290ABD}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OverSurgerySystem</RootNamespace>
     <AssemblyName>Over Surgery System</AssemblyName>
@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
@@ -43,6 +46,7 @@
     <Compile Include="Database\DatabaseDefinition.cs" />
     <Compile Include="Database\DatabaseObject.cs" />
     <Compile Include="Database\DatabaseQuery.cs" />
+    <Compile Include="Database\IDatabaseQuery.cs" />
     <Compile Include="Database\QueryComparator.cs" />
     <Compile Include="Database\QueryElement.cs" />
     <Compile Include="Core\Base\Identification.cs" />
@@ -56,7 +60,6 @@
     <Compile Include="Core\Staffs\Staff.cs" />
     <Compile Include="Core\Patients\TestResult.cs" />
     <Compile Include="Core\Staffs\WorkingDays.cs" />
-    <Compile Include="Main.cs" />
     <Compile Include="Manager\AddressManager.cs" />
     <Compile Include="Manager\DetailsManager.cs" />
     <Compile Include="Manager\Manager.cs" />

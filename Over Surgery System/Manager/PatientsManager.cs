@@ -96,6 +96,7 @@ namespace OverSurgerySystem.Manager
         public static List<Patient> GetPatientsByLastName( string name      )   { return PatientManager.Merge( Database.Tables.PATIENTS , ManagerHelper.GetInLikeComparator( Database.Tables.Patients.DetailsId     , Database.Tables.PERSONAL_DETAILS  , Database.Tables.PersonalDetails.LastName      , name      ) ); }
         public static List<Patient> GetPatientsByAddress( string address    )   { return PatientManager.Merge( Database.Tables.PATIENTS , ManagerHelper.GetInLikeComparator( Database.Tables.Patients.DetailsId     , Database.Tables.PERSONAL_DETAILS  , Database.Tables.PersonalDetails.Address       , address   ) ); }
         public static List<Patient> GetPatientsByDateOfBirth( DateTime dob  )   { return PatientManager.Merge( Database.Tables.PATIENTS , ManagerHelper.GetInEqualComparator( Database.Tables.Patients.DetailsId    , Database.Tables.PERSONAL_DETAILS , Database.Tables.PersonalDetails.DateOfBirth    , dob       ) ); }
+        public static List<Patient> GetPatientsBySex( char sex              )   { return PatientManager.Merge( Database.Tables.PATIENTS , ManagerHelper.GetInEqualComparator( Database.Tables.Patients.DetailsId    , Database.Tables.PERSONAL_DETAILS , Database.Tables.PersonalDetails.Sex            , sex       ) ); }
         public static List<Patient> GetPatientsByPostcode( int id           )   { return PatientManager.Merge( Database.Tables.PATIENTS , ManagerHelper.GetInEqualComparator( Database.Tables.Patients.DetailsId    , Database.Tables.PERSONAL_DETAILS , Database.Tables.PersonalDetails.PostcodeId     , id        ) ); }
         public static List<Patient> GetPatientsByPostcode( string code      )
         {
@@ -104,14 +105,11 @@ namespace OverSurgerySystem.Manager
                 Comparator = new QueryComparator()
                 {
                     Source  = new QueryElement( Database.Tables.PersonalDetails.PostcodeId ),
-                    Operand = new QueryElement
+                    Operand = ManagerHelper.GetInEqualQuery
                     (
-                        ManagerHelper.GetInEqualQuery
-                        (
-                            Database.Tables.POSTAL_CODES,
-                            Database.Tables.PostalCodes.Code,
-                            code
-                        )
+                        Database.Tables.POSTAL_CODES,
+                        Database.Tables.PostalCodes.Code,
+                        code
                     )
                 }
             };
@@ -245,14 +243,22 @@ namespace OverSurgerySystem.Manager
         public static List<Medication> GetMedicationByCode( string code )   { return MedicationManager.Merge( Database.Tables.MEDICATIONS , ManagerHelper.GetEqualComparator( Database.Tables.Medications.Code , code ) ); }
         public static List<Medication> GetMedicationByName( string name )   { return MedicationManager.Merge( Database.Tables.MEDICATIONS , ManagerHelper.GetEqualComparator( Database.Tables.Medications.Name , name ) ); }
         
+        public static List<PrescriptionMedication> GetMedicationsForPrescription( int id )  { return PrescriptionMedManager.Merge( Database.Tables.PRESCRIPTION_MEDICATIONS , ManagerHelper.GetEqualComparator( Database.Tables.PrescriptionMedications.PrescriptionId , id ) ); }
+        
+        public static List<Patient>         GetAllPatients()        { return PatientManager.Merge(      Database.Tables.PATIENTS        , null ); }
+        public static List<TestResult>      GetAllTestResults()     { return TestResultManager.Merge(   Database.Tables.TEST_RESULTS    , null ); }
+        public static List<Appointment>     GetAllAppointments()    { return AppointmentManager.Merge(  Database.Tables.APPOINTMENTS    , null ); }
+        public static List<Prescription>    GetAllPrescriptions()   { return PrescriptionManager.Merge(  Database.Tables.PRESCRIPTIONS  , null ); }
+        
         // Simple redirect getters...
-        public static List<Patient>         GetPatientsByDetails( PersonalDetails detail            )   { return GetPatientsByDetails( detail.Id            ); }
-        public static List<Prescription>    GetPrescriptionsByPatient( Patient patient              )   { return GetPrescriptionsByPatient( patient.Id      ); }
-        public static List<Prescription>    GetPrescriptionsByStaff( Staff staff                    )   { return GetPrescriptionsByStaff( staff.Id          ); }
-        public static List<Appointment>     GetAppointmentsByPatient(  Patient patient              )   { return GetAppointmentsByPatient( patient.Id       ); }
-        public static List<Appointment>     GetAppointmentsByStaff( Staff staff                     )   { return GetAppointmentsByStaff( staff.Id           ); }
-        public static List<TestResult>      GetTestResultsByPatient( Patient patient                )   { return GetTestResultsByPatient( patient.Id        ); }
-        public static List<Prescription>    GetPrescriptions( MedicalStaff staff , Patient patient  )   { return GetPrescriptions( staff.Id , patient.Id    ); }
-        public static List<Appointment>     GetAppointments( MedicalStaff staff , Patient patient   )   { return GetAppointments( staff.Id , patient.Id     ); }
+        public static List<Patient>                 GetPatientsByDetails( PersonalDetails detail                )   { return GetPatientsByDetails( detail.Id                ); }
+        public static List<Prescription>            GetPrescriptionsByPatient( Patient patient                  )   { return GetPrescriptionsByPatient( patient.Id          ); }
+        public static List<Prescription>            GetPrescriptionsByStaff( Staff staff                        )   { return GetPrescriptionsByStaff( staff.Id              ); }
+        public static List<Appointment>             GetAppointmentsByPatient(  Patient patient                  )   { return GetAppointmentsByPatient( patient.Id           ); }
+        public static List<Appointment>             GetAppointmentsByStaff( Staff staff                         )   { return GetAppointmentsByStaff( staff.Id               ); }
+        public static List<TestResult>              GetTestResultsByPatient( Patient patient                    )   { return GetTestResultsByPatient( patient.Id            ); }
+        public static List<Prescription>            GetPrescriptions( MedicalStaff staff , Patient patient      )   { return GetPrescriptions( staff.Id , patient.Id        ); }
+        public static List<Appointment>             GetAppointments( MedicalStaff staff , Patient patient       )   { return GetAppointments( staff.Id , patient.Id         ); }
+        public static List<PrescriptionMedication>  GetMedicationsForPrescription( Prescription prescription    )   { return GetMedicationsForPrescription( prescription.Id ); }
     }
 }

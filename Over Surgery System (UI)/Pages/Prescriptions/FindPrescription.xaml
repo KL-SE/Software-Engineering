@@ -1,0 +1,48 @@
+﻿<core:FinderPage
+    x:TypeArguments="patients:Prescription"
+    x:Class="OverSurgerySystem.UI.Pages.Prescriptions.FindPrescription"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:OverSurgerySystem.UI.Pages.Prescriptions"
+    xmlns:core="clr-namespace:OverSurgerySystem.UI.Pages.Core"
+    xmlns:patients="clr-namespace:OverSurgerySystem.Core.Patients"
+    mc:Ignorable="d" 
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    Title="FindStaff">
+
+    <Page.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Over Surgery System (UI);component/Styles/FindItemStyles.xaml"/>
+    </Page.Resources>
+
+    <StackPanel HorizontalAlignment="Center">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Name="BackButton" Width="300">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png"/>
+                    <TextBlock
+                        Text="Back"
+                        VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Name="ResetButton">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/search.png"/>
+                    <TextBlock
+                        Text="Search Again"
+                        VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Border Style="{StaticResource HeaderBorder}" Width="250"><TextBlock Style="{StaticResource HeaderText}" Text="ID"      /></Border>
+            <Border Style="{StaticResource HeaderBorder}" Width="450"><TextBlock Style="{StaticResource HeaderText}" Text="Patient" /></Border>
+            <Border Style="{StaticResource HeaderBorder}" Width="750"><TextBlock Style="{StaticResource HeaderText}" Text="Name"    /></Border>
+            <Border Style="{StaticResource HeaderBorder}" Width="250"><TextBlock Style="{StaticResource HeaderText}" Text="Date"    /></Border>
+        </StackPanel>
+        <StackPanel Name="ResultsList" Background="White">
+        </StackPanel>
+    </StackPanel>
+</core:FinderPage>

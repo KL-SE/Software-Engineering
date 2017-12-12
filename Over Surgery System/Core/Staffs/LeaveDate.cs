@@ -36,17 +36,19 @@ namespace OverSurgerySystem.Core.Staffs
             DatabaseQuery query = new DatabaseQuery( Database.Tables.LEAVE_DATES );
             query.Add( Database.Tables.LeaveDates.Date      );
             query.Add( Database.Tables.LeaveDates.StaffId   );
-
-            MySqlDataReader reader = DoLoad( query );
+            
+            MySqlDataReader reader  = DoLoad( query );
+            int ownerId             = INVALID_ID;
             
             if( Loaded )
             {
                 Date    = reader.GetDateTime( 0 );
-                Owner   = StaffsManager.GetMedicalStaff( reader.GetInt32( 1 ) );
+                ownerId = reader.GetInt32( 1 );
                 StaffsManager.Add( this );
             }
 
             reader.Close();
+            Owner = StaffsManager.GetMedicalStaff( ownerId );
         }
 
         public override void Save()
