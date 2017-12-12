@@ -16,14 +16,14 @@ namespace OverSurgerySystem.Core.Base
         public DateTime DateOfBirth { set; get; }
 
         char sex;
-        public List<Identification> Identifications { set; get; }
-        public List<ContactNumber> ContactNumbers   { set; get; }
+        public List<Identification> identifications;
+        public List<ContactNumber> contactNumbers;
 
         // Default Constructor
         public PersonalDetails() : base()
         {
-            Identifications = new List<Identification>();
-            ContactNumbers  = new List<ContactNumber>();
+            identifications = new List<Identification>();
+            contactNumbers  = new List<ContactNumber>();
         }
         
         // Person's full name, which is a combination of their first and last name
@@ -60,6 +60,138 @@ namespace OverSurgerySystem.Core.Base
             {
                 return sex;
             }
+        }
+        
+        // Person's identification
+        public IList<Identification> Identifications
+        {
+            get
+            {
+                return identifications.AsReadOnly();
+            }
+        }
+        
+        // Person's contact numbers
+        public IList<ContactNumber> ContactNumbers
+        {
+            get
+            {
+                return contactNumbers.AsReadOnly();
+            }
+        }
+
+        // Adders and removers for identifications
+        public bool HaveIdentification( string iden )
+        {
+            foreach( Identification identification in Identifications )
+            {
+                if( identification.Value.Equals( iden ) )
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        public bool HaveIdentification( Identification iden )
+        {
+            return HaveIdentification( iden.Value );
+        }
+        
+        public bool AddIdentification( string iden )
+        {
+            if( !HaveIdentification( iden ) )
+            {
+                Identification newIden  = new Identification();
+                newIden.Value           = iden;
+                newIden.Owner           = this;
+
+                Identifications.Add( newIden );
+            }
+            return false;
+        }
+        
+        public bool AddIdentification( Identification iden )
+        {
+            if( !HaveIdentification( iden ) )
+            {
+                Identifications.Add( iden );
+            }
+            return false;
+        }
+        
+        public void RemoveIdentification( string iden )
+        {
+            for( int i = 0 ; i < identifications.Count ; i++ )
+            {
+                if( identifications[i].Valid.Equals( iden ) )
+                {
+                    identifications.RemoveAt( i );
+                    return;
+                }
+            }
+        }
+        
+        public void RemoveIdentification( Identification iden )
+        {
+            RemoveIdentification( iden.Value );
+        }
+
+        // Adders and removers for contact numbers
+        public bool HaveContactNumber( string iden )
+        {
+            foreach( ContactNumber contactNumbers in ContactNumbers )
+            {
+                if( contactNumbers.Number.Equals( iden ) )
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        public bool HaveContactNumber( ContactNumber number )
+        {
+            return HaveContactNumber( number.Number );
+        }
+        
+        public bool AddContactNumber( string number )
+        {
+            if( !HaveContactNumber( number ) )
+            {
+                ContactNumber newNo = new ContactNumber();
+                newNo.Number        = number;
+                newNo.Owner         = this;
+
+                ContactNumbers.Add( newNo );
+            }
+            return false;
+        }
+        
+        public bool AddContactNumber( ContactNumber number )
+        {
+            if( !HaveContactNumber( number ) )
+            {
+                ContactNumbers.Add( number );
+            }
+            return false;
+        }
+        
+        public void RemoveContactNumber( string number )
+        {
+            for( int i = 0 ; i < contactNumbers.Count ; i++ )
+            {
+                if( contactNumbers[i].Valid.Equals( number ) )
+                {
+                    contactNumbers.RemoveAt( i );
+                    return;
+                }
+            }
+        }
+        
+        public void RemoveContactNumber( ContactNumber number )
+        {
+            RemoveContactNumber( number.Number );
         }
         
         // Inherited Functions
@@ -103,8 +235,8 @@ namespace OverSurgerySystem.Core.Base
             reader.Close();
 
             Postcode        = AddressManager.GetPostcode( postcodeId );
-            Identifications = DetailsManager.GetIdentificationsWithOwner( this );
-            ContactNumbers  = DetailsManager.GetContactNumbersWithOwner( this );
+            identifications = DetailsManager.GetIdentificationsWithOwner( this );
+            contactNumbers  = DetailsManager.GetContactNumbersWithOwner( this );
         }
 
         public override void Save()

@@ -40,10 +40,6 @@
                 <TextBlock Text="Prescriber:"/>
                 <TextBlock Text="Name:"/>
                 <TextBlock Text="Remark:"/>
-                <TextBlock Name="DateCreatedText" Text="Date Created:"/>
-                <TextBlock Text="Prescription Date:"/>
-                <TextBlock Text="Prescription Time:"/>
-                <TextBlock Text="Medications:"/>
             </StackPanel>
 
             <StackPanel>
@@ -61,8 +57,20 @@
                 
                 <TextBox Name="NameBox"/>
                 <TextBox Name="RemarkBox" TextWrapping="WrapWithOverflow" MaxLength="100"/>
-                
-                <DatePicker Name="CreationDatePicker" Width="900" IsEnabled="False" CalendarStyle="{StaticResource BiggerCalendar}"/>
+            </StackPanel>
+        </StackPanel>
+        
+        <StackPanel
+            Orientation         = "Horizontal"
+            HorizontalAlignment = "Right">
+            <StackPanel>
+                <TextBlock Name="DateCreatedText" Text="Date Created:"/>
+                <TextBlock Name="StartDateText" Text="Start Date:"/>
+                <TextBlock Name="EndDateText" Text="End Date:"/>
+                <TextBlock Text="Medications:"/>
+            </StackPanel>
+            <StackPanel>
+                <TextBox Name="DateCreatedBox" IsEnabled="False"/>
                 
                 <StackPanel Orientation="Horizontal">
                     <DatePicker Name="StartDatePicker" CalendarStyle="{StaticResource BiggerCalendar}"/>
@@ -74,7 +82,7 @@
                     <Button Name="ClearEndDateButton" Content="Clear"/>
                 </StackPanel>
                 
-                <Button Name="AddMedication" Content="Add Medication" IsEnabled="False"/>
+                <Button Name="AddMedicationButton" Width="900" Content="Add Medication"/>
                 <StackPanel Name="MedicationsList">
                 </StackPanel>
             </StackPanel>
@@ -96,8 +104,11 @@
                 Margin="20,20,10,20"
                 Padding="20,0,0,0">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/cross.png"/>
+                    <Image
+                        Name="CancelButtonImg"
+                        Source="pack://application:,,,/Over Surgery System (UI);component/Resources/cross.png"/>
                     <TextBlock
+                        Name="CancelButtonText"
                         Text="Cancel"
                         FontSize="45"
                         VerticalAlignment="Center"/>

@@ -43,12 +43,28 @@ namespace OverSurgerySystem.UI.Pages.Staffs
             EditDetails.OnCancel        = DoCancel;
             EditDetails.OnNavigate      = RecordFields;
             EditDetails.OnReturn        = () => App.GoToPage( this );
+
+            StaffIdBox.TextChanged         += (object o, TextChangedEventArgs e) => CurrentEditor?.HideMessage();
+            MedicalLicenceBox.TextChanged  += (object o, TextChangedEventArgs e) => CurrentEditor?.HideMessage();
+            PasswordField.TextInput        += (object o, TextCompositionEventArgs e) => CurrentEditor?.HideMessage();
+
             SetAsAdmin.Click           += (object o, RoutedEventArgs e) => ReplaceCurrentItem( o , new Receptionist() { Admin = true   } );
             SetAsReceptionist.Click    += (object o, RoutedEventArgs e) => ReplaceCurrentItem( o , new Receptionist() { Admin = false  } );
             SetAsGP.Click              += (object o, RoutedEventArgs e) => ReplaceCurrentItem( o , new MedicalStaff() { Nurse = false  } );
             SetAsNurse.Click           += (object o, RoutedEventArgs e) => ReplaceCurrentItem( o , new MedicalStaff() { Nurse = true   } );
-            SetAsActive.Click          += (object o, RoutedEventArgs e) => { CurrentItem.Active = true;  StaffModeHeader.Header = "Yes"; };
-            SetAsInactive.Click        += (object o, RoutedEventArgs e) => { CurrentItem.Active = false; StaffModeHeader.Header = "No";  };
+
+            SetAsActive.Click          += (object o, RoutedEventArgs e) => { CurrentItem.Active = true;  StaffModeHeader.Header = "Yes"; CurrentEditor.HideMessage(); };
+            SetAsInactive.Click        += (object o, RoutedEventArgs e) => { CurrentItem.Active = false; StaffModeHeader.Header = "No";  CurrentEditor.HideMessage(); };
+
+            if( IsView )
+            {
+                StaffIdBox.IsEnabled        = false;
+                StaffType.IsEnabled         = false;
+                StaffTypeHeader.IsEnabled   = false;
+                StaffMode.IsEnabled         = false;
+                PasswordField.IsEnabled     = false;
+                MedicalLicenceBox.IsEnabled = false;
+            }
         }
 
         private void ReplaceCurrentItem( object sender ,  Staff newStaff )
@@ -80,6 +96,7 @@ namespace OverSurgerySystem.UI.Pages.Staffs
                 StaffMode.IsEnabled     = IsFind;
                 CurrentItem             = newStaff;
             }
+            CurrentEditor.HideMessage();
         }
 
         private void OnLoad( object o , RoutedEventArgs e )
@@ -116,15 +133,15 @@ namespace OverSurgerySystem.UI.Pages.Staffs
 
             if( CurrentItem is MedicalStaff )
             {
-                MedicalLicenceBox.IsEnabled = true;
+                MedicalLicenceBox.IsEnabled = !IsView;
                 MedicalLicenceBox.Text      = ( ( MedicalStaff ) CurrentItem ).LicenseNo;
                 StaffTypeHeader.Header      = ( ( MedicalStaff ) CurrentItem ).Nurse ? "Nurse" : "General Practitioner";
             }
 
             EditDetails.Setup( CurrentDetail , Mode );
             StaffIdBox.IsEnabled        = IsFind;
-            StaffType.IsEnabled         = ( IsFind || !CurrentItem.Valid ) && !IsRestricted;
-            StaffMode.IsEnabled         = ( IsFind ||  CurrentItem.Valid ) && !IsRestricted;
+            StaffType.IsEnabled         = ( IsFind || !CurrentItem.Valid ) && !IsView && !IsRestricted;
+            StaffMode.IsEnabled         = ( IsFind ||  CurrentItem.Valid ) && !IsView && !IsRestricted;
         }
 
         private void RecordFields()
@@ -139,7 +156,8 @@ namespace OverSurgerySystem.UI.Pages.Staffs
 
         private int DoConfirm( PersonalDetails d )
         {
-            RecordFields();
+            if( !IsView )
+                RecordFields();
 
             if( IsEdit )
             {
@@ -173,7 +191,7 @@ namespace OverSurgerySystem.UI.Pages.Staffs
                 CurrentEditor.ShowMessage( "Staff saved." );
                 LoadDetails();
             }
-            else
+            else if( IsFind )
             {
                 CurrentItem.Id = Staff.GetIdFromString( StaffIdBox.Text );
             }
@@ -184,8 +202,7 @@ namespace OverSurgerySystem.UI.Pages.Staffs
 
         private void DoCancel()
         {
-            if( CurrentItem.Valid   ) CurrentItem.Load();
-            if( CurrentDetail.Valid ) CurrentDetail.Load();
+            if( CurrentItem.Valid ) CurrentItem.Load();
             OnCancel?.Invoke();
         }
     }

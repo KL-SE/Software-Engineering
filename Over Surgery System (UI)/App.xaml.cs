@@ -70,21 +70,21 @@ namespace OverSurgerySystem.UI
         public static void GoToFindAppointmentResultPage()              { GoToPage( new FindAppointment() );                        }
         public static void GoToFindPrescriptionResultPage()             { GoToPage( new FindPrescription() );                       }
 
-        public static void GoToAddStaffPage()                           { GoToEditStaffPage( null           , EditStaff.Edit        ); }
-        public static void GoToFindStaffPage()                          { GoToEditStaffPage( null           , EditStaff.Find        ); }
-        public static void GoToFindStaffPage( Staff proto )             { GoToEditStaffPage( proto          , EditStaff.Find        ); }
-        public static void GoToAddPatientPage()                         { GoToEditPatientPage( null         , EditPatient.Edit      ); }
-        public static void GoToFindPatientPage()                        { GoToEditPatientPage( null         , EditPatient.Find      ); }
-        public static void GoToFindPatientPage( Patient proto )         { GoToEditPatientPage( proto        , EditPatient.Find      ); }
-        public static void GoToAddTestResultPage()                      { GoToEditTestResultPage( null      , EditTestResult.Edit   ); }
-        public static void GoToFindTestResultPage()                     { GoToEditTestResultPage( null      , EditTestResult.Find   ); }
-        public static void GoToFindTestResultPage( TestResult proto )   { GoToEditTestResultPage( proto     , EditTestResult.Find   ); }
-        public static void GoToAddAppointmentPage()                     { GoToEditAppointmentPage( null     , EditAppointment.Edit  ); }
-        public static void GoToFindAppointmentPage()                    { GoToEditAppointmentPage( null     , EditAppointment.Find  ); }
-        public static void GoToFindAppointmentPage( Appointment proto ) { GoToEditAppointmentPage( proto    , EditAppointment.Find  ); }
-        public static void GoToAddPrescriptionPage()                     { GoToEditPrescriptionPage( null     , EditPrescription.Edit  ); }
-        public static void GoToFindPrescriptionPage()                    { GoToEditPrescriptionPage( null     , EditPrescription.Find  ); }
-        public static void GoToFindPrescriptionPage( Prescription proto ) { GoToEditPrescriptionPage( proto    , EditPrescription.Find  ); }
+        public static void GoToAddStaffPage()                               { GoToEditStaffPage( null           , EditStaff.Edit        ); }
+        public static void GoToFindStaffPage()                              { GoToEditStaffPage( null           , EditStaff.Find        ); }
+        public static void GoToFindStaffPage( Staff proto )                 { GoToEditStaffPage( proto          , EditStaff.Find        ); }
+        public static void GoToAddPatientPage()                             { GoToEditPatientPage( null         , EditPatient.Edit      ); }
+        public static void GoToFindPatientPage()                            { GoToEditPatientPage( null         , EditPatient.Find      ); }
+        public static void GoToFindPatientPage( Patient proto )             { GoToEditPatientPage( proto        , EditPatient.Find      ); }
+        public static void GoToAddTestResultPage()                          { GoToEditTestResultPage( null      , EditTestResult.Edit   ); }
+        public static void GoToFindTestResultPage()                         { GoToEditTestResultPage( null      , EditTestResult.Find   ); }
+        public static void GoToFindTestResultPage( TestResult proto )       { GoToEditTestResultPage( proto     , EditTestResult.Find   ); }
+        public static void GoToAddAppointmentPage()                         { GoToEditAppointmentPage( null     , EditAppointment.Edit  ); }
+        public static void GoToFindAppointmentPage()                        { GoToEditAppointmentPage( null     , EditAppointment.Find  ); }
+        public static void GoToFindAppointmentPage( Appointment proto )     { GoToEditAppointmentPage( proto    , EditAppointment.Find  ); }
+        public static void GoToAddPrescriptionPage()                        { GoToEditPrescriptionPage( null    , EditPrescription.Edit ); }
+        public static void GoToFindPrescriptionPage()                       { GoToEditPrescriptionPage( null    , EditPrescription.Find ); }
+        public static void GoToFindPrescriptionPage( Prescription proto )   { GoToEditPrescriptionPage( proto   , EditPrescription.Find ); }
 
         public static void GoToEditStaffPage( Staff staff , int mode )
         {
@@ -127,7 +127,7 @@ namespace OverSurgerySystem.UI
             if( appointment == null )
             {
                 arg                 = new Appointment();
-                arg.DateAppointed   = arg.DateAppointed + new TimeSpan( 1 , 0 , 0 );
+                arg.DateAppointed   = DateTime.Now + new TimeSpan( 1 , 0 , 0 );
             }
 
             EditAppointment.Setup( arg , mode );
@@ -141,7 +141,16 @@ namespace OverSurgerySystem.UI
 
         public static void GoToEditPrescriptionPage( Prescription prescription , int mode )
         {
-            EditPrescription.Setup( prescription != null ? prescription : new Prescription() , mode );
+            // Similarly, prescription should have some time spacing too.
+            Prescription arg = prescription;
+            if( prescription == null )
+            {
+                arg             = new Prescription();
+                arg.StartDate   = DateTime.Now.Date;
+                arg.EndDate     = DateTime.Now.Date.AddDays( 1 );
+            }
+
+            EditPrescription.Setup( arg , mode );
             if( EditPrescription.IsFind )
             {
                 EditPrescription.OnConfirm   = FindPrescription.OnInitialFind;

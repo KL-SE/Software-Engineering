@@ -41,6 +41,15 @@ namespace OverSurgerySystem.UI.Pages.TestResults
             PatientIdButton.Click          += StartFindPatient;
             LicenseNoButton.Click          += StartFindMedstaff;
             LicenseNoBox.StoppedTyping     += ResolveMedicalStaff;
+
+            PatientIdBox.TextChanged           += (object o, TextChangedEventArgs e) => HideMessage();
+            LicenseNoBox.TextChanged           += (object o, TextChangedEventArgs e) => HideMessage();
+            TestNameBox.TextChanged            += (object o, TextChangedEventArgs e) => HideMessage();
+            TestDescBox.TextChanged            += (object o, TextChangedEventArgs e) => HideMessage();
+            TestResultBox.TextChanged          += (object o, TextChangedEventArgs e) => HideMessage();
+            TestRemarkBox.TextChanged          += (object o, TextChangedEventArgs e) => HideMessage();
+            TestDatePicker.SelectedDateChanged += (object o, SelectionChangedEventArgs e) => HideMessage();
+
             ConfirmButton.Click            += (object o, RoutedEventArgs a) => DoConfirm();
             CancelButton.Click             += (object o, RoutedEventArgs a) => DoCancel();
             PrintButton.Click              += (object o, RoutedEventArgs e) => DoPrint();
@@ -52,11 +61,33 @@ namespace OverSurgerySystem.UI.Pages.TestResults
                 ConfirmButtonImg.Source = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/search.png" ) );
                 ConfirmButtonText.Text  = "Find";
             }
+
+            if( IsView )
+            {
+                TestIdBox.IsEnabled         = false;
+                PatientIdBox.IsEnabled      = false;
+                LicenseNoBox.IsEnabled      = false;
+                MedStaffBox.IsEnabled       = false;
+                TestNameBox.IsEnabled       = false;
+                TestDescBox.IsEnabled       = false;
+                PatientIdBox.IsEnabled      = false;
+                TestDatePicker.IsEnabled    = false;
+                TestResultBox.IsEnabled     = false;
+                TestRemarkBox.IsEnabled     = false;
+                ClearDobButton.IsEnabled    = false;
+
+                PatientIdButton.Content     = "View";
+                LicenseNoButton.Content     = "View";
+
+                ConfirmButton.Visibility    = Visibility.Collapsed;
+                CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
+                CancelButtonText.Text       = "Back";
+            }
         }
 
         private void OnLoad( object o , RoutedEventArgs e )
         {
-            TestIdBox.Text = !IsEdit || IsFind ? "" : "- New TestResult -";
+            TestIdBox.Text = !IsEdit ? "" : "- New TestResult -";
             LoadDetails();
         }
 
@@ -65,17 +96,20 @@ namespace OverSurgerySystem.UI.Pages.TestResults
             List<MedicalStaff> medStaffs = StaffsManager.GetMedicalStaffWithLicenseNo( LicenseNoBox.Text );
             if( medStaffs.Count == 1 )
             {
-                LinkedMedStaff      = medStaffs[0];
-                MedStaffBox.Text    = String.Format( "{0} - {1}" , LinkedMedStaff.StringId , LinkedMedStaff.Details.FullName );
+                LicenseNoButton.IsEnabled   = true;
+                LinkedMedStaff              = medStaffs[0];
+                MedStaffBox.Text            = String.Format( "{0} - {1}" , LinkedMedStaff.StringId , LinkedMedStaff.Details.FullName );
             }
             else if( medStaffs.Count > 1 )
             {
                 // This should NEVER be true.
-                MedStaffBox.Text    = "- Multiple Found -";
+                MedStaffBox.Text            = "- Multiple Found -";
+                LicenseNoButton.IsEnabled   = !IsView;
             }
             else
             {
-                MedStaffBox.Text = "- External Examiner -";
+                MedStaffBox.Text            = "- External Examiner -";
+                LicenseNoButton.IsEnabled   = !IsView;
             }
         }
 
@@ -113,23 +147,42 @@ namespace OverSurgerySystem.UI.Pages.TestResults
 
         private void StartFindMedstaff( object o , RoutedEventArgs e )
         {
-            RecordFields();
-            ResolveMedicalStaff( null , null );
-            FindStaff.OnSelect  = OnSelectStaff;
-            FindStaff.OnFind    = OnFindStaff;
-            FindStaff.OnFound   = OnConfirmStaff;
-            FindStaff.OnCancel  = () => App.GoToPage( this );
-            App.GoToEditStaffPage( LinkedMedStaff , EditStaff.Find | EditStaff.Restricted );
+            if( IsView )
+            {
+                if( LinkedMedStaff.Valid )
+                {
+                    EditStaff.OnCancel  = () => App.GoToPage( this );
+                    App.GoToEditStaffPage( LinkedMedStaff , EditStaff.View );
+                }
+            }
+            else
+            {
+                RecordFields();
+                ResolveMedicalStaff( null , null );
+                FindStaff.OnSelect  = OnSelectStaff;
+                FindStaff.OnFind    = OnFindStaff;
+                FindStaff.OnFound   = OnConfirmStaff;
+                FindStaff.OnCancel  = () => App.GoToPage( this );
+                App.GoToEditStaffPage( LinkedMedStaff , EditStaff.Find | EditStaff.Restricted );
+            }
         }
 
         private void StartFindPatient( object o , EventArgs e )
         {
-            RecordFields();
-            FindPatient.OnSelect    = OnSelectPatient;
-            FindPatient.OnFind      = OnFindPatient;
-            FindPatient.OnFound     = OnConfirmPatient;
-            FindPatient.OnCancel    = () => App.GoToPage( this );
-            App.GoToFindPatientPage();
+            if( IsView )
+            {
+                EditPatient.OnCancel    = () => App.GoToPage( this );
+                App.GoToEditPatientPage( CurrentItem.Patient , EditPatient.View );
+            }
+            else
+            {
+                RecordFields();
+                FindPatient.OnSelect    = OnSelectPatient;
+                FindPatient.OnFind      = OnFindPatient;
+                FindPatient.OnFound     = OnConfirmPatient;
+                FindPatient.OnCancel    = () => App.GoToPage( this );
+                App.GoToFindPatientPage();
+            }
         }
 
         public void OnFindPatient( Patient patient )
@@ -194,7 +247,7 @@ namespace OverSurgerySystem.UI.Pages.TestResults
             DateBefore                      = TestDatePicker.SelectedDate != null ? TestDatePicker.SelectedDate.Value : DatabaseObject.INVALID_DATETIME;
         }
 
-        public void HideError()
+        public void HideMessage()
         {
             MsgBox.Visibility = Visibility.Collapsed;
         }

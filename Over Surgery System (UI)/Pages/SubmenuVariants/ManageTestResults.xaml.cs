@@ -39,7 +39,7 @@ namespace OverSurgerySystem.UI.Pages
                 FindTestResult.OnFind   = OnFindTestResult;
                 FindTestResult.OnFound  = null;
                 FindTestResult.OnCancel = OnCancel;
-                FindTestResult.OnSelect = ( TestResult test ) => App.GoToEditTestResultPage( test , EditTestResult.Edit );
+                FindTestResult.OnSelect = ( TestResult test ) => App.GoToEditTestResultPage( test , EditTestResult.View );
             };
         }
         

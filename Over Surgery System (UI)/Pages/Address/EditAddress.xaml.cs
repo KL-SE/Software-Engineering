@@ -39,10 +39,10 @@ namespace OverSurgerySystem.UI.Pages.Address
             InitializeComponent();
             Loaded += OnLoad;
 
-            PostcodeBox.TextChanged     += (object o, TextChangedEventArgs e) => HideError();
-            CityBox.TextChanged         += (object o, TextChangedEventArgs e) => HideError();
-            StateBox.TextChanged        += (object o, TextChangedEventArgs e) => HideError();
-            CountryBox.TextChanged      += (object o, TextChangedEventArgs e) => HideError();
+            PostcodeBox.TextChanged     += (object o, TextChangedEventArgs e) => HideMessage();
+            CityBox.TextChanged         += (object o, TextChangedEventArgs e) => HideMessage();
+            StateBox.TextChanged        += (object o, TextChangedEventArgs e) => HideMessage();
+            CountryBox.TextChanged      += (object o, TextChangedEventArgs e) => HideMessage();
 
             PostcodeBox.StoppedTyping   += (object o, EventArgs a) => UpdatePostcodes();
             CityBox.StoppedTyping       += (object o, EventArgs a) => UpdateCities();
@@ -55,7 +55,7 @@ namespace OverSurgerySystem.UI.Pages.Address
             StateClearButton.Click      += (object o, RoutedEventArgs a) => StateBox.Text = "";
             CountryClearButton.Click    += (object o, RoutedEventArgs a) => CountryBox.Text = "";
 
-            if( IsFind )
+            if( IsFind || IsView )
             {
                 PostcodeBox.Visibility          = Visibility.Collapsed;
                 CityBox.Visibility              = Visibility.Collapsed;
@@ -68,9 +68,13 @@ namespace OverSurgerySystem.UI.Pages.Address
                 StateClearButton.Visibility     = Visibility.Collapsed;
                 CityClearButton.Visibility      = Visibility.Collapsed;
                 CountryClearButton.Visibility   = Visibility.Collapsed;
+            }
 
-                ConfirmButtonImg.Source     = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/search.png" ) );
-                ConfirmButtonText.Text      = "Find";
+            if( IsView )
+            {
+                ConfirmButton.Visibility    = Visibility.Collapsed;
+                CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
+                CancelButtonText.Text       = "Back";
             }
         }
 
@@ -83,15 +87,15 @@ namespace OverSurgerySystem.UI.Pages.Address
             UpdateCountries();
         }
 
-        private void HideError()
+        private void HideMessage()
         {
-            ErrorBox.Visibility = Visibility.Collapsed;
+            MsgBox.Visibility = Visibility.Collapsed;
         }
 
-        private void ShowError( string error_message )
+        private void ShowMessage( string error_message )
         {
-            ErrorBox.Visibility = Visibility.Visible;
-            ErrorBox.Text       = error_message;
+            MsgBox.Visibility   = Visibility.Visible;
+            MsgBox.Text         = error_message;
         }
 
         private void UpdatePostcodes()
@@ -165,7 +169,7 @@ namespace OverSurgerySystem.UI.Pages.Address
             if( obj is Country      ) { CurrentCountry    = ( Country     )( obj ); UpdateStates();     }
         }
 
-        private void ResolvePostcode()
+        /*private void ResolvePostcode()
         {
             ResolveCity();
             if( CurrentPostcode == null || !CurrentPostcode.Valid )
@@ -276,26 +280,30 @@ namespace OverSurgerySystem.UI.Pages.Address
                     CurrentCountry.Name = CountryBox.Text;
                 }
             }
-        }
+        }*/
 
         private void DoConfirm()
         {
-            // Figure out if we actually need this.
-            // ResolvePostcode();
-            if( CurrentCountry  == null || !CurrentCountry.Valid    )   CurrentCountry.Name         = CountryBox.Text;
-            if( CurrentState    == null || !CurrentState.Valid      )   CurrentState.Name           = StateBox.Text;
-            if( CurrentCity     == null || !CurrentCity.Valid       )   CurrentCity.Name            = CityBox.Text;
-            if( CurrentPostcode == null || !CurrentPostcode.Valid   )   CurrentPostcode.Postcode    = PostcodeBox.Text;
-            
-            if( CurrentCountry.Name.Length      == 0 ) { ShowError( "Please select a country"   ); return; }
-            if( CurrentState.Name.Length        == 0 ) { ShowError( "Please select a state."    ); return; }
-            if( CurrentCity.Name.Length         == 0 ) { ShowError( "Please select a city."     ); return; }
-            if( CurrentPostcode.Postcode.Length == 0 ) { ShowError( "Please select a postcode." ); return; }
+            if( IsEdit )
+            {
+                // Figure out if we actually need this.
+                // ResolvePostcode();
 
-            CurrentPostcode.City    = CurrentCity;
-            CurrentPostcode.State   = CurrentState;
-            CurrentPostcode.Country = CurrentCountry;
-            CurrentPostcode.Save();
+                if( CurrentCountry  == null || !CurrentCountry.Valid    )   CurrentCountry.Name         = CountryBox.Text;
+                if( CurrentState    == null || !CurrentState.Valid      )   CurrentState.Name           = StateBox.Text;
+                if( CurrentCity     == null || !CurrentCity.Valid       )   CurrentCity.Name            = CityBox.Text;
+                if( CurrentPostcode == null || !CurrentPostcode.Valid   )   CurrentPostcode.Postcode    = PostcodeBox.Text;
+            
+                if( CurrentCountry.Name.Length      == 0 ) { ShowMessage( "Please enter a country name."    ); return; }
+                if( CurrentState.Name.Length        == 0 ) { ShowMessage( "Please enter a state name."      ); return; }
+                if( CurrentCity.Name.Length         == 0 ) { ShowMessage( "Please enter a city name."       ); return; }
+                if( CurrentPostcode.Postcode.Length == 0 ) { ShowMessage( "Please enter a postcode."        ); return; }
+
+                CurrentPostcode.City    = CurrentCity;
+                CurrentPostcode.State   = CurrentState;
+                CurrentPostcode.Country = CurrentCountry;
+                CurrentPostcode.Save();
+            }
 
             OnConfirm?.Invoke( CurrentPostcode );
         }

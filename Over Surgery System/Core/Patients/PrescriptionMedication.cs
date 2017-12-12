@@ -37,14 +37,14 @@ namespace OverSurgerySystem.Core.Patients
             {
                 prescriptionId  = reader.GetInt32( 0 );
                 baseId          = reader.GetInt32( 1 );
-                Code            = Base.Code;
-                Name            = Base.Name;
                 PatientsManager.Add( this );
             }
 
             reader.Close();
             Prescription    = PatientsManager.GetPrescription( prescriptionId );
             Base            = PatientsManager.GetMedication( baseId );
+            Code            = Base.Code;
+            Name            = Base.Name;
         }
 
         public override void Save()

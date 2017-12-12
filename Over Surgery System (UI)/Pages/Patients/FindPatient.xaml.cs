@@ -77,43 +77,13 @@ namespace OverSurgerySystem.UI.Pages.Patients
             }
             
             SearchResult = PatientsManager.GetAllPatients();
-            if( protoPatient.Details.FirstName.Length > 0                             ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.FirstName.ToUpper().Contains(   protoPatient.Details.FirstName.ToUpper()    ) );
-            if( protoPatient.Details.LastName.Length > 0                              ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.LastName.ToUpper().Contains(    protoPatient.Details.LastName.ToUpper()     ) );
-            if( protoPatient.Details.Address.Length > 0                               ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.Address.ToUpper().Contains(     protoPatient.Details.Address.ToUpper()      ) );
-            if( protoPatient.Details.DateOfBirth != DatabaseObject.INVALID_DATETIME   ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.DateOfBirth.Equals(             protoPatient.Details.DateOfBirth            ) );
+            if( protoPatient.Details.FirstName.Length > 0                           ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.FirstName.ToUpper().Contains( protoPatient.Details.FirstName.ToUpper()    ) );
+            if( protoPatient.Details.LastName.Length > 0                            ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.LastName.ToUpper().Contains(  protoPatient.Details.LastName.ToUpper()     ) );
+            if( protoPatient.Details.Address.Length > 0                             ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.Address.ToUpper().Contains(   protoPatient.Details.Address.ToUpper()      ) );
+            if( protoPatient.Details.DateOfBirth != DatabaseObject.INVALID_DATETIME ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.DateOfBirth.Equals(           protoPatient.Details.DateOfBirth            ) );
+            if( protoPatient.Details.Identifications.Count > 0                      )  SearchResult = ManagerHelper.Filter( SearchResult , e => e.Details.HaveIdentification( protoPatient.Details.Identifications[0]               ) );
+            if( protoPatient.Details.ContactNumbers.Count > 0                       )  SearchResult = ManagerHelper.Filter( SearchResult , e => e.Details.HaveContactNumber(  protoPatient.Details.ContactNumbers[0]                ) );
 
-            // Match the identifications
-            if( protoPatient.Details.Identifications.Count > 0 )
-            {
-                SearchResult = ManagerHelper.Filter( SearchResult , e =>
-                {
-                    foreach( Identification iden in e.Details.Identifications )
-                    {
-                        if( iden.Value.Equals( protoPatient.Details.Identifications[0].Value ) )
-                        {
-                            return true;
-                        }
-                    }
-                    return false;
-                });
-            }
-
-            // Match the contact number
-            if( protoPatient.Details.ContactNumbers.Count > 0 )
-            {
-                SearchResult = ManagerHelper.Filter( SearchResult , e =>
-                {
-                    foreach( ContactNumber no in e.Details.ContactNumbers )
-                    {
-                        if( no.Number.Equals( protoPatient.Details.ContactNumbers[0].Number ) )
-                        {
-                            return true;
-                        }
-                    }
-                    return false;
-                });
-            }
-            
             // Match the postcode.
             if( protoPatient.Details.Postcode!= null && protoPatient.Details.Postcode.Valid )
             {

@@ -211,6 +211,9 @@ namespace OverSurgerySystem.Core.Patients
             query.Add( Database.Tables.Prescriptions.EndDate        , QueryElement.DateOf( EndDate   )  );
             DoSave( query );
             PatientsManager.Add( this );
+
+            foreach( PrescriptionMedication medication in medications )
+                medication.Save();
         }
     }
 }

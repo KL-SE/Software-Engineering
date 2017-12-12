@@ -241,14 +241,15 @@ namespace OverSurgerySystem.Manager
         public static List<Appointment> GetAppointmentsByDateAndTime( DateTime dt   )   { return AppointmentManager.Merge( Database.Tables.APPOINTMENTS  , ManagerHelper.GetEqualComparator( Database.Tables.Appointments.DateAppointed     , dt                ) ); }
 
         public static List<Medication> GetMedicationByCode( string code )   { return MedicationManager.Merge( Database.Tables.MEDICATIONS , ManagerHelper.GetEqualComparator( Database.Tables.Medications.Code , code ) ); }
-        public static List<Medication> GetMedicationByName( string name )   { return MedicationManager.Merge( Database.Tables.MEDICATIONS , ManagerHelper.GetEqualComparator( Database.Tables.Medications.Name , name ) ); }
+        public static List<Medication> GetMedicationByName( string name )   { return MedicationManager.Merge( Database.Tables.MEDICATIONS , ManagerHelper.GetLikeComparator(  Database.Tables.Medications.Name , name ) ); }
         
         public static List<PrescriptionMedication> GetMedicationsForPrescription( int id )  { return PrescriptionMedManager.Merge( Database.Tables.PRESCRIPTION_MEDICATIONS , ManagerHelper.GetEqualComparator( Database.Tables.PrescriptionMedications.PrescriptionId , id ) ); }
         
         public static List<Patient>         GetAllPatients()        { return PatientManager.Merge(      Database.Tables.PATIENTS        , null ); }
         public static List<TestResult>      GetAllTestResults()     { return TestResultManager.Merge(   Database.Tables.TEST_RESULTS    , null ); }
         public static List<Appointment>     GetAllAppointments()    { return AppointmentManager.Merge(  Database.Tables.APPOINTMENTS    , null ); }
-        public static List<Prescription>    GetAllPrescriptions()   { return PrescriptionManager.Merge(  Database.Tables.PRESCRIPTIONS  , null ); }
+        public static List<Prescription>    GetAllPrescriptions()   { return PrescriptionManager.Merge( Database.Tables.PRESCRIPTIONS   , null ); }
+        public static List<Medication>      GetAllMedications()     { return MedicationManager.Merge(   Database.Tables.MEDICATIONS     , null ); }
         
         // Simple redirect getters...
         public static List<Patient>                 GetPatientsByDetails( PersonalDetails detail                )   { return GetPatientsByDetails( detail.Id                ); }

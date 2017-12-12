@@ -26,24 +26,19 @@ using OverSurgerySystem.UI.Pages.Core;
 namespace OverSurgerySystem.UI.Pages.Appointments
 {
     /// <summary>
-    /// Interaction logic for EditAppointment.xaml
+    /// Interaction logic for EditAvailableDate.xaml
     /// </summary>
-    public partial class EditAppointment : EditorPage<Appointment>
+    public partial class EditAvailableDate : EditorPage<Appointment>
     {
-        public static DateTime DateAfter    = DatabaseObject.INVALID_DATETIME;
         public static DateTime DateSelected = DatabaseObject.INVALID_DATETIME;
 
-        private MedicalStaff ProtoMedStaff;
-
-        public EditAppointment()
+        public EditAvailableDate()
         {
             InitializeComponent();
             Loaded                             += OnLoad;
-            PatientIdButton.Click              += StartFindPatient;
-            StaffIdButton.Click                += StartFindMedstaff;
+            StaffIdButton.Click                += StartFindStaff;
             ConfirmButton.Click                += (object o, RoutedEventArgs a) => DoConfirm();
             CancelButton.Click                 += (object o, RoutedEventArgs a) => DoCancel();
-            ClearCreationDateButton.Click      += (object o, RoutedEventArgs a) => CreationDatePicker.SelectedDate = null;
             ClearAppointmentDateButton.Click   += (object o, RoutedEventArgs a) => AppointmentDatePicker.SelectedDate = null;
             SetIncludeCancelled.Click          += (object o, RoutedEventArgs a) => { IncludeCancelledHeader.Header = "Yes"; CurrentItem.Cancelled = true;  HideMessage(); };
             SetExcludeCancelled.Click          += (object o, RoutedEventArgs a) => { IncludeCancelledHeader.Header = "No";  CurrentItem.Cancelled = false; HideMessage(); };
@@ -153,7 +148,7 @@ namespace OverSurgerySystem.UI.Pages.Appointments
             EndText.Foreground  = EndButton.IsEnabled ? Brushes.Black : Brushes.Gray;
         }
 
-        private void StartFindMedstaff( object o , RoutedEventArgs e )
+        private void StartFindStaff( object o , RoutedEventArgs e )
         {
             if( IsView )
             {

@@ -102,11 +102,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\MedicalStaffs\EditWorkingDay.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\MedicalStaffs\EditAvailableDate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Pages\Patients\EditPatient.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Pages\Patients\FindPatient.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\Prescriptions\EditMedication.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -210,11 +222,20 @@
     <Compile Include="Pages\MainMenuVariants\MenuButtonsReceptionist.xaml.cs">
       <DependentUpon>MenuButtonsReceptionist.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\MedicalStaffs\EditWorkingDay.xaml.cs">
+      <DependentUpon>EditWorkingDay.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\MedicalStaffs\EditAvailableDate.xaml.cs">
+      <DependentUpon>EditAvailableDate.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Patients\EditPatient.xaml.cs">
       <DependentUpon>EditPatient.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\Patients\FindPatient.xaml.cs">
       <DependentUpon>FindPatient.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Prescriptions\EditMedication.xaml.cs">
+      <DependentUpon>EditMedication.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\Prescriptions\EditPrescription.xaml.cs">
       <DependentUpon>EditPrescription.xaml</DependentUpon>

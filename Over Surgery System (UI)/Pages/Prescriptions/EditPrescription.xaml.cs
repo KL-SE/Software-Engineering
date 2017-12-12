@@ -41,6 +41,7 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
             Loaded                         += OnLoad;
             PatientIdButton.Click          += StartFindPatient;
             PrescriberIdButton.Click       += StartFindMedstaff;
+            AddMedicationButton.Click      += StartFindMedication;
             ConfirmButton.Click            += (object o, RoutedEventArgs a) => DoConfirm();
             CancelButton.Click             += (object o, RoutedEventArgs a) => DoCancel();
             ClearStartDateButton.Click     += (object o, RoutedEventArgs a) => StartDatePicker.SelectedDate = null;
@@ -48,12 +49,40 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
             ProtoMedStaff                   = new MedicalStaff();
             FindPatient.Reset();
 
+            PrescriptionIdBox.TextChanged          += (object o, TextChangedEventArgs e) => HideMessage();
+            NameBox.TextChanged                    += (object o, TextChangedEventArgs e) => HideMessage();
+            RemarkBox.TextChanged                  += (object o, TextChangedEventArgs e) => HideMessage();
+            DateCreatedBox.TextChanged             += (object o, TextChangedEventArgs e) => HideMessage();
+            StartDatePicker.SelectedDateChanged    += (object o, SelectionChangedEventArgs e) => HideMessage();
+            EndDatePicker.SelectedDateChanged      += (object o, SelectionChangedEventArgs e) => HideMessage();
+
             if( IsFind )
             {
-                DateCreatedText.Visibility      = Visibility.Collapsed;
-                CreationDatePicker.Visibility   = Visibility.Collapsed;
-                ConfirmButtonImg.Source         = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/search.png" ) );
-                ConfirmButtonText.Text          = "Find";
+                DateCreatedText.Visibility  = Visibility.Collapsed;
+                DateCreatedBox.Visibility   = Visibility.Collapsed;
+                ConfirmButtonImg.Source     = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/search.png" ) );
+                ConfirmButtonText.Text      = "Find";
+            }
+
+            if( IsView )
+            {
+                PrescriptionIdBox.IsEnabled     = false;
+                PatientIdBox.IsEnabled          = false;
+                PrescriberIdBox.IsEnabled       = false;
+                NameBox.IsEnabled               = false;
+                RemarkBox.IsEnabled             = false;
+                DateCreatedBox.IsEnabled        = false;
+                StartDatePicker.IsEnabled       = false;
+                ClearStartDateButton.IsEnabled  = false;
+                EndDatePicker.IsEnabled         = false;
+                ClearEndDateButton.IsEnabled    = false;
+                AddMedicationButton.IsEnabled   = false;
+                PatientIdButton.Content         = "View";
+                PrescriberIdButton.Content      = "View";
+
+                ConfirmButton.Visibility        = Visibility.Collapsed;
+                CancelButtonImg.Source          = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
+                CancelButtonText.Text           = "Back";
             }
         }
 
@@ -73,44 +102,74 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
 
             if( CurrentItem.CreatedOn != DatabaseObject.INVALID_DATETIME )
             {
-                CreationDatePicker.SelectedDate = CurrentItem.CreatedOn;
-                CreationDatePicker.Foreground   = Brushes.Black;
-            }
-            else if( !IsFind )
-            {
-                CreationDatePicker.Foreground = Brushes.White;
+                DateCreatedBox.Text = CurrentItem.CreatedOn.ToShortDateString();
             }
             
-            StartDatePicker.SelectedDate  = CurrentItem.StartDate;
-            EndDatePicker.SelectedDate    = CurrentItem.EndDate;
+            if( !IsFind )
+            {
+                StartDatePicker.SelectedDate    = CurrentItem.StartDate;
+                EndDatePicker.SelectedDate      = CurrentItem.EndDate;
+            }
+            else
+            {
+                StartDateText.Text  = "Starting After:";
+                EndDateText.Text    = "Ending Before:";
+            }
+
+            PopulateMedications();
             
             EndButton.IsEnabled                 = IsEdit && CurrentItem.Valid;
+            StartDatePicker.IsEnabled           = !IsView && ( CurrentItem.StartDate > DateTime.Now.Date || !CurrentItem.Valid );
+            EndDatePicker.IsEnabled             = !IsView && CurrentItem.EndDate >= DateTime.Now.Date;
             PrescriptionIdBox.IsEnabled         = IsFind;
-            StartDatePicker.IsEnabled           = IsFind;
-            EndDatePicker.IsEnabled             = IsFind;
-            DateCreatedText.Text                = IsFind ? "Date After:" : "Date Created:";
 
-            EndText.Foreground  = EndButton.IsEnabled ? Brushes.Black : Brushes.Gray;
+            EndText.Foreground = EndButton.IsEnabled ? Brushes.Black : Brushes.Gray;
         }
 
         private void StartFindMedstaff( object o , RoutedEventArgs e )
         {
-            RecordFields();
-            FindStaff.OnSelect  = OnSelectStaff;
-            FindStaff.OnFind    = OnFindStaff;
-            FindStaff.OnFound   = OnConfirmStaff;
-            FindStaff.OnCancel  = () => App.GoToPage( this );
-            App.GoToEditStaffPage( ProtoMedStaff , EditStaff.Find | EditStaff.Restricted );
+            if( IsView )
+            {
+                EditStaff.OnCancel  = () => App.GoToPage( this );
+                App.GoToEditStaffPage( CurrentItem.Prescriber , EditStaff.View );
+            }
+            else
+            {
+                RecordFields();
+                FindStaff.OnSelect  = OnSelectStaff;
+                FindStaff.OnFind    = OnFindStaff;
+                FindStaff.OnFound   = OnConfirmStaff;
+                FindStaff.OnCancel  = () => App.GoToPage( this );
+                App.GoToEditStaffPage( ProtoMedStaff , EditStaff.Find | EditStaff.Restricted );
+            }
         }
 
         private void StartFindPatient( object o , EventArgs e )
         {
+            if( IsView )
+            {
+                EditPatient.OnCancel    = () => App.GoToPage( this );
+                App.GoToEditPatientPage( CurrentItem.Patient , EditPatient.View );
+            }
+            else
+            {
+                RecordFields();
+                FindPatient.OnSelect    = OnSelectPatient;
+                FindPatient.OnFind      = OnFindPatient;
+                FindPatient.OnFound     = OnConfirmPatient;
+                FindPatient.OnCancel    = () => App.GoToPage( this );
+                App.GoToFindPatientPage();
+            }
+        }
+
+        private void StartFindMedication( object o , EventArgs e )
+        {
             RecordFields();
-            FindPatient.OnSelect    = OnSelectPatient;
-            FindPatient.OnFind      = OnFindPatient;
-            FindPatient.OnFound     = OnConfirmPatient;
-            FindPatient.OnCancel    = () => App.GoToPage( this );
-            App.GoToFindPatientPage();
+            EditMedication.OnConfirm    = OnConfirmMedication;
+            EditMedication.OnCancel     = () => App.GoToPage( this );
+
+            EditMedication.Setup( null , EditMedication.Find );
+            App.GoToPage( new EditMedication() );
         }
 
         public void OnFindPatient( Patient patient )
@@ -167,20 +226,17 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
             App.GoToPage( this );
         }
 
-        private bool RecordFields()
+        public void OnConfirmMedication( Medication medication )
         {
-            CurrentItem.Name    = NameBox.Text;
-            CurrentItem.Remark  = RemarkBox.Text;
-            EndBefore           = StartDatePicker.SelectedDate != null ? StartDatePicker.SelectedDate.Value : DatabaseObject.INVALID_DATETIME;
-            StartAfter          = EndDatePicker.SelectedDate != null ? EndDatePicker.SelectedDate.Value : DatabaseObject.INVALID_DATETIME;
-            
-            if( IsEdit && StartAfter < DateTime.Now )
+            App.GoToPage( this );
+            if( CurrentItem.AddMedication( medication ) )
             {
-                ShowMessage( "Select a valid start date" );
-                return false;
+                PopulateMedications();
             }
-            
-            return true;
+            else
+            {
+                ShowMessage( "This medication already exists in the prescription." );
+            }
         }
 
         public void PopulateMedications()
@@ -199,7 +255,7 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
                 deleteItem.Content      = "Delete";
                 deleteItem.Click       += ( object i , RoutedEventArgs a ) =>
                 {
-                    CurrentItem.Medications.Remove( med );
+                    CurrentItem.RemoveMedication( med );
                     MedicationsList.Children.Remove( itemRow );
                 };
                 
@@ -210,7 +266,7 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
             }
         }
 
-        public void HideError()
+        public void HideMessage()
         {
             MsgBox.Visibility = Visibility.Collapsed;
         }
@@ -221,21 +277,45 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
             MsgBox.Text       = error_message;
         }
 
+        private bool RecordFields()
+        {
+            CurrentItem.Name    = NameBox.Text;
+            CurrentItem.Remark  = RemarkBox.Text;
+            EndBefore           = StartDatePicker.SelectedDate != null ? StartDatePicker.SelectedDate.Value : DatabaseObject.INVALID_DATETIME;
+            StartAfter          = EndDatePicker.SelectedDate != null ? EndDatePicker.SelectedDate.Value : DatabaseObject.INVALID_DATETIME;
+            
+            if( IsEdit && StartAfter < DateTime.Now.Date )
+            {
+                ShowMessage( "Select a valid start date" );
+                return false;
+            }
+            
+            if( IsEdit && ( EndBefore < DateTime.Now.Date || EndBefore < StartAfter ) )
+            {
+                ShowMessage( "Select a valid end date" );
+                return false;
+            }
+
+            return true;
+        }
+
         private void DoConfirm()
         {
-            if( !RecordFields() )
+            if( !IsView && !RecordFields() )
                 return;
 
-            if( IsEdit && !IsFind )
+            if( IsEdit )
             {
-                if( CurrentItem.Patient     == null ) { ShowMessage( "Please select a patient."     ); return; }
-                if( CurrentItem.Prescriber  == null ) { ShowMessage( "Please select a prescriber."  ); return; }
+
+                if( CurrentItem.Patient     == null     ) { ShowMessage( "Please select a patient."         ); return; }
+                if( CurrentItem.Prescriber  == null     ) { ShowMessage( "Please select a prescriber."      ); return; }
+                if( CurrentItem.Medications.Count == 0  ) { ShowMessage( "Enter at least one medication."   ); return; }
 
                 CurrentItem.Save();
                 ShowMessage( "Prescription saved." );
                 LoadDetails();
             }
-            else
+            else if( IsFind )
             {
                 CurrentItem.Id = Prescription.GetIdFromString( PrescriptionIdBox.Text );
             }

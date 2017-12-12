@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using OverSurgerySystem.UI.Persistent;
 using OverSurgerySystem.UI.Pages.Staffs;
+using OverSurgerySystem.Manager;
 
 namespace OverSurgerySystem.UI
 {

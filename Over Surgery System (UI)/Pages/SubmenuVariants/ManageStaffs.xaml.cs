@@ -43,7 +43,7 @@ namespace OverSurgerySystem.UI.Pages
 
                 // Enter edit staff page when a staff is selected from the list.
                 // After we stared interacting with inner pages, backing out from the editor page now goes back to the results page instead.
-                FindStaff.OnSelect = ( Staff staff ) => App.GoToEditStaffPage( staff , EditStaff.Edit );
+                FindStaff.OnSelect = ( Staff staff ) => App.GoToEditStaffPage( staff , EditStaff.View );
             };
         }
         

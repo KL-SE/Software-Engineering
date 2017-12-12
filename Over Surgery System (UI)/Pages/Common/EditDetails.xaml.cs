@@ -28,17 +28,19 @@ namespace OverSurgerySystem.UI.Pages.Common
         public EditDetails()
         {
             InitializeComponent();
-            PostcodeBox.StoppedTyping              += (object o, EventArgs e) => ResolvePostcode();
-            PostcodeBox.TextChanged                += (object o, TextChangedEventArgs e) => HideError();
-            FirstNameBox.TextChanged               += (object o, TextChangedEventArgs e) => HideError();
-            LastNameBox.TextChanged                += (object o, TextChangedEventArgs e) => HideError();
-            AddressBox.TextChanged                 += (object o, TextChangedEventArgs e) => HideError();
-            IdentificationBox.TextChanged          += (object o, TextChangedEventArgs e) => HideError();
-            ContactNoBox.TextChanged               += (object o, TextChangedEventArgs e) => HideError();
-            DateOfBirthPicker.SelectedDateChanged  += (object o, SelectionChangedEventArgs e) => HideError();
+            PostcodeBox.TextChanged                += (object o, TextChangedEventArgs e) => HideMessage();
+            FirstNameBox.TextChanged               += (object o, TextChangedEventArgs e) => HideMessage();
+            LastNameBox.TextChanged                += (object o, TextChangedEventArgs e) => HideMessage();
+            AddressBox.TextChanged                 += (object o, TextChangedEventArgs e) => HideMessage();
+            IdentificationBox.TextChanged          += (object o, TextChangedEventArgs e) => HideMessage();
+            ContactNoBox.TextChanged               += (object o, TextChangedEventArgs e) => HideMessage();
+            DateOfBirthPicker.SelectedDateChanged  += (object o, SelectionChangedEventArgs e) => HideMessage();
+            
+            PostcodeBox.StoppedTyping              += (object o, EventArgs e) => { ResolvePostcode(); HideMessage(); };
             PostcodeButton.Click                   += (object o, RoutedEventArgs e) => RecordAndNavigateToEditAddress();
             ConfirmButton.Click                    += (object o, RoutedEventArgs a) => DoConfirm();
             CancelButton.Click                     += (object o, RoutedEventArgs a) => DoCancel();
+
             ClearDobButton.Click                   += ClearDateOfBirth;
             IdentificationButton.Click             += AddIdentification;
             ContactNoButton.Click                  += AddContactNumbers;
@@ -58,6 +60,26 @@ namespace OverSurgerySystem.UI.Pages.Common
 
                 ConfirmButtonImg.Source         = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/search.png" ) );
                 ConfirmButtonText.Text          = "Find";
+            }
+
+            if( IsView )
+            {
+                FirstNameBox.IsEnabled          = false;
+                LastNameBox.IsEnabled           = false;
+                AddressBox.IsEnabled            = false;
+                PostcodeBox.IsEnabled           = false;
+                PostcodeButton.IsEnabled        = false;
+                DateOfBirthPicker.IsEnabled     = false;
+                ClearDobButton.IsEnabled        = false;
+                UserSexPicker.IsEnabled         = false;
+                IdentificationBox.IsEnabled     = false;
+                IdentificationButton.IsEnabled  = false;
+                ContactNoBox.IsEnabled          = false;
+                ContactNoButton.IsEnabled       = false;
+
+                ConfirmButton.Visibility        = Visibility.Collapsed;
+                CancelButtonImg.Source          = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
+                CancelButtonText.Text           = "Back";
             }
         }
 
@@ -99,8 +121,8 @@ namespace OverSurgerySystem.UI.Pages.Common
 
             maleItem.Header     = "Male";
             femaleItem.Header   = "Female";
-            maleItem.Click     += ( object i , RoutedEventArgs a ) => { UserSexHeader.Header = maleItem.Header;     CurrentItem.Sex = 'M'; HideError(); };
-            femaleItem.Click   += ( object i , RoutedEventArgs a ) => { UserSexHeader.Header = femaleItem.Header;   CurrentItem.Sex = 'F'; HideError(); };
+            maleItem.Click     += ( object i , RoutedEventArgs a ) => { UserSexHeader.Header = maleItem.Header;     CurrentItem.Sex = 'M'; HideMessage(); };
+            femaleItem.Click   += ( object i , RoutedEventArgs a ) => { UserSexHeader.Header = femaleItem.Header;   CurrentItem.Sex = 'F'; HideMessage(); };
 
             UserSexHeader.ItemsSource = list;
         }
@@ -127,6 +149,7 @@ namespace OverSurgerySystem.UI.Pages.Common
                     itemContent.Text        = iden.Value;
                     itemContent.Width       = 700;
                     itemContent.IsEnabled   = false;
+                    deleteItem.IsEnabled    = !IsView;
                     deleteItem.Content      = "Delete";
                     deleteItem.Click       += ( object i , RoutedEventArgs a ) =>
                     {
@@ -164,6 +187,7 @@ namespace OverSurgerySystem.UI.Pages.Common
                     itemContent.Text        = contactNo.Number;
                     itemContent.Width       = 700;
                     itemContent.IsEnabled   = false;
+                    deleteItem.IsEnabled    = !IsView;
                     deleteItem.Content      = "Delete";
                     deleteItem.Click       += ( object i , RoutedEventArgs a ) =>
                     {
@@ -189,23 +213,15 @@ namespace OverSurgerySystem.UI.Pages.Common
         {
             if( IdentificationBox.Text.Length > 0 )
             {
-                foreach( Identification iden in CurrentItem.Identifications )
+                if( !CurrentItem.AddIdentification( IdentificationBox.Text ) )
                 {
-                    if( iden.Value.Equals( IdentificationBox.Text ) )
-                    {
-                        ShowMessage( "The identification already exists." );
-                        return;
-                    }
+                    ShowMessage( "The identification already exists." );
+                    return;
                 }
-
-                Identification newIden  = new Identification();
-                newIden.Value           = IdentificationBox.Text;
-                newIden.Owner           = CurrentItem;
-                CurrentItem.Identifications.Add( newIden );
-                PopulateIdentifications();
 
                 // Clear the text box.
                 IdentificationBox.Text = "";
+                PopulateIdentifications();
             }
         }
 
@@ -213,27 +229,19 @@ namespace OverSurgerySystem.UI.Pages.Common
         {
             if( ContactNoBox.Text.Length > 0 )
             {
-                foreach( ContactNumber no in CurrentItem.ContactNumbers )
+                if( !CurrentItem.AddContactNumber( ContactNoBox.Text ) )
                 {
-                    if( no.Number.Equals( ContactNoBox.Text ) )
-                    {
-                        ShowMessage( "The contact number already exists." );
-                        return;
-                    }
+                    ShowMessage( "The contact number already exists." );
+                    return;
                 }
-                
-                ContactNumber newNo = new ContactNumber();
-                newNo.Number        = ContactNoBox.Text;
-                newNo.Owner         = CurrentItem;
-                CurrentItem.ContactNumbers.Add( newNo );
-                PopulateContactNumbers();
 
                 // Clear the text box.
                 ContactNoBox.Text = "";
+                PopulateContactNumbers();
             }
         }
 
-        public void HideError()
+        public void HideMessage()
         {
             MsgBox.Visibility = Visibility.Collapsed;
         }
@@ -315,7 +323,8 @@ namespace OverSurgerySystem.UI.Pages.Common
         
         private void DoConfirm()
         {
-            RecordFields();
+            if( !IsView )
+                RecordFields();
 
             if( IsEdit )
             {
@@ -341,6 +350,7 @@ namespace OverSurgerySystem.UI.Pages.Common
 
         private void DoCancel()
         {
+            if( CurrentItem.Valid ) CurrentItem.Load();
             OnCancel?.Invoke();
         }
     }

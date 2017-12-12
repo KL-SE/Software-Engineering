@@ -44,8 +44,7 @@ namespace OverSurgerySystem.UI.Pages.Patients
 
         private void OnLoad( object o , RoutedEventArgs e )
         {
-            PatientIdBox.Text = !IsEdit || IsFind ? "" : "- New Patient -";
-            
+            PatientIdBox.Text = !IsEdit ? "" : "- New Patient -";
             LoadDetails();
 
             CurrentEditor = new EditDetails();
@@ -63,12 +62,6 @@ namespace OverSurgerySystem.UI.Pages.Patients
             PatientIdBox.IsEnabled = IsFind;
         }
 
-        private int OnBackToDetails()
-        {
-            App.GoToPage( this );
-            return 0;
-        }
-
         private int DoConfirm( PersonalDetails d )
         {
             if( IsEdit )
@@ -77,7 +70,7 @@ namespace OverSurgerySystem.UI.Pages.Patients
                 CurrentEditor.ShowMessage( "Patient saved." );
                 LoadDetails();
             }
-            else
+            else if( IsFind )
             {
                 CurrentItem.Id = Patient.GetIdFromString( PatientIdBox.Text );
             }
@@ -88,8 +81,7 @@ namespace OverSurgerySystem.UI.Pages.Patients
 
         private void DoCancel()
         {
-            if( CurrentItem.Valid    ) CurrentItem.Load();
-            if( CurrentDetail.Valid     ) CurrentDetail.Load();
+            if( CurrentItem.Valid ) CurrentItem.Load();
             OnCancel?.Invoke();
         }
     }
