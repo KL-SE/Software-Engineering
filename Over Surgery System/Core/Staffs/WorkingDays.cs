@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 using OverSurgerySystem.Manager;
+using System;
+using System.Linq;
 
 namespace OverSurgerySystem.Core.Staffs
 {
@@ -24,13 +26,13 @@ namespace OverSurgerySystem.Core.Staffs
 
         public WorkingDays() : base()
         {
-            days = new bool[Day.TOTAL];
+            days = Enumerable.Repeat<bool>( true , Day.TOTAL ).ToArray();
         }
 
         public WorkingDays( MedicalStaff owner )
         {
-            days = new bool[Day.TOTAL];
-            Owner = owner;
+            days    = Enumerable.Repeat<bool>( true , Day.TOTAL ).ToArray();
+            Owner   = owner;
         }
 
         // Properties to access specific days of a week.
@@ -109,6 +111,56 @@ namespace OverSurgerySystem.Core.Staffs
             {
                 return days[Day.SUNDAY] && days[Day.SATURDAY];
             }
+        }
+        
+        public bool Set( int dayOfWeek , bool isWorking )
+        {
+            switch( dayOfWeek )
+            {
+                case( Day.SUNDAY     ): Sunday       = isWorking; break;
+                case( Day.MONDAY     ): Monday       = isWorking; break;
+                case( Day.TUESDAY    ): Tuesday      = isWorking; break;
+                case( Day.WEDNESDAY  ): Wednesday    = isWorking; break;
+                case( Day.THURSDAY   ): Thursday     = isWorking; break;
+                case( Day.FRIDAY     ): Friday       = isWorking; break;
+                case( Day.SATURDAY   ): Saturday     = isWorking; break;
+            }
+            return false;
+        }
+
+        public bool WorkingOn( int dayOfWeek )
+        {
+            switch( dayOfWeek )
+            {
+                case( Day.SUNDAY     ): return Sunday;
+                case( Day.MONDAY     ): return Monday;
+                case( Day.TUESDAY    ): return Tuesday;
+                case( Day.WEDNESDAY  ): return Wednesday;
+                case( Day.THURSDAY   ): return Thursday;
+                case( Day.FRIDAY     ): return Friday;
+                case( Day.SATURDAY   ): return Saturday;
+            }
+            return false;
+        }
+
+        public static int GetDayNumber( DateTime date )
+        {
+            switch( date.DayOfWeek )
+            {
+                case( DayOfWeek.Sunday       ): return Day.SUNDAY;
+                case( DayOfWeek.Monday       ): return Day.MONDAY;
+                case( DayOfWeek.Tuesday      ): return Day.TUESDAY;
+                case( DayOfWeek.Wednesday    ): return Day.WEDNESDAY;
+                case( DayOfWeek.Thursday     ): return Day.THURSDAY;
+                case( DayOfWeek.Friday       ): return Day.FRIDAY;
+                case( DayOfWeek.Saturday     ): return Day.SATURDAY;
+            }
+            return Day.SUNDAY;
+        }
+
+        public bool WorkingOn( DateTime date )
+        {
+            return WorkingOn( GetDayNumber( date ) );
         }
         
         // Inherited Functions

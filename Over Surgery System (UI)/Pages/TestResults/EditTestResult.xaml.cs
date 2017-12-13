@@ -64,21 +64,35 @@ namespace OverSurgerySystem.UI.Pages.TestResults
 
             if( IsView )
             {
+                TestIdBox.IsEnabled             = false;
+                PatientIdBox.IsEnabled          = false;
+                LicenseNoBox.IsEnabled          = false;
+                MedStaffBox.IsEnabled           = false;
+                TestNameBox.IsEnabled           = false;
+                TestDescBox.IsEnabled           = false;
+                TestDatePicker.IsEnabled        = false;
+                TestResultBox.IsEnabled         = false;
+                TestRemarkBox.IsEnabled         = false;
+                ClearTestDateButton.IsEnabled   = false;
+
+                PatientIdButton.Content     = "View";
+                LicenseNoButton.Content     = "View";
+            }
+
+            if( IsRestricted )
+            {
                 TestIdBox.IsEnabled         = false;
                 PatientIdBox.IsEnabled      = false;
                 LicenseNoBox.IsEnabled      = false;
                 MedStaffBox.IsEnabled       = false;
-                TestNameBox.IsEnabled       = false;
-                TestDescBox.IsEnabled       = false;
-                PatientIdBox.IsEnabled      = false;
-                TestDatePicker.IsEnabled    = false;
-                TestResultBox.IsEnabled     = false;
-                TestRemarkBox.IsEnabled     = false;
-                ClearDobButton.IsEnabled    = false;
-
                 PatientIdButton.Content     = "View";
-                LicenseNoButton.Content     = "View";
+                
+                if( CurrentItem.Valid )
+                    LicenseNoButton.Content = "View";
+            }
 
+            if( IsBackOnly )
+            {
                 ConfirmButton.Visibility    = Visibility.Collapsed;
                 CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
                 CancelButtonText.Text       = "Back";
@@ -147,32 +161,36 @@ namespace OverSurgerySystem.UI.Pages.TestResults
 
         private void StartFindMedstaff( object o , RoutedEventArgs e )
         {
-            if( IsView )
+            if( IsView || !IsRestricted )
             {
                 if( LinkedMedStaff.Valid )
                 {
                     EditStaff.OnCancel  = () => App.GoToPage( this );
-                    App.GoToEditStaffPage( LinkedMedStaff , EditStaff.View );
+                    App.GoToEditStaffPage( LinkedMedStaff , EditStaff.View | EditStaff.BackOnly );
                 }
             }
             else
             {
                 RecordFields();
                 ResolveMedicalStaff( null , null );
-                FindStaff.OnSelect  = OnSelectStaff;
-                FindStaff.OnFind    = OnFindStaff;
-                FindStaff.OnFound   = OnConfirmStaff;
-                FindStaff.OnCancel  = () => App.GoToPage( this );
+                FindStaff.OnSelect              = OnSelectStaff;
+                FindStaff.OnFind                = OnFindStaff;
+                FindStaff.OnFound               = OnConfirmStaff;
+                FindStaff.OnCancel              = () => App.GoToPage( this );
+                EditStaff.RestrictActive        = true;
+                EditStaff.RestrictAdmin         = true;
+                EditStaff.RestrictReceptionist  = true;
+                EditStaff.RestrictNurse         = true;
                 App.GoToEditStaffPage( LinkedMedStaff , EditStaff.Find | EditStaff.Restricted );
             }
         }
 
         private void StartFindPatient( object o , EventArgs e )
         {
-            if( IsView )
+            if( IsView || ( IsRestricted && CurrentItem.Valid ) )
             {
                 EditPatient.OnCancel    = () => App.GoToPage( this );
-                App.GoToEditPatientPage( CurrentItem.Patient , EditPatient.View );
+                App.GoToEditPatientPage( CurrentItem.Patient , EditPatient.View | EditPatient.BackOnly );
             }
             else
             {
@@ -269,10 +287,17 @@ namespace OverSurgerySystem.UI.Pages.TestResults
                 if( CurrentItem.Name.Length             == 0 ) { ShowMessage( "Enter the test name."                            ); return; }
                 if( CurrentItem.Description.Length      == 0 ) { ShowMessage( "Enter the test description."                     ); return; }
                 if( CurrentItem.Result.Length           == 0 ) { ShowMessage( "Enter the test result."                          ); return; }
-
-                CurrentItem.Save();
-                ShowMessage( "Test saved." );
-                LoadDetails();
+                
+                try
+                {
+                    CurrentItem.Save();
+                    ShowMessage( "Test saved." );
+                    LoadDetails();
+                }
+                catch
+                {
+                    ShowMessage( "Failed to save data. Please check your connection." );
+                }
             }
             else
             {
@@ -284,9 +309,18 @@ namespace OverSurgerySystem.UI.Pages.TestResults
 
         private void DoCancel()
         {
-            if( CurrentItem.Valid ) CurrentItem.Load();
-            App.GoToMainMenu();
-            MainMenu.Instance.Loaded += (object sender, RoutedEventArgs e) => App.GoToManageTestResults();
+            try
+            {
+                if( CurrentItem.Valid )
+                {
+                    CurrentItem.Load();
+                }
+            }
+            catch
+            {
+                ShowMessage( "Failed to load data. Please check your connection." );
+            }
+            
             OnCancel?.Invoke();
         }
 

@@ -33,15 +33,17 @@ namespace OverSurgerySystem.UI.Pages.Appointments
             BackButton.Click   += (object o, RoutedEventArgs e) => OnCancel?.Invoke();
             ResetButton.Click  += (object o, RoutedEventArgs e) =>
             {
-                App.GoToFindAppointmentPage( LastPrototype );
+                App.GoToEditAppointmentPage( LastPrototype , LastEditMode );
                 EditAppointment.OnConfirm   = OnFind;
                 EditAppointment.OnCancel    = () => App.GoToPage( this );
             };
+
+            LastEditMode = EditAppointment.Mode;
         }
         
         public override string[] GetData( Appointment appointment )
         {
-            return new string[4]
+            return new string[]
             {
                 appointment.StringId,
                 appointment.Patient.StringId,
@@ -63,28 +65,38 @@ namespace OverSurgerySystem.UI.Pages.Appointments
 
         public static List<Appointment> FindFromPrototype( Appointment protoAppointment )
         {
-            LastPrototype = protoAppointment;
-            if( protoAppointment.Valid )
+            try
             {
-                SearchResult.Clear();
-                Appointment appointment = PatientsManager.GetAppointment( protoAppointment.Id );
-
-                if( appointment != null && appointment.Valid )
+                if( protoAppointment.Valid )
                 {
-                    SearchResult.Add( appointment );
+                    SearchResult.Clear();
+                    Appointment appointment = PatientsManager.GetAppointment( protoAppointment.Id );
+
+                    if( appointment != null && appointment.Valid )
+                    {
+                        SearchResult.Add( appointment );
+                    }
+
+                    return SearchResult;
                 }
-
-                return SearchResult;
-            }
             
-            SearchResult = PatientsManager.GetAllAppointments();
-            if( protoAppointment.Remark.Length > 0                              ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Remark.ToUpper().Contains(   protoAppointment.Remark.ToUpper()    ) );
-            if( protoAppointment.Patient != null                                ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Patient.Id == protoAppointment.Patient.Id                         );
-            if( protoAppointment.MedicalStaff != null                           ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.MedicalStaff.Id == protoAppointment.MedicalStaff.Id               );
-            if( !protoAppointment.Cancelled                                     ) SearchResult  = ManagerHelper.Filter( SearchResult , e => !e.Cancelled                                                        );
-            if( EditAppointment.DateSelected != DatabaseObject.INVALID_DATETIME ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.DateAppointed.Date == EditAppointment.DateSelected.Date           );
-            if( EditAppointment.DateAfter != DatabaseObject.INVALID_DATETIME    ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.DateAppointed.Date > EditAppointment.DateAfter.Date               );
+                SearchResult = PatientsManager.GetAllAppointments();
+                if( protoAppointment.Remark.Length > 0                              ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Remark.ToUpper().Contains(   protoAppointment.Remark.ToUpper()    ) );
+                if( protoAppointment.Patient != null                                ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Patient.Id == protoAppointment.Patient.Id                         );
+                if( protoAppointment.MedicalStaff != null                           ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.MedicalStaff.Id == protoAppointment.MedicalStaff.Id               );
+                if( !protoAppointment.Cancelled                                     ) SearchResult  = ManagerHelper.Filter( SearchResult , e => !e.Cancelled                                                        );
+                if( EditAppointment.SelectedDate != DatabaseObject.INVALID_DATETIME ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.DateAppointed.Date == EditAppointment.SelectedDate.Date           );
+                if( EditAppointment.DateAfter != DatabaseObject.INVALID_DATETIME    ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.DateAppointed.Date > EditAppointment.DateAfter.Date               );
 
+                SearchResult.Sort( (c,o) => c.DateAppointed.CompareTo( o.DateAppointed ) );
+                LastSearchError = false;
+            }
+            catch
+            {
+                LastSearchError = true;
+            }
+
+            LastPrototype = protoAppointment;
             return SearchResult;
         }
     }

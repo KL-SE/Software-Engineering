@@ -14,10 +14,11 @@ namespace OverSurgerySystem.UI.Pages.Core
         public static Action    OnNavigate  { set; get; }
         public static Action    OnReturn    { set; get; }
 
-        public static int View          = 0b0001;
-        public static int Edit          = 0b0010;
-        public static int Find          = 0b0100;
-        public static int Restricted    = 0b1000;
+        public static int View          = 0b00001;
+        public static int Edit          = 0b00010;
+        public static int Find          = 0b00100;
+        public static int Restricted    = 0b01000;
+        public static int BackOnly      = 0b10000;
 
         public static T CurrentItem { set; get; }
         public static int Mode      { set; get; }
@@ -51,6 +52,14 @@ namespace OverSurgerySystem.UI.Pages.Core
             get
             {
                 return ( Mode & Restricted ) == Restricted;
+            }
+        }
+
+        public static bool IsBackOnly
+        {
+            get
+            {
+                return ( Mode & BackOnly ) == BackOnly;
             }
         }
 

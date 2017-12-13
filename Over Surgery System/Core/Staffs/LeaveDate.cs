@@ -6,8 +6,9 @@ namespace OverSurgerySystem.Core.Staffs
 {
     public class LeaveDate : DatabaseObject
     {
-        public DateTime Date        { private set; get; }
-        public MedicalStaff Owner   { private set; get; }
+        public DateTime date;
+        public MedicalStaff Owner   { set; get; }
+        public string Remark        { set; get; }
 
         // Constructor & Factory Function
         public LeaveDate()
@@ -15,12 +16,17 @@ namespace OverSurgerySystem.Core.Staffs
             Date = INVALID_DATETIME;
         }
 
-        public static LeaveDate Make( MedicalStaff staff , DateTime date )
+        // Date property
+        public DateTime Date
         {
-            LeaveDate leaveDate = new LeaveDate();
-            leaveDate.Owner     = staff;
-            leaveDate.Date      = date.Date;
-            return leaveDate;
+            set
+            {
+                date = value.Date;
+            }
+            get
+            {
+                return date;
+            }
         }
         
         // Inherited Functions
@@ -34,16 +40,18 @@ namespace OverSurgerySystem.Core.Staffs
         public override void Load()
         {
             DatabaseQuery query = new DatabaseQuery( Database.Tables.LEAVE_DATES );
-            query.Add( Database.Tables.LeaveDates.Date      );
             query.Add( Database.Tables.LeaveDates.StaffId   );
+            query.Add( Database.Tables.LeaveDates.Date      );
+            query.Add( Database.Tables.LeaveDates.Remark    );
             
             MySqlDataReader reader  = DoLoad( query );
             int ownerId             = INVALID_ID;
             
             if( Loaded )
             {
-                Date    = reader.GetDateTime( 0 );
-                ownerId = reader.GetInt32( 1 );
+                ownerId = reader.GetInt32( 0 );
+                Date    = reader.GetDateTime( 1 );
+                Remark  = reader.GetString( 2 );
                 StaffsManager.Add( this );
             }
 
@@ -54,8 +62,9 @@ namespace OverSurgerySystem.Core.Staffs
         public override void Save()
         {
             DatabaseQuery query = new DatabaseQuery( Database.Tables.LEAVE_DATES );
-            query.Add( Database.Tables.LeaveDates.Date      , QueryElement.DateOf( Date )   );
             query.Add( Database.Tables.LeaveDates.StaffId   , Owner                         );
+            query.Add( Database.Tables.LeaveDates.Remark    , Remark                        );
+            query.Add( Database.Tables.LeaveDates.Date      , QueryElement.DateOf( Date )   );
             DoSave( query );
             StaffsManager.Add( this );
         }

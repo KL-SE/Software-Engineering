@@ -19,18 +19,20 @@
 
     <StackPanel HorizontalAlignment="Center">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Name="BackButton" Width="300">
+            <Button Style="{StaticResource FindNavButton}" Name="BackButton" Width="300">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png"/>
+                    <Image Style="{StaticResource FindNavImage}" Source="pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png"/>
                     <TextBlock
+                        Style="{StaticResource FindNavText}"
                         Text="Back"
                         VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
-            <Button Name="ResetButton">
+            <Button Style="{StaticResource FindNavButton}" Name="ResetButton">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/search.png"/>
+                    <Image Style="{StaticResource FindNavImage}" Source="pack://application:,,,/Over Surgery System (UI);component/Resources/search.png"/>
                     <TextBlock
+                        Style="{StaticResource FindNavText}"
                         Text="Search Again"
                         VerticalAlignment="Center"/>
                 </StackPanel>

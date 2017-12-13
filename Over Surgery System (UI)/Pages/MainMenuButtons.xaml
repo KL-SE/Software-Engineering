@@ -1,13 +1,13 @@
-﻿<Page x:Class="OverSurgerySystem.UI.Pages.MainMenuVariants.MenuButtonsReceptionist"
+﻿<Page x:Class="OverSurgerySystem.UI.Pages.MainMenuButtons"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:OverSurgerySystem.UI.Pages.MainMenuVariants"
+      xmlns:local="clr-namespace:OverSurgerySystem.UI.Pages"
       mc:Ignorable="d" 
       d:DesignHeight="300"
       d:DesignWidth="300"
-      Title="MenuButtonsReceptionist">
+      Title="MainMenuButtons">
 
     <Page.Resources>
         <ResourceDictionary Source="pack://application:,,,/Over Surgery System (UI);component/Styles/MenuStyles.xaml"/>
@@ -35,6 +35,13 @@
                     <TextBlock Text="Check On Duty Staffs"/>
                 </StackPanel>
             </Button>
+
+            <Button Name="ManageStaffsButton">
+                <StackPanel>
+                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/manage_staffs.png"/>
+                    <TextBlock Text="Manage Staffs"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal">
@@ -47,15 +54,15 @@
 
             <Button Name="ManagePrescriptionsButton">
                 <StackPanel>
-                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/manage_prescriptions.png"/>
-                    <TextBlock Text="Manage Prescriptions"/>
+                    <Image Name="ManagePrescriptionsImg" Source="pack://application:,,,/Over Surgery System (UI);component/Resources/manage_prescriptions.png"/>
+                    <TextBlock Name="ManagePrescriptionsText" Text="Manage Prescriptions"/>
                 </StackPanel>
             </Button>
 
             <Button Name="ManageTestResultsButton">
                 <StackPanel>
-                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/manage_test_results.png"/>
-                    <TextBlock Text="Manage Test Results"/>
+                    <Image Name="ManageTestResultsImg" Source="pack://application:,,,/Over Surgery System (UI);component/Resources/manage_test_results.png"/>
+                    <TextBlock Name="ManageTestResultsText" Text="Manage Test Results"/>
                 </StackPanel>
             </Button>
         </StackPanel>

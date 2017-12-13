@@ -131,7 +131,8 @@ namespace OverSurgerySystem.Manager
         }
         
         // Getting leave dates within a set range through the staff ID.
-        public static List<MedicalStaff> GetMedicalStaffLeavesFrom( DateTime start , DateTime end , bool not )
+        // We don't have a true ranged leave date, so this function extracts whether the staff is on leave in any one of the day in the range.
+        public static List<MedicalStaff> GetMedicalStaffLeavesIn( DateTime start , DateTime end )
         {
             DatabaseQuery nestedQuery = new DatabaseQuery( Database.Tables.LEAVE_DATES );
 
@@ -140,7 +141,8 @@ namespace OverSurgerySystem.Manager
                 nestedQuery.Comparator = new QueryComparator
                 {
                     Source  = new QueryElement( Database.Tables.LeaveDates.Date     ),
-                    Operand = new QueryElement( null , QueryElement.DateOf( start ) )
+                    Operand = new QueryElement( null , QueryElement.DateOf( start ) ),
+                    Equal   = true
                 };
             }
             else
@@ -151,22 +153,21 @@ namespace OverSurgerySystem.Manager
                     {
                         Source  = new QueryElement( Database.Tables.LeaveDates.Date     ),
                         Operand = new QueryElement( null , QueryElement.DateOf( start ) ),
-                        Equal   = !not,
-                        More    = !not,
-                        Less    = not
+                        Equal   = true,
+                        More    = true,
+                        Less    = false
                     },
 
                     Operand = new QueryComparator()
                     {
                         Source  = new QueryElement( Database.Tables.LeaveDates.Date     ),
                         Operand = new QueryElement( null , QueryElement.DateOf( end )   ),
-                        Equal   = !not,
-                        Less    = !not,
-                        More    = not
+                        Equal   = true,
+                        Less    = true,
+                        More    = false
                     },
 
-                    And = !not,
-                    Or  = not
+                    And = true
                 };
             }
 
@@ -217,20 +218,22 @@ namespace OverSurgerySystem.Manager
         }
 
         // Simple redirect getters...
-        public static List<Staff>           GetStaffsByDetails( PersonalDetails details )                   { return GetStaffsByDetails( details.Id );                  }
-        public static List<Receptionist>    GetAdminReceptionists()                                         { return GetReceptionistsWithAdminStatus( true );           }
-        public static List<Receptionist>    GetNonAdminReceptionists()                                      { return GetReceptionistsWithAdminStatus( false );          }
-        public static List<MedicalStaff>    GetMedicalStaffsWorkingOn( int day )                            { return GetMedicalStaffsWorkingOn( day , false );          }
-        public static List<MedicalStaff>    GetMedicalStaffsNotWorkingOn( int day )                         { return GetMedicalStaffsWorkingOn( day , true );           }
-        public static List<MedicalStaff>    GetMedicalStaffOnLeaveFrom( DateTime start , DateTime end )     { return GetMedicalStaffLeavesFrom( start , end , false );  }
-        public static List<MedicalStaff>    GetMedicalStaffNotOnLeaveFrom( DateTime start , DateTime end )  { return GetMedicalStaffLeavesFrom( start , end , true  );  }
-        public static List<MedicalStaff>    GetMedicalStaffOnLeaveOn( DateTime date )                       { return GetMedicalStaffLeavesFrom( date , date , false );  }
-        public static List<MedicalStaff>    GetMedicalStaffNotOnLeaveOn( DateTime date )                    { return GetMedicalStaffLeavesFrom( date , date , true  );  }
-        public static List<LeaveDate>       GetLeaveDatesByStaff( MedicalStaff staff )                      { return GetLeaveDatesByStaff( staff.Id );                  }
-        public static List<WorkingDays>     GetWorkingDaysByStaff( MedicalStaff staff )                     { return GetWorkingDaysByStaff( staff.Id );                 }
+        public static List<Staff>           GetStaffsByDetails( PersonalDetails details )                   { return GetStaffsByDetails( details.Id );          }
+        public static List<Receptionist>    GetAdminReceptionists()                                         { return GetReceptionistsWithAdminStatus( true );   }
+        public static List<Receptionist>    GetNonAdminReceptionists()                                      { return GetReceptionistsWithAdminStatus( false );  }
+        public static List<MedicalStaff>    GetMedicalStaffsWorkingOn( int day )                            { return GetMedicalStaffsWorkingOn( day , false );  }
+        public static List<MedicalStaff>    GetMedicalStaffsNotWorkingOn( int day )                         { return GetMedicalStaffsWorkingOn( day , true );   }
+        public static List<MedicalStaff>    GetMedicalStaffOnLeaveIn( DateTime start , DateTime end )       { return GetMedicalStaffLeavesIn( start , end );    }
+        public static List<MedicalStaff>    GetMedicalStaffOnLeaveOn( DateTime date )                       { return GetMedicalStaffLeavesIn( date , date );    }
+        public static List<LeaveDate>       GetLeaveDatesByStaff( MedicalStaff staff )                      { return GetLeaveDatesByStaff( staff.Id );          }
+        public static List<WorkingDays>     GetWorkingDaysByStaff( MedicalStaff staff )                     { return GetWorkingDaysByStaff( staff.Id );         }
 
         public static List<MedicalStaff>    RemoveNurses( List<MedicalStaff> list )                 { return ManagerHelper.Filter( list , e => !e.Nurse );  }
         public static List<MedicalStaff>    RemoveGeneralPractitioners( List<MedicalStaff> list )   { return ManagerHelper.Filter( list , e => e.Nurse );   }
+
+        public static List<Staff>           GetAllStaffs()          {  return StaffManager.Merge( Database.Tables.STAFFS , null );      }
+        public static List<MedicalStaff>    GetAllMedicalStaffs()   {  return ManagerHelper.FilterType<MedicalStaff>( GetAllStaffs() ); }
+        public static List<Receptionist>    GetAllReceptionists()   {  return ManagerHelper.FilterType<Receptionist>( GetAllStaffs() ); }
     }
 
     [Serializable]

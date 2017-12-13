@@ -76,10 +76,13 @@ namespace OverSurgerySystem.UI.Pages.Common
                 IdentificationButton.IsEnabled  = false;
                 ContactNoBox.IsEnabled          = false;
                 ContactNoButton.IsEnabled       = false;
+            }
 
-                ConfirmButton.Visibility        = Visibility.Collapsed;
-                CancelButtonImg.Source          = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
-                CancelButtonText.Text           = "Back";
+            if( IsBackOnly )
+            {
+                ConfirmButton.Visibility    = Visibility.Collapsed;
+                CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
+                CancelButtonText.Text       = "Back";
             }
         }
 
@@ -254,32 +257,39 @@ namespace OverSurgerySystem.UI.Pages.Common
 
         private void ResolvePostcode()
         {
-            List<PostalCode> results    = AddressManager.GetPostcodesByExactCode( PostcodeBox.Text );
-            CurrentItem.Postcode        = results.Count == 1 ? results[0] : null;
-            if( results.Count == 1 )
+            try
             {
-                CityBox.Text    = CurrentItem.Postcode.City.Name;
-                StateBox.Text   = CurrentItem.Postcode.State.Name;
-                CountryBox.Text = CurrentItem.Postcode.Country.Name;
+                List<PostalCode> results    = AddressManager.GetPostcodesByExactCode( PostcodeBox.Text );
+                CurrentItem.Postcode        = results.Count == 1 ? results[0] : null;
+                if( results.Count == 1 )
+                {
+                    CityBox.Text    = CurrentItem.Postcode.City.Name;
+                    StateBox.Text   = CurrentItem.Postcode.State.Name;
+                    CountryBox.Text = CurrentItem.Postcode.Country.Name;
+                }
+                else if( results.Count > 1 )
+                {
+                    CityBox.Text    = "- Multiple Found -";
+                    StateBox.Text   = "- Multiple Found -";
+                    CountryBox.Text = "- Multiple Found -";
+                }
+                else
+                {
+                    CityBox.Text    = "- Not Found -";
+                    StateBox.Text   = "- Not Found -";
+                    CountryBox.Text = "- Not Found -";
+                }
             }
-            else if( results.Count > 1 )
+            catch
             {
-                CityBox.Text    = "- Multiple Found -";
-                StateBox.Text   = "- Multiple Found -";
-                CountryBox.Text = "- Multiple Found -";
-            }
-            else
-            {
-                CityBox.Text    = "- Not Found -";
-                StateBox.Text   = "- Not Found -";
-                CountryBox.Text = "- Not Found -";
+                ShowMessage( "Failed to load data. Please check your connection." );
             }
         }
 
         public void OnPostcodeEdit( PostalCode postcode )
         {
-            OnNavigate?.Invoke();
             CurrentItem.Postcode = postcode;
+            OnReturn?.Invoke();
         }
 
         public void OnPostcodeCancel()
@@ -317,6 +327,8 @@ namespace OverSurgerySystem.UI.Pages.Common
         private void RecordAndNavigateToEditAddress()
         {
             RecordFields();
+            OnNavigate?.Invoke();
+
             EditAddress.Setup( new PostalCode() , Mode );
             App.GoToPage( new EditAddress() );
         }
@@ -350,7 +362,17 @@ namespace OverSurgerySystem.UI.Pages.Common
 
         private void DoCancel()
         {
-            if( CurrentItem.Valid ) CurrentItem.Load();
+            try
+            {
+                if( CurrentItem.Valid )
+                {
+                    CurrentItem.Load();
+                }
+            }
+            catch
+            {
+                ShowMessage( "Failed to load data. Please check your connection." );
+            }
             OnCancel?.Invoke();
         }
     }

@@ -25,7 +25,7 @@
             <Button Name="AddStaffButton">
                 <StackPanel>
                     <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/add_staff.png"/>
-                    <TextBlock Text="Add Staff"/>
+                    <TextBlock Name="AddStaffText" Text="Add Staff"/>
                 </StackPanel>
             </Button>
 

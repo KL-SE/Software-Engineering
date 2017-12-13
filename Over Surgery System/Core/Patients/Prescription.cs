@@ -155,6 +155,7 @@ namespace OverSurgerySystem.Core.Patients
             {
                 if( medication.Id == medications[index].Base.Id )
                 {
+                    medications[index].Delete();
                     medications.RemoveAt( index );
                     return;
                 }

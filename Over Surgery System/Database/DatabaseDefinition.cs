@@ -118,6 +118,7 @@
             public static class LeaveDates
             {
                 public const string StaffId = "staff_id";
+                public const string Remark  = "remark";
                 public const string Date    = "date";
             }
         

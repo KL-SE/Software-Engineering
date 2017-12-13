@@ -21,6 +21,12 @@ namespace OverSurgerySystem.Core.Staffs
             }
         }
 
+        // A helper function to get whether a staff is an admin.
+        public static bool IsAdmin( Staff staff )
+        {
+            return staff is Receptionist && ( ( Receptionist ) staff ).Admin;
+        }
+
         // Inherited Functions
         public override void Delete()
         {

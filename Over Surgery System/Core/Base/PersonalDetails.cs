@@ -126,6 +126,7 @@ namespace OverSurgerySystem.Core.Base
             {
                 if( identifications[i].Valid.Equals( iden ) )
                 {
+                    identifications[i].Delete();
                     identifications.RemoveAt( i );
                     return;
                 }
@@ -183,6 +184,7 @@ namespace OverSurgerySystem.Core.Base
             {
                 if( contactNumbers[i].Valid.Equals( number ) )
                 {
+                    contactNumbers[i].Delete();
                     contactNumbers.RemoveAt( i );
                     return;
                 }

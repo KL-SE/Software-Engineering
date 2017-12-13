@@ -56,7 +56,7 @@
                 </StackPanel>
                 
                 <TextBox Name="NameBox"/>
-                <TextBox Name="RemarkBox" TextWrapping="WrapWithOverflow" MaxLength="100"/>
+                <TextBox Name="RemarkBox" TextWrapping="Wrap" MaxLength="100"/>
             </StackPanel>
         </StackPanel>
         

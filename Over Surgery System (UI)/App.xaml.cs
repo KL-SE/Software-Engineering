@@ -12,13 +12,14 @@ using OverSurgerySystem.Core.Staffs;
 using OverSurgerySystem.UI.Pages;
 using OverSurgerySystem.UI.Pages.Common;
 using OverSurgerySystem.UI.Pages.Staffs;
-using OverSurgerySystem.UI.Pages.MainMenuVariants;
 using OverSurgerySystem.UI.Persistent;
 using OverSurgerySystem.UI.Pages.Patients;
 using OverSurgerySystem.Core.Patients;
 using OverSurgerySystem.UI.Pages.TestResults;
 using OverSurgerySystem.UI.Pages.Appointments;
 using OverSurgerySystem.UI.Pages.Prescriptions;
+using OverSurgerySystem.UI.Pages.MedicalStaffs;
+using OverSurgerySystem.UI.Core;
 
 namespace OverSurgerySystem.UI
 {
@@ -57,8 +58,8 @@ namespace OverSurgerySystem.UI
         public static void GoToPage( Page destination )                 { MainPage.Navigate( destination );                         }
         public static void GoToMenu( Page destination )                 { MainMenu.Instance.MenuButtons.Navigate( destination );    }
         public static void GoToManageAppointments()                     { GoToMenu( new ManageAppointments() );                     }
-        public static void GoToStaffsAvailability()                     { GoToMenu( new Page() );                                   }
-        public static void GoToStaffsOnDuty()                           { GoToMenu( new Page() );                                   }
+        public static void GoToStaffsAvailability()                     { GoToMenu( new EditAvailableDate() );                      }
+        public static void GoToStaffsOnDuty()                           { GoToMenu( new EditWorkingDay() );                         }
         public static void GoToManageStaffs()                           { GoToMenu( new ManageStaffs() );                           }
         public static void GoToManagePatients()                         { GoToMenu( new ManagePatients() );                         }
         public static void GoToManagePrescriptions()                    { GoToMenu( new ManagePrescriptions() );                    }
@@ -110,7 +111,18 @@ namespace OverSurgerySystem.UI
 
         public static void GoToEditTestResultPage( TestResult test , int mode )
         {
-            EditTestResult.Setup( test != null ? test : new TestResult() , mode );
+            // For test, appointments and prescriptions, the staff field will be auto filled with the current staff ID.
+            TestResult arg = test;
+            if( test == null )
+            {
+                arg = new TestResult();
+                if( !Permission.HaveAdminPrivilege && LoggedInStaff is MedicalStaff )
+                {
+                    arg.MedicalLicenseNo = ( ( MedicalStaff ) LoggedInStaff ).LicenseNo;
+                }
+            }
+
+            EditTestResult.Setup( arg , mode );
             if( EditTestResult.IsFind )
             {
                 EditTestResult.OnConfirm    = FindTestResult.OnInitialFind;
@@ -128,6 +140,11 @@ namespace OverSurgerySystem.UI
             {
                 arg                 = new Appointment();
                 arg.DateAppointed   = DateTime.Now + new TimeSpan( 1 , 0 , 0 );
+
+                if( !Permission.HaveAdminPrivilege && LoggedInStaff is MedicalStaff )
+                {
+                    arg.MedicalStaff = ( MedicalStaff )( LoggedInStaff );
+                }
             }
 
             EditAppointment.Setup( arg , mode );
@@ -148,6 +165,11 @@ namespace OverSurgerySystem.UI
                 arg             = new Prescription();
                 arg.StartDate   = DateTime.Now.Date;
                 arg.EndDate     = DateTime.Now.Date.AddDays( 1 );
+
+                if( !Permission.HaveAdminPrivilege && LoggedInStaff is MedicalStaff )
+                {
+                    arg.Prescriber = ( MedicalStaff )( LoggedInStaff );
+                }
             }
 
             EditPrescription.Setup( arg , mode );
@@ -162,21 +184,9 @@ namespace OverSurgerySystem.UI
         public static void GoToMainMenu()
         {
             GoToPage( MainMenu.Instance );
-            if( App.LoggedInStaff is Receptionist )
+            if( App.LoggedInStaff != null )
             {
-                Receptionist CurrentStaff = App.LoggedInStaff as Receptionist;
-                if( CurrentStaff.Admin )
-                {
-                    MainMenu.Instance.MenuButtons.Navigate( new MenuButtonsAdmin() );
-                }
-                else
-                {
-                    MainMenu.Instance.MenuButtons.Navigate( new MenuButtonsReceptionist() );
-                }
-            }
-            else if( App.LoggedInStaff is MedicalStaff )
-            {
-                MainMenu.Instance.MenuButtons.Navigate( new MenuButtonsMedical() );
+                MainMenu.Instance.MenuButtons.Navigate( new MainMenuButtons() );
             }
             else
             {

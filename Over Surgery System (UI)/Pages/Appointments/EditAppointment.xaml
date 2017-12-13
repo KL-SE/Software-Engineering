@@ -58,7 +58,7 @@
                     <Button Name="StaffIdButton" Content="Find"/>
                 </StackPanel>
                 
-                <TextBox Name="RemarkBox" TextWrapping="WrapWithOverflow" MaxLength="100"/>
+                <TextBox Name="RemarkBox" TextWrapping="Wrap" MaxLength="100"/>
                 
                 <Menu Name="IncludeCancelled" Visibility="Collapsed">
                     <MenuItem Name="IncludeCancelledHeader" Header="No">

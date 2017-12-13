@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace OverSurgerySystem.UI.Pages.Core
 {
     public class FinderPage<T> : Page where T: new()
     {
         public static T         LastPrototype;
+        public static int       LastEditMode;
+        public static bool      LastSearchError;
         public static List<T>   SearchResult = new List<T>();
         public static Action<T> OnSelect    { set; get; }
         public static Action<T> OnFind      { set; get; }
@@ -24,7 +27,8 @@ namespace OverSurgerySystem.UI.Pages.Core
 
         public static void Reset()
         {
-            LastPrototype = default(T);
+            LastSearchError = false;
+            LastPrototype   = default(T);
         }
 
         public void Populate( StackPanel parent )
@@ -45,6 +49,12 @@ namespace OverSurgerySystem.UI.Pages.Core
                 Border border   = new Border()      { Style = Resources["RowBorder"] as Style, Width = 1682                     };
                 TextBlock text  = new TextBlock()   { Style = Resources["ShortRowText"] as Style, Text = "No results found."    };
                 border.Child    = text;
+
+                if( LastSearchError )
+                {
+                    text.Text       = "No results found. Connection Error.";
+                    text.Foreground = Brushes.Red;
+                }
                 
                 parent.Children.Add( border );
             }

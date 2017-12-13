@@ -25,6 +25,8 @@ namespace OverSurgerySystem.UI.Pages.Staffs
     /// </summary>
     public partial class FindStaff : FinderPage<Staff>
     {
+        public static bool NoResetButton = false;
+
         public FindStaff()
         {
             InitializeComponent();
@@ -32,10 +34,13 @@ namespace OverSurgerySystem.UI.Pages.Staffs
             BackButton.Click   += (object o, RoutedEventArgs e) => OnCancel?.Invoke();
             ResetButton.Click  += (object o, RoutedEventArgs e) =>
             {
-                App.GoToFindStaffPage( LastPrototype );
+                App.GoToEditStaffPage( LastPrototype , LastEditMode );
                 EditStaff.OnConfirm = OnFind;
                 EditStaff.OnCancel  = () => App.GoToPage( this );
             };
+
+            LastEditMode            = EditStaff.Mode;
+            ResetButton.Visibility  = NoResetButton ? Visibility.Collapsed : Visibility.Visible;
         }
 
         public void OnLoad( object o , RoutedEventArgs e )
@@ -51,7 +56,7 @@ namespace OverSurgerySystem.UI.Pages.Staffs
 
         public override string[] GetData( Staff staff )
         {
-            return new string[4]
+            return new string[]
             {
                 staff.StringId,
                 String.Format( "{0} {1}" , staff.Details.FirstName , staff.Details.LastName ),
@@ -60,87 +65,101 @@ namespace OverSurgerySystem.UI.Pages.Staffs
             };
         }
 
+        public static void AcquireList( List<Staff> results )
+        {
+            SearchResult = results;
+        }
+
         public static List<Staff> FindFromPrototype( Staff protoStaff )
         {
+            try
+            {
+                if( protoStaff.Valid )
+                {
+                    SearchResult.Clear();
+                    Staff staff = StaffsManager.GetStaff( protoStaff.Id );
+
+                    if( staff != null && staff.Valid && protoStaff.GetType() == staff.GetType() )
+                    {
+                        SearchResult.Add( staff );
+                    }
+
+                    return SearchResult;
+                }
+            
+                SearchResult = protoStaff.Active ? StaffsManager.GetActiveStaffs() : StaffsManager.GetInactiveStaffs();
+                if( protoStaff.Details.FirstName.Length > 0                             ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.FirstName.ToUpper().Contains( protoStaff.Details.FirstName.ToUpper()  ) );
+                if( protoStaff.Details.LastName.Length > 0                              ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.LastName.ToUpper().Contains(  protoStaff.Details.LastName.ToUpper()   ) );
+                if( protoStaff.Details.Address.Length > 0                               ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.Address.ToUpper().Contains(   protoStaff.Details.Address.ToUpper()    ) );
+                if( protoStaff.Details.DateOfBirth != DatabaseObject.INVALID_DATETIME   ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.DateOfBirth.Equals(           protoStaff.Details.DateOfBirth          ) );
+
+                // Match the identifications
+                if( protoStaff.Details.Identifications.Count > 0 )
+                {
+                    SearchResult = ManagerHelper.Filter( SearchResult , e =>
+                    {
+                        foreach( Identification iden in e.Details.Identifications )
+                        {
+                            if( iden.Value.Equals( protoStaff.Details.Identifications[0].Value ) )
+                            {
+                                return true;
+                            }
+                        }
+                        return false;
+                    });
+                }
+
+                // Match the contact number
+                if( protoStaff.Details.ContactNumbers.Count > 0 )
+                {
+                    SearchResult = ManagerHelper.Filter( SearchResult , e =>
+                    {
+                        foreach( ContactNumber no in e.Details.ContactNumbers )
+                        {
+                            if( no.Number.Equals( protoStaff.Details.ContactNumbers[0].Number ) )
+                            {
+                                return true;
+                            }
+                        }
+                        return false;
+                    });
+                }
+            
+                // Match the postcode.
+                if( protoStaff.Details.Postcode!= null && protoStaff.Details.Postcode.Valid )
+                {
+                    SearchResult = ManagerHelper.Filter( SearchResult , e => e.Details.Postcode.Id == protoStaff.Details.Postcode.Id );
+                }
+            
+                // Match staff specfic details
+                if( protoStaff is Receptionist )
+                {
+                    Receptionist protoReceptionist = ( Receptionist )( protoStaff );
+                    SearchResult = ManagerHelper.FilterType<Receptionist,Staff>( SearchResult );
+                    SearchResult = ManagerHelper.Filter( SearchResult , e => ( ( Receptionist ) e ).Admin == protoReceptionist.Admin );
+                }
+                else if( protoStaff is MedicalStaff )
+                {
+                    MedicalStaff protoMedicalStaff = ( MedicalStaff )( protoStaff );
+                    SearchResult = ManagerHelper.FilterType<MedicalStaff,Staff>( SearchResult );
+                    SearchResult = ManagerHelper.Filter( SearchResult , e => ( ( MedicalStaff ) e ).Nurse == protoMedicalStaff.Nurse );
+
+                    // Compare the license number
+                    if( protoMedicalStaff.LicenseNo.Length > 0 )
+                    {
+                        int first = SearchResult.Count;
+                        SearchResult = ManagerHelper.Filter( SearchResult , e => ( ( MedicalStaff ) e ).LicenseNo.Equals( protoMedicalStaff.LicenseNo ) );
+                    }
+                }
+
+                SearchResult.Sort( (c,o) => c.Details.FullName.ToUpper().CompareTo( o.Details.FullName.ToUpper() ) );
+                LastSearchError = false;
+            }
+            catch
+            {
+                LastSearchError = true;
+            }
             LastPrototype = protoStaff;
-            if( protoStaff.Valid )
-            {
-                SearchResult.Clear();
-                Staff staff = StaffsManager.GetStaff( protoStaff.Id );
-
-                if( staff != null && staff.Valid && protoStaff.GetType() == staff.GetType() )
-                {
-                    SearchResult.Add( staff );
-                }
-
-                return SearchResult;
-            }
-            
-            SearchResult = protoStaff.Active ? StaffsManager.GetActiveStaffs() : StaffsManager.GetInactiveStaffs();
-            if( protoStaff.Details.FirstName.Length > 0                             ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.FirstName.ToUpper().Contains( protoStaff.Details.FirstName.ToUpper()  ) );
-            if( protoStaff.Details.LastName.Length > 0                              ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.LastName.ToUpper().Contains(  protoStaff.Details.LastName.ToUpper()   ) );
-            if( protoStaff.Details.Address.Length > 0                               ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.Address.ToUpper().Contains(   protoStaff.Details.Address.ToUpper()    ) );
-            if( protoStaff.Details.DateOfBirth != DatabaseObject.INVALID_DATETIME   ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.DateOfBirth.Equals(           protoStaff.Details.DateOfBirth          ) );
-
-            // Match the identifications
-            if( protoStaff.Details.Identifications.Count > 0 )
-            {
-                SearchResult = ManagerHelper.Filter( SearchResult , e =>
-                {
-                    foreach( Identification iden in e.Details.Identifications )
-                    {
-                        if( iden.Value.Equals( protoStaff.Details.Identifications[0].Value ) )
-                        {
-                            return true;
-                        }
-                    }
-                    return false;
-                });
-            }
-
-            // Match the contact number
-            if( protoStaff.Details.ContactNumbers.Count > 0 )
-            {
-                SearchResult = ManagerHelper.Filter( SearchResult , e =>
-                {
-                    foreach( ContactNumber no in e.Details.ContactNumbers )
-                    {
-                        if( no.Number.Equals( protoStaff.Details.ContactNumbers[0].Number ) )
-                        {
-                            return true;
-                        }
-                    }
-                    return false;
-                });
-            }
-            
-            // Match the postcode.
-            if( protoStaff.Details.Postcode!= null && protoStaff.Details.Postcode.Valid )
-            {
-                SearchResult = ManagerHelper.Filter( SearchResult , e => e.Details.Postcode.Id == protoStaff.Details.Postcode.Id );
-            }
-            
-            // Match staff specfic details
-            if( protoStaff is Receptionist )
-            {
-                Receptionist protoReceptionist = ( Receptionist )( protoStaff );
-                SearchResult = ManagerHelper.FilterType<Receptionist,Staff>( SearchResult );
-                SearchResult = ManagerHelper.Filter( SearchResult , e => ( ( Receptionist ) e ).Admin == protoReceptionist.Admin );
-            }
-            else if( protoStaff is MedicalStaff )
-            {
-                MedicalStaff protoMedicalStaff = ( MedicalStaff )( protoStaff );
-                SearchResult = ManagerHelper.FilterType<MedicalStaff,Staff>( SearchResult );
-                SearchResult = ManagerHelper.Filter( SearchResult , e => ( ( MedicalStaff ) e ).Nurse == protoMedicalStaff.Nurse );
-
-                // Compare the license number
-                if( protoMedicalStaff.LicenseNo.Length > 0 )
-                {
-                    int first = SearchResult.Count;
-                    SearchResult = ManagerHelper.Filter( SearchResult , e => ( ( MedicalStaff ) e ).LicenseNo.Equals( protoMedicalStaff.LicenseNo ) );
-                }
-            }
-
             return SearchResult;
         }
     }

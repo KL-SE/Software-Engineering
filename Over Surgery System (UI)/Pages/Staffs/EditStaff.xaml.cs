@@ -26,6 +26,12 @@ namespace OverSurgerySystem.UI.Pages.Staffs
     /// </summary>
     public partial class EditStaff : EditorPage<Staff>
     {
+        public static bool RestrictAdmin        { set; get; }
+        public static bool RestrictReceptionist { set; get; }
+        public static bool RestrictGP           { set; get; }
+        public static bool RestrictNurse        { set; get; }
+        public static bool RestrictActive       { set; get; }
+
         private EditDetails CurrentEditor;
         private PersonalDetails CurrentDetail
         {
@@ -52,6 +58,11 @@ namespace OverSurgerySystem.UI.Pages.Staffs
             SetAsReceptionist.Click    += (object o, RoutedEventArgs e) => ReplaceCurrentItem( o , new Receptionist() { Admin = false  } );
             SetAsGP.Click              += (object o, RoutedEventArgs e) => ReplaceCurrentItem( o , new MedicalStaff() { Nurse = false  } );
             SetAsNurse.Click           += (object o, RoutedEventArgs e) => ReplaceCurrentItem( o , new MedicalStaff() { Nurse = true   } );
+            
+            SetAsAdmin.Visibility           = IsRestricted && RestrictAdmin         ? Visibility.Collapsed : Visibility.Visible;
+            SetAsReceptionist.Visibility    = IsRestricted && RestrictReceptionist  ? Visibility.Collapsed : Visibility.Visible;
+            SetAsGP.Visibility              = IsRestricted && RestrictGP            ? Visibility.Collapsed : Visibility.Visible;
+            SetAsNurse.Visibility           = IsRestricted && RestrictNurse         ? Visibility.Collapsed : Visibility.Visible;
 
             SetAsActive.Click          += (object o, RoutedEventArgs e) => { CurrentItem.Active = true;  StaffModeHeader.Header = "Yes"; CurrentEditor.HideMessage(); };
             SetAsInactive.Click        += (object o, RoutedEventArgs e) => { CurrentItem.Active = false; StaffModeHeader.Header = "No";  CurrentEditor.HideMessage(); };
@@ -93,7 +104,7 @@ namespace OverSurgerySystem.UI.Pages.Staffs
                 
                 MenuItem item           = ( MenuItem )( sender );
                 StaffTypeHeader.Header  = item.Header;
-                StaffMode.IsEnabled     = IsFind;
+                StaffMode.IsEnabled     = IsFind && !IsView && !( IsRestricted && RestrictActive );
                 CurrentItem             = newStaff;
             }
             CurrentEditor.HideMessage();
@@ -139,9 +150,9 @@ namespace OverSurgerySystem.UI.Pages.Staffs
             }
 
             EditDetails.Setup( CurrentDetail , Mode );
-            StaffIdBox.IsEnabled        = IsFind;
-            StaffType.IsEnabled         = ( IsFind || !CurrentItem.Valid ) && !IsView && !IsRestricted;
-            StaffMode.IsEnabled         = ( IsFind ||  CurrentItem.Valid ) && !IsView && !IsRestricted;
+            StaffIdBox.IsEnabled    = IsFind;
+            StaffType.IsEnabled     = ( IsFind || !CurrentItem.Valid ) && !IsView;
+            StaffMode.IsEnabled     = ( IsFind ||  CurrentItem.Valid ) && !IsView && !( IsRestricted && RestrictActive );
         }
 
         private void RecordFields()
@@ -186,10 +197,17 @@ namespace OverSurgerySystem.UI.Pages.Staffs
                         }
                     }
                 }
-
-                CurrentItem.Save();
-                CurrentEditor.ShowMessage( "Staff saved." );
-                LoadDetails();
+                
+                try
+                {
+                    CurrentItem.Save();
+                    CurrentEditor.ShowMessage( "Staff saved." );
+                    LoadDetails();
+                }
+                catch
+                {
+                    CurrentEditor.ShowMessage( "Failed to save data. Please check your connection." );
+                }
             }
             else if( IsFind )
             {
@@ -202,7 +220,17 @@ namespace OverSurgerySystem.UI.Pages.Staffs
 
         private void DoCancel()
         {
-            if( CurrentItem.Valid ) CurrentItem.Load();
+            try
+            {
+                if( CurrentItem.Valid )
+                {
+                    CurrentItem.Load();
+                }
+            }
+            catch
+            {
+                CurrentEditor.ShowMessage( "Failed to load data. Please check your connection." );
+            }
             OnCancel?.Invoke();
         }
     }

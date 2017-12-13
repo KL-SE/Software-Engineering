@@ -66,7 +66,7 @@
                 MaxLines        = "100"
                 AcceptsTab      = "True"
                 AcceptsReturn   = "True"
-                TextWrapping    = "WrapWithOverflow"/>
+                TextWrapping    = "Wrap"/>
         </StackPanel>
                 
         <StackPanel
@@ -75,7 +75,7 @@
             <TextBlock Name="DateText" Text="Date Added:"/>
             <StackPanel Orientation="Horizontal">
                 <DatePicker Name="TestDatePicker" CalendarStyle="{StaticResource BiggerCalendar}"/>
-                <Button Name="ClearDobButton" Content="Clear"/>
+                <Button Name="ClearTestDateButton" Content="Clear"/>
             </StackPanel>
         </StackPanel>
                 
@@ -88,7 +88,7 @@
                 MaxLines        = "100"
                 AcceptsTab      = "True"
                 AcceptsReturn   = "True"
-                TextWrapping    = "WrapWithOverflow"/>
+                TextWrapping    = "Wrap"/>
         </StackPanel>
                 
         <StackPanel
@@ -100,7 +100,7 @@
                 MaxLines        = "100"
                 AcceptsTab      = "True"
                 AcceptsReturn   = "True"
-                TextWrapping    = "WrapWithOverflow"/>
+                TextWrapping    = "Wrap"/>
         </StackPanel>
 
         <TextBlock

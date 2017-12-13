@@ -22,182 +22,156 @@ using OverSurgerySystem.UI.Pages.Staffs;
 using OverSurgerySystem.Core.Staffs;
 using System.IO;
 using OverSurgerySystem.UI.Pages.Core;
+using OverSurgerySystem.UI.Core;
 
-namespace OverSurgerySystem.UI.Pages.Appointments
+namespace OverSurgerySystem.UI.Pages.MedicalStaffs
 {
     /// <summary>
     /// Interaction logic for EditAvailableDate.xaml
     /// </summary>
-    public partial class EditAvailableDate : EditorPage<Appointment>
+    public partial class EditAvailableDate : FinderPage<LeaveDate>
     {
-        public static DateTime DateSelected = DatabaseObject.INVALID_DATETIME;
+        public static string LastRemark             { set; get; }
+        public static DateTime SelectedDate         { set; get; }
+        public static LeaveDate SelectedLeaveDate   { set; get; }
+        public static MedicalStaff SearchStaff      { set; get; }
+        public static MedicalStaff CurrentStaff     { set; get; }
 
         public EditAvailableDate()
         {
             InitializeComponent();
-            Loaded                             += OnLoad;
-            StaffIdButton.Click                += StartFindStaff;
-            ConfirmButton.Click                += (object o, RoutedEventArgs a) => DoConfirm();
-            CancelButton.Click                 += (object o, RoutedEventArgs a) => DoCancel();
-            ClearAppointmentDateButton.Click   += (object o, RoutedEventArgs a) => AppointmentDatePicker.SelectedDate = null;
-            SetIncludeCancelled.Click          += (object o, RoutedEventArgs a) => { IncludeCancelledHeader.Header = "Yes"; CurrentItem.Cancelled = true;  HideMessage(); };
-            SetExcludeCancelled.Click          += (object o, RoutedEventArgs a) => { IncludeCancelledHeader.Header = "No";  CurrentItem.Cancelled = false; HideMessage(); };
-            ProtoMedStaff                       = new MedicalStaff();
-            FindPatient.Reset();
+            Loaded                     += OnLoad;
+            StaffIdButton.Click        += StartFindStaff;
+            ShowStaffsButton.Click     += (object o, RoutedEventArgs a) => ShowStaffsInResult();
+            FindButton.Click           += (object o, RoutedEventArgs a) => DoFind();
+            AddButton.Click            += (object o, RoutedEventArgs a) => DoConfirm();
+            BackButton.Click           += (object o, RoutedEventArgs a) => DoCancel();
+            ClearStaffButton.Click     += (object o, RoutedEventArgs a) => { StaffIdBox.Text = null; CurrentStaff = null;                                           };
+            ClearLeaveDateButton.Click += (object o, RoutedEventArgs a) => { LeaveDatePicker.SelectedDate = null; SelectedDate = DatabaseObject.INVALID_DATETIME;   };
             
-            AppointmentIdBox.TextChanged               += (object o, TextChangedEventArgs e) => HideMessage();
-            RemarkBox.TextChanged                      += (object o, TextChangedEventArgs e) => HideMessage();
-            TimeHourBox.TextChanged                    += (object o, TextChangedEventArgs e) => HideMessage();
-            TimeMinBox.TextChanged                     += (object o, TextChangedEventArgs e) => HideMessage();
-            CreationDatePicker.SelectedDateChanged     += (object o, SelectionChangedEventArgs e) => HideMessage();
-            AppointmentDatePicker.SelectedDateChanged  += (object o, SelectionChangedEventArgs e) => HideMessage();
-
-            if( IsFind )
-            {
-                IncludeCancelled.Visibility     = Visibility.Visible;
-                IncludeCancelledText.Visibility = Visibility.Visible;
-                AppointmentTimeText.Visibility  = Visibility.Collapsed;
-                AppointmentTimePanel.Visibility = Visibility.Collapsed;
-
-                ConfirmButtonImg.Source         = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/search.png" ) );
-                ConfirmButtonText.Text          = "Find";
-            }
-
-            if( IsView )
-            {
-                AppointmentIdBox.IsEnabled              = false;
-                PatientIdBox.IsEnabled                  = false;
-                StaffIdBox.IsEnabled                    = false;
-                RemarkBox.IsEnabled                     = false;
-                CreationDatePicker.IsEnabled            = false;
-                ClearCreationDateButton.IsEnabled       = false;
-                AppointmentDatePicker.IsEnabled         = false;
-                ClearAppointmentDateButton.IsEnabled    = false;
-                TimeHourBox.IsEnabled                   = false;
-                TimeMinBox.IsEnabled                    = false;
-                TimeMPicker.IsEnabled                   = false;
-
-                PatientIdButton.Content     = "View";
-                StaffIdButton.Content       = "View";
-
-                ConfirmButton.Visibility    = Visibility.Collapsed;
-                CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
-                CancelButtonText.Text       = "Back";
-            }
+            FindStaff.LastPrototype = new MedicalStaff();
+            SearchStaff             = new MedicalStaff();
+            CurrentStaff            = new MedicalStaff();
+            SelectedDate            = DatabaseObject.INVALID_DATETIME;
+            OnSelect                = OnSelectLeaveDate;
+            
+            StaffIdBox.TextChanged                 += (object o, TextChangedEventArgs e) => HideMessage();
+            RemarkBox.TextChanged                  += (object o, TextChangedEventArgs e) => HideMessage();
+            LeaveDatePicker.SelectedDateChanged    += (object o, SelectionChangedEventArgs e) => HideMessage();
         }
 
         private void OnLoad( object o , RoutedEventArgs e )
         {
-            AppointmentIdBox.Text = !IsEdit ? "" : "- New Appointment -";
             LoadDetails();
+            PerformSearch();
+        }
+
+        public override string[] GetData( LeaveDate leaveDate )
+        {
+            return new string[]
+            {
+                leaveDate.Owner.StringId,
+                String.Format( "{0} {1}" , leaveDate.Owner.Details.FirstName , leaveDate.Owner.Details.LastName ),
+                leaveDate.Remark,
+                leaveDate.Date.ToShortDateString()
+            };
+        }
+
+        public override void SetEventHandler()
+        { 
+            EditStaff.OnConfirm = OnConfirmStaff;
+            EditStaff.OnCancel  = () => App.GoToPage( this );
         }
 
         private void LoadDetails()
         {
-            if( CurrentItem.Valid                   )   AppointmentIdBox.Text   = CurrentItem.StringId;
-            if( CurrentItem.Patient != null         )   PatientIdBox.Text       = String.Format( "{0} - {1}" , CurrentItem.Patient.StringId      , CurrentItem.Patient.Details.FullName       );
-            if( CurrentItem.MedicalStaff != null    )   StaffIdBox.Text         = String.Format( "{0} - {1}" , CurrentItem.MedicalStaff.StringId , CurrentItem.MedicalStaff.Details.FullName  );
-            if( CurrentItem.Remark != null          )   RemarkBox.Text          = CurrentItem.Remark;
-            
-            // Don't let the date from setting to the current date in find mode.
-            // It's not a proper solution. The date would get reset each time the user search again instead of persisting.
-            if( !IsFind )
+            AddButton.IsEnabled         = Permission.CanEditLeaveDates;
+            AddButtonText.Foreground    = Permission.CanEditLeaveDates ? Brushes.Black : Brushes.Gray;
+
+            if( SelectedLeaveDate == null )
             {
-                // Dates are non-nullable, so they can be set without checking.
-                AppointmentDatePicker.SelectedDate = CurrentItem.DateAppointed;
+                if( !Permission.CanEditLeaveDates )
+                {
+                    StaffIdButton.Content           = "Edit";
+                    ClearStaffButton.IsEnabled      = true;
+                    LeaveDatePicker.IsEnabled       = true;
+                    ClearLeaveDateButton.IsEnabled  = true;
+                    RemarkBox.IsEnabled             = true;
+                }
 
-                int hour    = CurrentItem.DateAppointed.Hour;
-                int minutes = CurrentItem.DateAppointed.Minute;
+                StaffIdBox.Text = CurrentStaff != null && CurrentStaff.Valid ? CurrentStaff.StringId : "";
+                RemarkBox.Text  = LastRemark;
+                if( SelectedDate != DatabaseObject.INVALID_DATETIME )
+                {
+                    LeaveDatePicker.SelectedDate = SelectedDate;
+                }
+                
+                AddButtonImg.Source = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/save.png" ) );
+                AddButtonText.Text  = "Add";
+                FindButtonText.Text = "Find";
+            }
+            else
+            {
+                StaffIdButton.Content           = "View";
+                ClearStaffButton.IsEnabled      = false;
+                LeaveDatePicker.IsEnabled       = false;
+                ClearLeaveDateButton.IsEnabled  = false;
+                RemarkBox.IsEnabled             = false;
 
-                if( CurrentItem.DateAppointed.Hour >= 12 )
+                StaffIdBox.Text                 = SelectedLeaveDate.Owner.StringId;
+                RemarkBox.Text                  = SelectedLeaveDate.Remark;
+                LeaveDatePicker.SelectedDate    = SelectedLeaveDate.Date;
+                
+                AddButtonImg.Source = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/cross.png" ) );
+                AddButtonText.Text  = "Delete";
+                FindButtonText.Text = "Reset";
+            }
+        }
+
+        private void ShowStaffsInResult()
+        {
+            try
+            {
+                RecordFields();
+                List<Staff> results = StaffsManager.GetAllStaffs();
+
+                results = ManagerHelper.Filter( results , e =>
                 {
-                    TimeHourBox.Text            = ( hour > 12 ? hour - 12 :hour ).ToString();
-                    TimeMinBox.Text             = minutes.ToString();
-                    TimeMPickerHeader.Header    = "P.M.";
-                }
-                else if( CurrentItem.DateAppointed.Hour == 0 )
-                {
-                    TimeHourBox.Text            = "12";
-                    TimeMinBox.Text             = minutes.ToString();
-                    TimeMPickerHeader.Header    = "A.M.";
-                }
-                else
-                {
-                    TimeHourBox.Text            = hour.ToString();
-                    TimeMinBox.Text             = minutes.ToString();
-                    TimeMPickerHeader.Header    = "A.M.";
-                }
+                    return e is MedicalStaff && !( ( MedicalStaff ) e ).IsOnLeave( SelectedDate );
+                });
+
+                FindStaff.AcquireList( results  );
+                FindStaff.NoResetButton = true;
+                FindStaff.OnSelect      = OnViewStaff;
+                FindStaff.OnCancel      = () => { App.GoToPage( this ); FindStaff.NoResetButton = false; };
+
+                results.Sort( (c,o) => c.Details.FullName.ToUpper().CompareTo( o.Details.FullName.ToUpper() ) );
+
+                App.GoToFindStaffResultPage();
+            }
+            catch
+            {
+                ShowMessage( "Failed to load data. Please check your connection." );
             }
 
-            if( CurrentItem.CreatedOn != DatabaseObject.INVALID_DATETIME )
-            {
-                CreationDatePicker.SelectedDate = CurrentItem.CreatedOn;
-                CreationDatePicker.Foreground   = Brushes.Black;
-            }
-            else if( !IsFind )
-            {
-                CreationDatePicker.Foreground = Brushes.White;
-            }
-            
-            EndButton.IsEnabled                 = IsEdit && CurrentItem.Valid;
-            ClearCreationDateButton.IsEnabled   = IsFind;
-            AppointmentIdBox.IsEnabled          = IsFind;
-            CreationDatePicker.IsEnabled        = IsFind;
-            DateCreatedText.Text                = IsFind ? "Date After:" : "Date Created:";
+        }
 
-            EndText.Foreground  = EndButton.IsEnabled ? Brushes.Black : Brushes.Gray;
+        private void OnViewStaff( Staff staff )
+        {
+            App.GoToEditStaffPage( staff , EditStaff.View | EditStaff.BackOnly );
         }
 
         private void StartFindStaff( object o , RoutedEventArgs e )
         {
-            if( IsView )
-            {
-                EditStaff.OnCancel  = () => App.GoToPage( this );
-                App.GoToEditStaffPage( CurrentItem.MedicalStaff , EditStaff.View );
-            }
-            else
-            {
-                RecordFields();
-                FindStaff.OnSelect  = OnSelectStaff;
-                FindStaff.OnFind    = OnFindStaff;
-                FindStaff.OnFound   = OnConfirmStaff;
-                FindStaff.OnCancel  = () => App.GoToPage( this );
-                App.GoToEditStaffPage( ProtoMedStaff , EditStaff.Find | EditStaff.Restricted );
-            }
-        }
-
-        private void StartFindPatient( object o , EventArgs e )
-        {
-            if( IsView )
-            {
-                EditStaff.OnCancel  = () => App.GoToPage( this );
-                App.GoToEditPatientPage( CurrentItem.Patient , EditStaff.View );
-            }
-            else
-            {
-                RecordFields();
-                FindPatient.OnSelect    = OnSelectPatient;
-                FindPatient.OnFind      = OnFindPatient;
-                FindPatient.OnFound     = OnConfirmPatient;
-                FindPatient.OnCancel    = () => App.GoToPage( this );
-                App.GoToFindPatientPage();
-            }
-        }
-
-        public void OnFindPatient( Patient patient )
-        {
-            List<Patient> list = FindPatient.FindFromPrototype( patient );
-            if( list.Count != 1 )
-            {
-                App.GoToFindPatientResultPage();
-                EditPatient.OnConfirm   = OnConfirmPatient;
-                EditPatient.OnCancel   = () => App.GoToFindPatientResultPage();;
-            }
-            else
-            {
-                OnSelectPatient( list[0] );
-                EditPatient.OnConfirm = OnConfirmPatient;
-            }
+            RecordFields();
+            FindStaff.OnSelect              = OnSelectStaff;
+            FindStaff.OnFind                = OnFindStaff;
+            FindStaff.OnFound               = OnConfirmStaff;
+            FindStaff.OnCancel              = () => App.GoToPage( this );
+            EditStaff.RestrictActive        = true;
+            EditStaff.RestrictAdmin         = true;
+            EditStaff.RestrictReceptionist  = true;
+            App.GoToEditStaffPage( FindStaff.LastPrototype , EditStaff.Find | EditStaff.Restricted );
         }
 
         public void OnFindStaff( Staff staff )
@@ -221,73 +195,28 @@ namespace OverSurgerySystem.UI.Pages.Appointments
             App.GoToEditStaffPage( staff , EditStaff.View );
         }
 
-        public void OnSelectPatient( Patient patient )
-        {
-            App.GoToEditPatientPage( patient , EditPatient.View );
-        }
-
-        public void OnConfirmPatient( Patient patient )
-        {
-            CurrentItem.Patient = patient;
-            App.GoToPage( this );
-        }
-
         public void OnConfirmStaff( Staff staff )
         {
-            CurrentItem.MedicalStaff = ( MedicalStaff )( staff );
+            CurrentStaff = ( MedicalStaff )( staff );
             App.GoToPage( this );
         }
 
-        private bool RecordFields()
+        public void OnSelectLeaveDate( LeaveDate leaveDate )
         {
-            CurrentItem.Remark          = RemarkBox.Text;
-            DateAfter                   = CreationDatePicker.SelectedDate != null ? CreationDatePicker.SelectedDate.Value : DatabaseObject.INVALID_DATETIME;
-            DateTime appointmentDate    = DateTime.MinValue;
+            SelectedLeaveDate = leaveDate;
+            LoadDetails();
+        }
 
-            if( AppointmentDatePicker.SelectedDate != null )
+        private void RecordFields()
+        {
+            if( SelectedLeaveDate == null )
             {
-                appointmentDate = AppointmentDatePicker.SelectedDate.Value;
-                try
+                LastRemark  = RemarkBox.Text;
+                if( LeaveDatePicker.SelectedDate != null )
                 {
-                    int hour    = Int32.Parse( TimeHourBox.Text );
-                    int minutes = Int32.Parse( TimeMinBox.Text  );
-                    TimeSpan ts;
-
-                    if( TimeMPickerHeader.Header.Equals( "P.M." ) )
-                    {
-                        ts = new TimeSpan( hour < 12 ? hour + 12 : hour , minutes , 0 );
-                    }
-                    else
-                    {
-                        ts = new TimeSpan( hour == 0 ? 12 : hour , minutes , 0 );
-                    }
-
-                    appointmentDate = appointmentDate.Date + ts;
-                }
-                catch
-                {
-                    ShowMessage( "Please enter a valid time." );
-                    return false;
-                }
-
-                if( IsEdit && appointmentDate < DateTime.Now )
-                {
-                    ShowMessage( "Appointment cannot be earlier than the current date & time." );
-                    return false;
+                    SelectedDate = LeaveDatePicker.SelectedDate.Value;
                 }
             }
-            else
-            {
-                DateSelected = DatabaseObject.INVALID_DATETIME;
-                if( !IsFind )
-                {
-                    ShowMessage( "Please select a date." );
-                    return false;
-                }
-            }
-
-            DateSelected = CurrentItem.DateAppointed = appointmentDate;
-            return true;
         }
 
         public void HideMessage()
@@ -303,32 +232,113 @@ namespace OverSurgerySystem.UI.Pages.Appointments
 
         private void DoConfirm()
         {
-            if( !IsView && !RecordFields() )
-                return;
+            // Add Mode
+            if( SelectedLeaveDate == null )
+            {   
+                if( CurrentStaff == null )
+                {
+                    ShowMessage( "Please select a staff." );
+                    return;
+                }
 
-            if( IsEdit )
+                if( LeaveDatePicker.SelectedDate == null )
+                {
+                    ShowMessage( "Please select a date." );
+                    return;
+                }
+
+                if( LeaveDatePicker.SelectedDate.Value < DateTime.Now.Date )
+                {
+                    ShowMessage( "Please select a future date." );
+                    return;
+                }
+
+                if( CurrentStaff.IsOnLeave( LeaveDatePicker.SelectedDate.Value ) )
+                {
+                    ShowMessage( "The staff is already on leave at this date." );
+                    return;
+                }
+                
+                try
+                {
+                    CurrentStaff.AddLeaveDate( LeaveDatePicker.SelectedDate.Value , RemarkBox.Text );
+                    CurrentStaff.Save();
+                }
+                catch
+                {
+                    ShowMessage( "Failed to save data. Please check your connection." );
+                }
+
+                LeaveDatePicker.SelectedDate    = null;
+                RemarkBox.Text                  = "";
+
+                ShowMessage( "Leave date added." );
+                LoadDetails();
+                PerformSearch();
+            }
+            // Delete Mode
+            else
             {
+                try
+                {
+                    SelectedLeaveDate.Owner.RemoveLeaveDate( SelectedLeaveDate.Date );
+                    SelectedLeaveDate = null;
+                    LoadDetails();
+                    PerformSearch();
+                }
+                catch
+                {
+                    ShowMessage( "Failed to delete data. Please check your connection." );
+                }
 
-                if( CurrentItem.Patient      == null ) { ShowMessage( "Please select a patient." ); return; }
-                if( CurrentItem.MedicalStaff == null ) { ShowMessage( "Please select a staff."   ); return; }
+            }
+        }
 
-                CurrentItem.Save();
-                ShowMessage( "Appointment saved." );
+        private void PerformSearch()
+        {
+            try
+            {
+                List<MedicalStaff> availableStaffs = StaffsManager.GetAllMedicalStaffs();
+
+                SearchResult.Clear();
+                foreach( MedicalStaff staff in availableStaffs )
+                    SearchResult.AddRange( staff.LeaveDates );
+
+                if( SearchStaff != null && SearchStaff.Valid    ) SearchResult = ManagerHelper.Filter( SearchResult , e => e.Owner.Id == SearchStaff.Id                             );
+                if( LeaveDatePicker.SelectedDate != null        ) SearchResult = ManagerHelper.Filter( SearchResult , e => e.Date == SelectedDate                                   );
+                if( RemarkBox.Text.Length > 0                   ) SearchResult = ManagerHelper.Filter( SearchResult , e => e.Remark.ToUpper().Contains( RemarkBox.Text.ToUpper() )  );
+            
+                SearchResult = ManagerHelper.Filter( SearchResult , e => e.Date >= DateTime.Now.Date );
+                SearchResult.Sort( (c,o) => c.Date.CompareTo( o.date ) );
+
+                Populate( ResultsList );
+            }
+            catch
+            {
+                ShowMessage( "Failed to load data. Please check your connection." );
+            }
+        }
+
+        private void DoFind()
+        {
+            // Find Mode
+            if( SelectedLeaveDate == null )
+            {
+                SearchStaff = CurrentStaff;
+                RecordFields();
+                PerformSearch();
+            }
+            // Reset Mode
+            else
+            {
+                SelectedLeaveDate = null;
                 LoadDetails();
             }
-            else if( IsFind )
-            {
-                CurrentItem.Id = Appointment.GetIdFromString( AppointmentIdBox.Text );
-            }
-
-            OnConfirm?.Invoke( CurrentItem );
         }
 
         private void DoCancel()
         {
-            if( CurrentItem.Valid ) CurrentItem.Load();
             App.GoToMainMenu();
-            MainMenu.Instance.Loaded += (object sender, RoutedEventArgs e) => App.GoToManageAppointments();
             OnCancel?.Invoke();
         }
     }

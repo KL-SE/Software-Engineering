@@ -100,32 +100,60 @@ namespace OverSurgerySystem.UI.Pages.Address
 
         private void UpdatePostcodes()
         {
-            PostcodesList = AddressManager.GetPostcodesByCode( PostcodeBox.Text );
-            PostcodesList = ManagerHelper.Filter( PostcodesList , e => e.City == CurrentCity );
-            UpdateMenu( PostcodesList , e => e.Postcode , PostcodeResult , PostcodeResultHeader );
+            try
+            {
+                PostcodesList = AddressManager.GetPostcodesByCode( PostcodeBox.Text );
+                PostcodesList = ManagerHelper.Filter( PostcodesList , e => e.City == CurrentCity );
+                UpdateMenu( PostcodesList , e => e.Postcode , PostcodeResult , PostcodeResultHeader );
+            }
+            catch
+            {
+                ShowMessage( "Failed to load data. Please check your connection." );
+            }
         }
 
         private void UpdateCities()
         {
-            CitiesList = AddressManager.GetCitiesByName( CityBox.Text );
-            CitiesList = ManagerHelper.Filter( CitiesList , e => e.State == CurrentState );
-            UpdateMenu( CitiesList , e => e.Name , CityResult , CityResultHeader );
-            UpdatePostcodes();
+            try
+            {
+                CitiesList = AddressManager.GetCitiesByName( CityBox.Text );
+                CitiesList = ManagerHelper.Filter( CitiesList , e => e.State == CurrentState );
+                UpdateMenu( CitiesList , e => e.Name , CityResult , CityResultHeader );
+                UpdatePostcodes();
+            }
+            catch
+            {
+                ShowMessage( "Failed to load data. Please check your connection." );
+            }
         }
 
         private void UpdateStates()
         {
-            StatesList = AddressManager.GetStatesByName( StateBox.Text );
-            StatesList = ManagerHelper.Filter( StatesList , e => e.Country == CurrentCountry );
-            UpdateMenu( StatesList , e => e.Name , StateResult , StateResultHeader );
-            UpdateCities();
+            try
+            {
+                StatesList = AddressManager.GetStatesByName( StateBox.Text );
+                StatesList = ManagerHelper.Filter( StatesList , e => e.Country == CurrentCountry );
+                UpdateMenu( StatesList , e => e.Name , StateResult , StateResultHeader );
+                UpdateCities();
+            }
+            catch
+            {
+                ShowMessage( "Failed to load data. Please check your connection." );
+            }
         }
 
         private void UpdateCountries()
         {
-            CountriesList = AddressManager.GetCountriesByName( CountryBox.Text );
-            UpdateMenu( CountriesList , e => e.Name , CountryResult , CountryResultHeader );
-            UpdateStates();
+            try
+            {
+                CountriesList = AddressManager.GetCountriesByName( CountryBox.Text );
+                UpdateMenu( CountriesList , e => e.Name , CountryResult , CountryResultHeader );
+                UpdateStates();
+            }
+            catch
+            {
+                ShowMessage( "Failed to load data. Please check your connection." );
+            }
         }
 
         private void UpdateMenu<T>( List<T> results , Func<T,string> selector , Menu menu , MenuItem header ) where T: new()
@@ -288,7 +316,6 @@ namespace OverSurgerySystem.UI.Pages.Address
             {
                 // Figure out if we actually need this.
                 // ResolvePostcode();
-
                 if( CurrentCountry  == null || !CurrentCountry.Valid    )   CurrentCountry.Name         = CountryBox.Text;
                 if( CurrentState    == null || !CurrentState.Valid      )   CurrentState.Name           = StateBox.Text;
                 if( CurrentCity     == null || !CurrentCity.Valid       )   CurrentCity.Name            = CityBox.Text;
@@ -298,11 +325,18 @@ namespace OverSurgerySystem.UI.Pages.Address
                 if( CurrentState.Name.Length        == 0 ) { ShowMessage( "Please enter a state name."      ); return; }
                 if( CurrentCity.Name.Length         == 0 ) { ShowMessage( "Please enter a city name."       ); return; }
                 if( CurrentPostcode.Postcode.Length == 0 ) { ShowMessage( "Please enter a postcode."        ); return; }
-
-                CurrentPostcode.City    = CurrentCity;
-                CurrentPostcode.State   = CurrentState;
-                CurrentPostcode.Country = CurrentCountry;
-                CurrentPostcode.Save();
+                    
+                try
+                {
+                    CurrentPostcode.City    = CurrentCity;
+                    CurrentPostcode.State   = CurrentState;
+                    CurrentPostcode.Country = CurrentCountry;
+                    CurrentPostcode.Save();
+                }
+                catch
+                {
+                    ShowMessage( "Failed to save data. Please check your connection." );
+                }
             }
 
             OnConfirm?.Invoke( CurrentPostcode );

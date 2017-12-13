@@ -66,9 +66,16 @@ namespace OverSurgerySystem.UI.Pages.Patients
         {
             if( IsEdit )
             { 
-                CurrentItem.Save();
-                CurrentEditor.ShowMessage( "Patient saved." );
-                LoadDetails();
+                try
+                {
+                    CurrentItem.Save();
+                    CurrentEditor.ShowMessage( "Patient saved." );
+                    LoadDetails();
+                }
+                catch
+                {
+                    CurrentEditor.ShowMessage( "Failed to load data. Please check your connection." );
+                }
             }
             else if( IsFind )
             {
@@ -81,7 +88,17 @@ namespace OverSurgerySystem.UI.Pages.Patients
 
         private void DoCancel()
         {
-            if( CurrentItem.Valid ) CurrentItem.Load();
+            try
+            {
+                if( CurrentItem.Valid )
+                {
+                    CurrentItem.Load();
+                }
+            }
+            catch
+            {
+                CurrentEditor.ShowMessage( "Failed to load data. Please check your connection." );
+            }
             OnCancel?.Invoke();
         }
     }

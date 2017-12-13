@@ -22,6 +22,7 @@ using OverSurgerySystem.UI.Pages.Staffs;
 using OverSurgerySystem.Core.Staffs;
 using System.IO;
 using OverSurgerySystem.UI.Pages.Core;
+using OverSurgerySystem.UI.Core;
 
 namespace OverSurgerySystem.UI.Pages.Appointments
 {
@@ -31,7 +32,7 @@ namespace OverSurgerySystem.UI.Pages.Appointments
     public partial class EditAppointment : EditorPage<Appointment>
     {
         public static DateTime DateAfter    = DatabaseObject.INVALID_DATETIME;
-        public static DateTime DateSelected = DatabaseObject.INVALID_DATETIME;
+        public static DateTime SelectedDate = DatabaseObject.INVALID_DATETIME;
 
         private MedicalStaff ProtoMedStaff;
 
@@ -84,7 +85,24 @@ namespace OverSurgerySystem.UI.Pages.Appointments
 
                 PatientIdButton.Content     = "View";
                 StaffIdButton.Content       = "View";
+            }
 
+            if( IsRestricted )
+            {
+                PatientIdBox.IsEnabled              = false;
+                StaffIdBox.IsEnabled                = false;
+                CreationDatePicker.IsEnabled        = false;
+                ClearCreationDateButton.IsEnabled   = false;
+
+                if( !Permission.CanAppointOtherStaffs )
+                    StaffIdButton.Content = "View";
+                
+                if( CurrentItem.Valid )
+                    PatientIdButton.Content = "View";
+            }
+
+            if( IsBackOnly )
+            {
                 ConfirmButton.Visibility    = Visibility.Collapsed;
                 CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
                 CancelButtonText.Text       = "Back";
@@ -155,28 +173,31 @@ namespace OverSurgerySystem.UI.Pages.Appointments
 
         private void StartFindMedstaff( object o , RoutedEventArgs e )
         {
-            if( IsView )
+            if( IsView || ( IsRestricted && !CurrentItem.Valid && !Permission.CanAppointOtherStaffs ) )
             {
                 EditStaff.OnCancel  = () => App.GoToPage( this );
-                App.GoToEditStaffPage( CurrentItem.MedicalStaff , EditStaff.View );
+                App.GoToEditStaffPage( CurrentItem.MedicalStaff , EditStaff.View | EditStaff.BackOnly );
             }
             else
             {
                 RecordFields();
-                FindStaff.OnSelect  = OnSelectStaff;
-                FindStaff.OnFind    = OnFindStaff;
-                FindStaff.OnFound   = OnConfirmStaff;
-                FindStaff.OnCancel  = () => App.GoToPage( this );
+                FindStaff.OnSelect              = OnSelectStaff;
+                FindStaff.OnFind                = OnFindStaff;
+                FindStaff.OnFound               = OnConfirmStaff;
+                FindStaff.OnCancel              = () => App.GoToPage( this );
+                EditStaff.RestrictActive        = true;
+                EditStaff.RestrictAdmin         = true;
+                EditStaff.RestrictReceptionist  = true;
                 App.GoToEditStaffPage( ProtoMedStaff , EditStaff.Find | EditStaff.Restricted );
             }
         }
 
         private void StartFindPatient( object o , EventArgs e )
         {
-            if( IsView )
+            if( IsView || ( IsRestricted && CurrentItem.Valid ) )
             {
                 EditStaff.OnCancel  = () => App.GoToPage( this );
-                App.GoToEditPatientPage( CurrentItem.Patient , EditStaff.View );
+                App.GoToEditPatientPage( CurrentItem.Patient , EditPatient.View | EditPatient.BackOnly );
             }
             else
             {
@@ -196,7 +217,7 @@ namespace OverSurgerySystem.UI.Pages.Appointments
             {
                 App.GoToFindPatientResultPage();
                 EditPatient.OnConfirm   = OnConfirmPatient;
-                EditPatient.OnCancel   = () => App.GoToFindPatientResultPage();;
+                EditPatient.OnCancel    = () => App.GoToFindPatientResultPage();;
             }
             else
             {
@@ -283,7 +304,7 @@ namespace OverSurgerySystem.UI.Pages.Appointments
             }
             else
             {
-                DateSelected = DatabaseObject.INVALID_DATETIME;
+                SelectedDate = DatabaseObject.INVALID_DATETIME;
                 if( !IsFind )
                 {
                     ShowMessage( "Please select a date." );
@@ -291,7 +312,7 @@ namespace OverSurgerySystem.UI.Pages.Appointments
                 }
             }
 
-            DateSelected = CurrentItem.DateAppointed = appointmentDate;
+            SelectedDate = CurrentItem.DateAppointed = appointmentDate;
             return true;
         }
 
@@ -313,13 +334,29 @@ namespace OverSurgerySystem.UI.Pages.Appointments
 
             if( IsEdit )
             {
+                try
+                {
+                    if( CurrentItem.Patient      == null ) { ShowMessage( "Please select a patient." ); return; }
+                    if( CurrentItem.MedicalStaff == null ) { ShowMessage( "Please select a staff."   ); return; }
+                    else 
+                    {
+                        // We will not restrict the ability for staffs to make appointments on dates which they are not on duty.
+                        // The only restriction we will place is when the staff is on leave.
+                        if( CurrentItem.MedicalStaff.IsOnLeave( CurrentItem.DateAppointed ) )
+                        {
+                            ShowMessage( "The staff is on leave at the set date. Choose another date." );
+                            return;
+                        }
+                    }
 
-                if( CurrentItem.Patient      == null ) { ShowMessage( "Please select a patient." ); return; }
-                if( CurrentItem.MedicalStaff == null ) { ShowMessage( "Please select a staff."   ); return; }
-
-                CurrentItem.Save();
-                ShowMessage( "Appointment saved." );
-                LoadDetails();
+                    CurrentItem.Save();
+                    ShowMessage( "Appointment saved." );
+                    LoadDetails();
+                }
+                catch
+                {
+                    ShowMessage( "Failed to load data. Please check your connection." );
+                }
             }
             else if( IsFind )
             {
@@ -331,9 +368,17 @@ namespace OverSurgerySystem.UI.Pages.Appointments
 
         private void DoCancel()
         {
-            if( CurrentItem.Valid ) CurrentItem.Load();
-            App.GoToMainMenu();
-            MainMenu.Instance.Loaded += (object sender, RoutedEventArgs e) => App.GoToManageAppointments();
+            try
+            {
+                if( CurrentItem.Valid )
+                {
+                    CurrentItem.Load();
+                }
+            }
+            catch
+            {
+                ShowMessage( "Failed to load data. Please check your connection." );
+            }
             OnCancel?.Invoke();
         }
     }

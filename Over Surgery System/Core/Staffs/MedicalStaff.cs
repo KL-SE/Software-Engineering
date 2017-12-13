@@ -2,6 +2,7 @@
 using MySql.Data.MySqlClient;
 using OverSurgerySystem.Core.Patients;
 using OverSurgerySystem.Manager;
+using System;
 
 namespace OverSurgerySystem.Core.Staffs
 {
@@ -40,6 +41,80 @@ namespace OverSurgerySystem.Core.Staffs
         {
             private set { leaveDates = value as List<LeaveDate>;    }
             get         { return leaveDates;                        }
+        }
+
+        // Get the staff's leave date information
+        public LeaveDate GetLeaveDate( DateTime date )
+        {
+            DateTime date_only = date.Date;
+            foreach( LeaveDate leaveDate in leaveDates )
+            {
+                if( leaveDate.Date == date_only )
+                {
+                    return leaveDate;
+                }
+            }
+            return null;
+        }
+
+
+        // Get whether the staff is on leave on a set date.
+        public bool IsOnLeave( DateTime date )
+        {
+            return GetLeaveDate( date ) != null;
+        }
+
+        // Add a leave date
+        public bool AddLeaveDate( DateTime date , string remark )
+        {
+            if( !IsOnLeave( date ) )
+            {
+                LeaveDate leaveDate = new LeaveDate();
+                leaveDate.Owner     = this;
+                leaveDate.Date      = date;
+                leaveDate.Remark    = remark;
+                leaveDates.Add( leaveDate );
+                return true;
+            }
+            return false;
+        }
+
+        // Remove a leave date
+        public void RemoveLeaveDate( DateTime date )
+        {
+            DateTime date_only = date.Date;
+            for( int i = 0 ; i < leaveDates.Count ; i++ )
+            {
+                if( leaveDates[i].Date == date_only )
+                {
+                    leaveDates[i].Delete();
+                    leaveDates.RemoveAt( i );
+                    return;
+                }
+            }
+        }
+
+        // Get whether the staff is working on a set day.
+        public bool IsOnDuty( DateTime date )
+        {
+            return WorkingDays.WorkingOn( date );
+        }
+
+        // Get whether the staff is fully available on a set date.
+        public bool IsFullyAvailable( DateTime date )
+        {
+            return !IsOnLeave( date ) && WorkingDays.WorkingOn( date );
+        }
+
+        // A helper function to get whether a staff is a nurse or GP.
+        public static bool IsNurse( Staff staff )
+        {
+            return staff is MedicalStaff && ( ( MedicalStaff ) staff ).Nurse;
+        }
+        
+        public static bool IsGP( Staff staff )
+        {
+            return staff is MedicalStaff && !( ( MedicalStaff ) staff ).Nurse;
         }
         
         // Inherited Functions

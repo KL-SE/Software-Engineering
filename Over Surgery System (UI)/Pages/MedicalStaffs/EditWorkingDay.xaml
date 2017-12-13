@@ -1,138 +1,143 @@
-﻿<core:EditorPage
-    x:TypeArguments="patients:Appointment"
-    x:Class="OverSurgerySystem.UI.Pages.Appointments.EditAppointment"
+﻿<core:FinderPage
+    x:TypeArguments="staffs:WorkingDays"
+    x:Class="OverSurgerySystem.UI.Pages.MedicalStaffs.EditWorkingDay"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    xmlns:local="clr-namespace:OverSurgerySystem.UI.Pages.Appointments"
+    xmlns:local="clr-namespace:OverSurgerySystem.UI.Pages.MedicalStaffs"
     xmlns:core="clr-namespace:OverSurgerySystem.UI.Pages.Core"
-    xmlns:patients="clr-namespace:OverSurgerySystem.Core.Patients"
+    xmlns:staffs="clr-namespace:OverSurgerySystem.Core.Staffs"
     mc:Ignorable="d" 
     d:DesignHeight="300"
     d:DesignWidth="300"
-    Title="EditAppointment">
+    Title="EditWorkingDay">
 
     <Page.Resources>
-        <ResourceDictionary Source="pack://application:,,,/Over Surgery System (UI);component/Styles/EditItemStyles.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Over Surgery System (UI);component/Styles/EditItemStyles.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Over Surgery System (UI);component/Styles/FindItemStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Page.Resources>
 
     <StackPanel
         VerticalAlignment   = "Center"
         HorizontalAlignment = "Center">
-        
-        <Button Name="EndButton" Height="90" Width="575" HorizontalAlignment="Right">
-            <StackPanel Orientation="Horizontal">
-                <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/cross.png"/>
-                <TextBlock
-                    Name="EndText"
-                    Text="Cancel Appointment"
-                    VerticalAlignment="Center"/>
-            </StackPanel>
-        </Button>
-                
-        <StackPanel
-            Orientation         = "Horizontal"
-            HorizontalAlignment = "Right">
-            <StackPanel>
-                <TextBlock Text="Appointment ID:"/>
-                <TextBlock Text="Patient:"/>
-                <TextBlock Text="Staff:"/>
-                <TextBlock Text="Remark:"/>
-                <TextBlock Name="IncludeCancelledText" Text="Include Cancelled:" Visibility="Collapsed"/>
-                <TextBlock Name="DateCreatedText" Text="Date Created:"/>
-                <TextBlock Name="AppointmentDateText" Text="Appointment Date:"/>
-                <TextBlock Name="AppointmentTimeText" Text="Appointment Time:"/>
-            </StackPanel>
 
-            <StackPanel>
-                <TextBox Name="AppointmentIdBox"/>
-                
+        <StackPanel
+            VerticalAlignment   = "Center"
+            HorizontalAlignment = "Center">
+            
+            <Button HorizontalAlignment="Right" Margin="0,0,10,10" Style="{StaticResource FindNavButton}" Name="BackButton" Width="380">
                 <StackPanel Orientation="Horizontal">
-                    <TextBox Name="PatientIdBox" IsEnabled="False" Width="700"/>
-                    <Button Name="PatientIdButton" Content="Find"/>
+                    <Image Style="{StaticResource FindNavImage}" Source="pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png"/>
+                    <TextBlock
+                        Style="{StaticResource FindNavText}"
+                        Text="Back"
+                        VerticalAlignment="Center"/>
                 </StackPanel>
-                
-                <StackPanel Orientation="Horizontal">
-                    <core:LookupTextBox x:Name="StaffIdBox" IsEnabled="False" Width="700"/>
-                    <Button Name="StaffIdButton" Content="Find"/>
+            </Button>
+            
+            <StackPanel
+                Orientation         = "Horizontal"
+                HorizontalAlignment = "Right">
+                <StackPanel>
+                    <TextBlock Text="Staff:"/>
+                    <TextBlock Name="DateText" Text="Working On:"/>
+                    <TextBlock Name="WorkingDayText" Text="Day:" Visibility="Collapsed"/>
+                    <TextBlock Name="WorkingOnText" Text="Working:" Visibility="Collapsed"/>
                 </StackPanel>
+
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Name="StaffIdBox" IsEnabled="False" Width="500"/>
+                        <Button Name="ClearStaffButton" Content="Clear"/>
+                        <Button Name="StaffIdButton" Content="Find"/>
+                    </StackPanel>
                 
-                <TextBox Name="RemarkBox" TextWrapping="WrapWithOverflow" MaxLength="100"/>
-                
-                <Menu Name="IncludeCancelled" Visibility="Collapsed">
-                    <MenuItem Name="IncludeCancelledHeader" Header="No">
-                        <MenuItem Name="SetIncludeCancelled" Header="Yes"/>
-                        <MenuItem Name="SetExcludeCancelled" Header="No"/>
-                    </MenuItem>
-                </Menu>
-                
-                <StackPanel Orientation="Horizontal">
-                    <DatePicker Name="CreationDatePicker" CalendarStyle="{StaticResource BiggerCalendar}"/>
-                    <Button Name="ClearCreationDateButton" Content="Clear"/>
-                </StackPanel>
-                
-                <StackPanel Orientation="Horizontal">
-                    <DatePicker Name="AppointmentDatePicker" CalendarStyle="{StaticResource BiggerCalendar}"/>
-                    <Button Name="ClearAppointmentDateButton" Content="Clear"/>
-                </StackPanel>
-                
-                <StackPanel Name="AppointmentTimePanel" Orientation="Horizontal">
-                    <TextBox Name="TimeHourBox" Width="285" MaxLength="2"/>
-                    <TextBox Name="TimeMinBox"  Width="285" MaxLength="2"/>
-                    <Menu Name="TimeMPicker" Width="285">
-                        <MenuItem Name="TimeMPickerHeader" Header="- Select -">
-                            <MenuItem Name="SetAsAM" Header="A.M."/>
-                            <MenuItem Name="SetAsPM" Header="P.M."/>
+                    <StackPanel Name="DutyDatePanel" Orientation="Horizontal">
+                        <DatePicker Name="DutyDatePicker" CalendarStyle="{StaticResource BiggerCalendar}"/>
+                        <Button Name="ClearDutyDateButton" Content="Clear"/>
+                    </StackPanel>
+                    
+                    <Menu Name="DayPicker" Visibility="Collapsed">
+                        <MenuItem Name="DayPickerHeader" Header="- Select -">
+                            <MenuItem Name="SetAsSunday"    Header="Sunday"/>
+                            <MenuItem Name="SetAsMonday"    Header="Monday"/>
+                            <MenuItem Name="SetAsTuesday"   Header="Tuesday"/>
+                            <MenuItem Name="SetAsWednesday" Header="Wednesday"/>
+                            <MenuItem Name="SetAsThursday"  Header="Thursday"/>
+                            <MenuItem Name="SetAsFriday"    Header="Friday"/>
+                            <MenuItem Name="SetAsSaturday"  Header="Saturday"/>
+                        </MenuItem>
+                    </Menu>
+                    
+                    <Menu Name="IsWorkingPicker" Visibility="Collapsed">
+                        <MenuItem Name="IsWorkingPickerHeader" Header="Yes">
+                            <MenuItem Name="SetAsWorking"    Header="Yes"/>
+                            <MenuItem Name="SetAsNotWorking" Header="No"/>
                         </MenuItem>
                     </Menu>
                 </StackPanel>
             </StackPanel>
-        </StackPanel>
 
-        <TextBlock
-            Name                = "MsgBox"
-            Foreground          = "Red"
-            HorizontalAlignment = "Right"
-            Visibility          = "Collapsed"/>
+            <TextBlock
+                Name                = "MsgBox"
+                Foreground          = "Red"
+                HorizontalAlignment = "Right"
+                Visibility          = "Collapsed"/>
 
-        <StackPanel
-            Orientation         = "Horizontal"
-            HorizontalAlignment = "Right">
-            <Button
-                Name="CancelButton"
-                Width="435"
-                Height="110"
-                Margin="20,20,10,20"
-                Padding="20,0,0,0">
-                <StackPanel Orientation="Horizontal">
-                    <Image
-                        Name="CancelButtonImg"
-                        Source="pack://application:,,,/Over Surgery System (UI);component/Resources/cross.png"/>
-                    <TextBlock
-                        Name="CancelButtonText"
-                        Text="Cancel"
-                        FontSize="45"
-                        VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
-            <Button
-                Name="ConfirmButton"
-                Width="435"
-                Height="110"
-                Margin="20,20,10,20"
-                Padding="20,0,0,0">
-                <StackPanel Orientation="Horizontal">
-                    <Image
-                        Name="ConfirmButtonImg"
-                        Source="pack://application:,,,/Over Surgery System (UI);component/Resources/save.png"/>
-                    <TextBlock
-                        Name="ConfirmButtonText"
-                        Text="Save"
-                        FontSize="45"
-                        VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
+            <StackPanel
+                Orientation         = "Horizontal"
+                HorizontalAlignment = "Right">
+                <Button
+                    Name="ModeButton"
+                    Width="435"
+                    Height="110"
+                    Margin="20,20,10,20"
+                    Padding="20,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Image
+                            Name="ModeButtonImg"
+                            Source="pack://application:,,,/Over Surgery System (UI);component/Resources/save.png"/>
+                        <TextBlock
+                            Name="ModeButtonText"
+                            Text="Edit"
+                            FontSize="45"
+                            VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button
+                    Name="ConfirmButton"
+                    Width="435"
+                    Height="110"
+                    Margin="20,20,10,20"
+                    Padding="20,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Image
+                            Name="ConfirmButtonImg"
+                            Source="pack://application:,,,/Over Surgery System (UI);component/Resources/search.png"/>
+                        <TextBlock
+                            Name="ConfirmButtonText"
+                            Text="Find"
+                            FontSize="45"
+                            VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
         </StackPanel>
+        
+        <StackPanel Orientation="Horizontal" Margin="0,50,0,0">
+            <Border Style="{StaticResource HeaderBorder}" Width="250"><TextBlock Style="{StaticResource HeaderText}" Text="ID"              /></Border>
+            <Border Style="{StaticResource HeaderBorder}" Width="450"><TextBlock Style="{StaticResource HeaderText}" Text="Staff Name"      /></Border>
+            <Border Style="{StaticResource HeaderBorder}" Width="750"><TextBlock Style="{StaticResource HeaderText}" Text="Staff Address"   /></Border>
+            <Border Style="{StaticResource HeaderBorder}" Width="250"><TextBlock Style="{StaticResource HeaderText}" Text="License"         /></Border>
+        </StackPanel>
+        
+        <StackPanel Name="ResultsList" Background="White">
+        </StackPanel>
+        
     </StackPanel>
-</core:EditorPage>
+</core:FinderPage>

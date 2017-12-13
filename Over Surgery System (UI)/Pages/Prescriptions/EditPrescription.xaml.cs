@@ -77,12 +77,28 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
                 EndDatePicker.IsEnabled         = false;
                 ClearEndDateButton.IsEnabled    = false;
                 AddMedicationButton.IsEnabled   = false;
+
                 PatientIdButton.Content         = "View";
                 PrescriberIdButton.Content      = "View";
+            }
 
-                ConfirmButton.Visibility        = Visibility.Collapsed;
-                CancelButtonImg.Source          = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
-                CancelButtonText.Text           = "Back";
+            if( IsRestricted )
+            {
+                PrescriptionIdBox.IsEnabled     = false;
+                PatientIdBox.IsEnabled          = false;
+                PrescriberIdBox.IsEnabled       = false;
+                DateCreatedBox.IsEnabled        = false;
+                PrescriberIdButton.Content      = "View";
+
+                if( CurrentItem.Valid )
+                    PatientIdButton.Content = "View";
+            }
+
+            if( IsBackOnly )
+            {
+                ConfirmButton.Visibility    = Visibility.Collapsed;
+                CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
+                CancelButtonText.Text       = "Back";
             }
         }
 
@@ -128,28 +144,31 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
 
         private void StartFindMedstaff( object o , RoutedEventArgs e )
         {
-            if( IsView )
+            if( IsView || !IsRestricted )
             {
                 EditStaff.OnCancel  = () => App.GoToPage( this );
-                App.GoToEditStaffPage( CurrentItem.Prescriber , EditStaff.View );
+                App.GoToEditStaffPage( CurrentItem.Prescriber , EditStaff.View | EditStaff.BackOnly );
             }
             else
             {
                 RecordFields();
-                FindStaff.OnSelect  = OnSelectStaff;
-                FindStaff.OnFind    = OnFindStaff;
-                FindStaff.OnFound   = OnConfirmStaff;
-                FindStaff.OnCancel  = () => App.GoToPage( this );
+                FindStaff.OnSelect              = OnSelectStaff;
+                FindStaff.OnFind                = OnFindStaff;
+                FindStaff.OnFound               = OnConfirmStaff;
+                FindStaff.OnCancel              = () => App.GoToPage( this );
+                EditStaff.RestrictActive        = true;
+                EditStaff.RestrictAdmin         = true;
+                EditStaff.RestrictReceptionist  = true;
                 App.GoToEditStaffPage( ProtoMedStaff , EditStaff.Find | EditStaff.Restricted );
             }
         }
 
         private void StartFindPatient( object o , EventArgs e )
         {
-            if( IsView )
+            if( IsView || ( IsRestricted && CurrentItem.Valid ) )
             {
                 EditPatient.OnCancel    = () => App.GoToPage( this );
-                App.GoToEditPatientPage( CurrentItem.Patient , EditPatient.View );
+                App.GoToEditPatientPage( CurrentItem.Patient , EditPatient.View | EditPatient.BackOnly );
             }
             else
             {
@@ -310,10 +329,17 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
                 if( CurrentItem.Patient     == null     ) { ShowMessage( "Please select a patient."         ); return; }
                 if( CurrentItem.Prescriber  == null     ) { ShowMessage( "Please select a prescriber."      ); return; }
                 if( CurrentItem.Medications.Count == 0  ) { ShowMessage( "Enter at least one medication."   ); return; }
-
-                CurrentItem.Save();
-                ShowMessage( "Prescription saved." );
-                LoadDetails();
+                
+                try
+                {
+                    CurrentItem.Save();
+                    ShowMessage( "Prescription saved." );
+                    LoadDetails();
+                }
+                catch
+                {
+                    ShowMessage( "Failed to save data. Please check your connection." );
+                }
             }
             else if( IsFind )
             {
@@ -325,9 +351,18 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
 
         private void DoCancel()
         {
-            if( CurrentItem.Valid ) CurrentItem.Load();
-            App.GoToMainMenu();
-            MainMenu.Instance.Loaded += (object sender, RoutedEventArgs e) => App.GoToManagePrescriptions();
+            try
+            { 
+                if( CurrentItem.Valid )
+                {
+                    CurrentItem.Load();
+                }
+            }
+            catch
+            {
+                ShowMessage( "Failed to load data. Please check your connection." );
+            }
+            
             OnCancel?.Invoke();
         }
     }

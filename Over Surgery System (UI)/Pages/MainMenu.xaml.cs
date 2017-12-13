@@ -13,7 +13,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using OverSurgerySystem.UI.Persistent;
-using OverSurgerySystem.UI.Pages.MainMenuVariants;
 using OverSurgerySystem.Core.Base;
 using OverSurgerySystem.Core.Staffs;
 

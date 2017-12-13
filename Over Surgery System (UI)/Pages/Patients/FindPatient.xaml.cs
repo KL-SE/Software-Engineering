@@ -32,15 +32,17 @@ namespace OverSurgerySystem.UI.Pages.Patients
             BackButton.Click   += (object o, RoutedEventArgs e) => OnCancel?.Invoke();
             ResetButton.Click  += (object o, RoutedEventArgs e) =>
             {
-                App.GoToFindPatientPage( LastPrototype );
+                App.GoToEditPatientPage( LastPrototype , LastEditMode );
                 EditPatient.OnConfirm   = OnFind;
                 EditPatient.OnCancel    = () => App.GoToPage( this );
             };
+
+            LastEditMode = EditPatient.Mode;
         }
         
         public override string[] GetData( Patient patient )
         {
-            return new string[4]
+            return new string[]
             {
                 patient.StringId,
                 String.Format( "{0} {1}" , patient.Details.FirstName , patient.Details.LastName ),
@@ -62,34 +64,44 @@ namespace OverSurgerySystem.UI.Pages.Patients
         
         public static List<Patient> FindFromPrototype( Patient protoPatient )
         {
-            LastPrototype = protoPatient;
-            if( protoPatient.Valid )
+            try
             {
-                SearchResult.Clear();
-                Patient patient = PatientsManager.GetPatient( protoPatient.Id );
-
-                if( patient != null && patient.Valid )
+                if( protoPatient.Valid )
                 {
-                    SearchResult.Add( patient );
+                    SearchResult.Clear();
+                    Patient patient = PatientsManager.GetPatient( protoPatient.Id );
+
+                    if( patient != null && patient.Valid )
+                    {
+                        SearchResult.Add( patient );
+                    }
+
+                    return SearchResult;
+                }
+            
+                SearchResult = PatientsManager.GetAllPatients();
+                if( protoPatient.Details.FirstName.Length > 0                           ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.FirstName.ToUpper().Contains( protoPatient.Details.FirstName.ToUpper()    ) );
+                if( protoPatient.Details.LastName.Length > 0                            ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.LastName.ToUpper().Contains(  protoPatient.Details.LastName.ToUpper()     ) );
+                if( protoPatient.Details.Address.Length > 0                             ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.Address.ToUpper().Contains(   protoPatient.Details.Address.ToUpper()      ) );
+                if( protoPatient.Details.DateOfBirth != DatabaseObject.INVALID_DATETIME ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.DateOfBirth.Equals(           protoPatient.Details.DateOfBirth            ) );
+                if( protoPatient.Details.Identifications.Count > 0                      )  SearchResult = ManagerHelper.Filter( SearchResult , e => e.Details.HaveIdentification( protoPatient.Details.Identifications[0]               ) );
+                if( protoPatient.Details.ContactNumbers.Count > 0                       )  SearchResult = ManagerHelper.Filter( SearchResult , e => e.Details.HaveContactNumber(  protoPatient.Details.ContactNumbers[0]                ) );
+
+                // Match the postcode.
+                if( protoPatient.Details.Postcode!= null && protoPatient.Details.Postcode.Valid )
+                {
+                    SearchResult = ManagerHelper.Filter( SearchResult , e => e.Details.Postcode.Id == protoPatient.Details.Postcode.Id );
                 }
 
-                return SearchResult;
+                SearchResult.Sort( (c,o) => c.Details.FullName.ToUpper().CompareTo( o.Details.FullName.ToUpper() ) );
+                LastSearchError = false;
             }
-            
-            SearchResult = PatientsManager.GetAllPatients();
-            if( protoPatient.Details.FirstName.Length > 0                           ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.FirstName.ToUpper().Contains( protoPatient.Details.FirstName.ToUpper()    ) );
-            if( protoPatient.Details.LastName.Length > 0                            ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.LastName.ToUpper().Contains(  protoPatient.Details.LastName.ToUpper()     ) );
-            if( protoPatient.Details.Address.Length > 0                             ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.Address.ToUpper().Contains(   protoPatient.Details.Address.ToUpper()      ) );
-            if( protoPatient.Details.DateOfBirth != DatabaseObject.INVALID_DATETIME ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.DateOfBirth.Equals(           protoPatient.Details.DateOfBirth            ) );
-            if( protoPatient.Details.Identifications.Count > 0                      )  SearchResult = ManagerHelper.Filter( SearchResult , e => e.Details.HaveIdentification( protoPatient.Details.Identifications[0]               ) );
-            if( protoPatient.Details.ContactNumbers.Count > 0                       )  SearchResult = ManagerHelper.Filter( SearchResult , e => e.Details.HaveContactNumber(  protoPatient.Details.ContactNumbers[0]                ) );
-
-            // Match the postcode.
-            if( protoPatient.Details.Postcode!= null && protoPatient.Details.Postcode.Valid )
+            catch
             {
-                SearchResult = ManagerHelper.Filter( SearchResult , e => e.Details.Postcode.Id == protoPatient.Details.Postcode.Id );
+                LastSearchError = true;
             }
 
+            LastPrototype = protoPatient;
             return SearchResult;
         }
     }

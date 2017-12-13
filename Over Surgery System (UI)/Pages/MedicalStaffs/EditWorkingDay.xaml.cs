@@ -22,187 +22,158 @@ using OverSurgerySystem.UI.Pages.Staffs;
 using OverSurgerySystem.Core.Staffs;
 using System.IO;
 using OverSurgerySystem.UI.Pages.Core;
+using OverSurgerySystem.UI.Core;
 
-namespace OverSurgerySystem.UI.Pages.Appointments
+namespace OverSurgerySystem.UI.Pages.MedicalStaffs
 {
     /// <summary>
-    /// Interaction logic for EditAppointment.xaml
+    /// Interaction logic for EditWorkingDay.xaml
     /// </summary>
-    public partial class EditAppointment : EditorPage<Appointment>
+    public partial class EditWorkingDay : FinderPage<WorkingDays>
     {
-        public static DateTime DateAfter    = DatabaseObject.INVALID_DATETIME;
-        public static DateTime DateSelected = DatabaseObject.INVALID_DATETIME;
+        public static bool InEditMode                   { set; get; }
+        public static int SelectedDay                   { set; get; }
+        public static DateTime SelectedDate             { set; get; }
+        public static WorkingDays SelectedWorkingDays   { set; get; }
+        public static MedicalStaff SearchStaff          { set; get; }
 
-        private MedicalStaff ProtoMedStaff;
-
-        public EditAppointment()
+        public EditWorkingDay()
         {
             InitializeComponent();
-            Loaded                             += OnLoad;
-            PatientIdButton.Click              += StartFindPatient;
-            StaffIdButton.Click                += StartFindMedstaff;
-            ConfirmButton.Click                += (object o, RoutedEventArgs a) => DoConfirm();
-            CancelButton.Click                 += (object o, RoutedEventArgs a) => DoCancel();
-            ClearCreationDateButton.Click      += (object o, RoutedEventArgs a) => CreationDatePicker.SelectedDate = null;
-            ClearAppointmentDateButton.Click   += (object o, RoutedEventArgs a) => AppointmentDatePicker.SelectedDate = null;
-            SetIncludeCancelled.Click          += (object o, RoutedEventArgs a) => { IncludeCancelledHeader.Header = "Yes"; CurrentItem.Cancelled = true;  HideMessage(); };
-            SetExcludeCancelled.Click          += (object o, RoutedEventArgs a) => { IncludeCancelledHeader.Header = "No";  CurrentItem.Cancelled = false; HideMessage(); };
-            ProtoMedStaff                       = new MedicalStaff();
-            FindPatient.Reset();
+            Loaded                     += OnLoad;
+            StaffIdButton.Click        += StartFindStaff;
+            ModeButton.Click           += (object o, RoutedEventArgs a) => DoChangeMode();
+            ConfirmButton.Click        += (object o, RoutedEventArgs a) => DoConfiirm();
+            BackButton.Click           += (object o, RoutedEventArgs a) => DoCancel();
+            ClearStaffButton.Click     += (object o, RoutedEventArgs a) => { StaffIdBox.Text = null; SearchStaff = null;                                            };
+            ClearDutyDateButton.Click  += (object o, RoutedEventArgs a) => { DutyDatePicker.SelectedDate = null; SelectedDate = DatabaseObject.INVALID_DATETIME;    };
+
+            SetAsSunday.Click          += (object o, RoutedEventArgs a) => SetWorkingDay( WorkingDays.Day.SUNDAY    );
+            SetAsMonday.Click          += (object o, RoutedEventArgs a) => SetWorkingDay( WorkingDays.Day.MONDAY    );
+            SetAsTuesday.Click         += (object o, RoutedEventArgs a) => SetWorkingDay( WorkingDays.Day.TUESDAY   );
+            SetAsWednesday.Click       += (object o, RoutedEventArgs a) => SetWorkingDay( WorkingDays.Day.WEDNESDAY );
+            SetAsThursday.Click        += (object o, RoutedEventArgs a) => SetWorkingDay( WorkingDays.Day.THURSDAY  );
+            SetAsFriday.Click          += (object o, RoutedEventArgs a) => SetWorkingDay( WorkingDays.Day.FRIDAY    );
+            SetAsSaturday.Click        += (object o, RoutedEventArgs a) => SetWorkingDay( WorkingDays.Day.SATURDAY  );
+            SetAsWorking.Click         += (object o, RoutedEventArgs a) => SetWorking( true     );
+            SetAsNotWorking.Click      += (object o, RoutedEventArgs a) => SetWorking( false    );
             
-            AppointmentIdBox.TextChanged               += (object o, TextChangedEventArgs e) => HideMessage();
-            RemarkBox.TextChanged                      += (object o, TextChangedEventArgs e) => HideMessage();
-            TimeHourBox.TextChanged                    += (object o, TextChangedEventArgs e) => HideMessage();
-            TimeMinBox.TextChanged                     += (object o, TextChangedEventArgs e) => HideMessage();
-            CreationDatePicker.SelectedDateChanged     += (object o, SelectionChangedEventArgs e) => HideMessage();
-            AppointmentDatePicker.SelectedDateChanged  += (object o, SelectionChangedEventArgs e) => HideMessage();
-
-            if( IsFind )
-            {
-                IncludeCancelled.Visibility     = Visibility.Visible;
-                IncludeCancelledText.Visibility = Visibility.Visible;
-                AppointmentTimeText.Visibility  = Visibility.Collapsed;
-                AppointmentTimePanel.Visibility = Visibility.Collapsed;
-
-                ConfirmButtonImg.Source         = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/search.png" ) );
-                ConfirmButtonText.Text          = "Find";
-            }
-
-            if( IsView )
-            {
-                AppointmentIdBox.IsEnabled              = false;
-                PatientIdBox.IsEnabled                  = false;
-                StaffIdBox.IsEnabled                    = false;
-                RemarkBox.IsEnabled                     = false;
-                CreationDatePicker.IsEnabled            = false;
-                ClearCreationDateButton.IsEnabled       = false;
-                AppointmentDatePicker.IsEnabled         = false;
-                ClearAppointmentDateButton.IsEnabled    = false;
-                TimeHourBox.IsEnabled                   = false;
-                TimeMinBox.IsEnabled                    = false;
-                TimeMPicker.IsEnabled                   = false;
-
-                PatientIdButton.Content     = "View";
-                StaffIdButton.Content       = "View";
-
-                ConfirmButton.Visibility    = Visibility.Collapsed;
-                CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
-                CancelButtonText.Text       = "Back";
-            }
+            FindStaff.LastPrototype     = new MedicalStaff();
+            SearchStaff                 = new MedicalStaff();
+            SelectedDate                = DateTime.Now.Date;
+            DutyDatePicker.SelectedDate = DateTime.Now.Date;
+            SelectedDay                 = WorkingDays.GetDayNumber( SelectedDate );
+            OnSelect                    = OnSelectWorkingDays;
+            
+            StaffIdBox.TextChanged              += (object o, TextChangedEventArgs e) => HideMessage();
+            DutyDatePicker.SelectedDateChanged  += (object o, SelectionChangedEventArgs e) => HideMessage();
         }
 
         private void OnLoad( object o , RoutedEventArgs e )
         {
-            AppointmentIdBox.Text = !IsEdit ? "" : "- New Appointment -";
             LoadDetails();
+            PerformSearch();
+        }
+
+        public override string[] GetData( WorkingDays workingDays )
+        {
+            return new string[]
+            {
+                workingDays.Owner.StringId,
+                String.Format( "{0} {1}" , workingDays.Owner.Details.FirstName , workingDays.Owner.Details.LastName ),
+                workingDays.Owner.Details.FullAddress,
+                workingDays.Owner.LicenseNo
+            };
+        }
+
+        public override void SetEventHandler()
+        { 
+            EditStaff.OnConfirm = OnConfirmStaff;
+            EditStaff.OnCancel  = () => App.GoToPage( this );
+        }
+
+        private void SetWorkingDay( int day )
+        {
+            SelectedDay = day;
+            LoadDetails();
+        }
+
+        private void SetWorking( bool working )
+        {
+            if( SelectedWorkingDays != null )
+            {
+                SelectedWorkingDays.Set( SelectedDay , working );
+                LoadDetails();
+            }
         }
 
         private void LoadDetails()
         {
-            if( CurrentItem.Valid                   )   AppointmentIdBox.Text   = CurrentItem.StringId;
-            if( CurrentItem.Patient != null         )   PatientIdBox.Text       = String.Format( "{0} - {1}" , CurrentItem.Patient.StringId      , CurrentItem.Patient.Details.FullName       );
-            if( CurrentItem.MedicalStaff != null    )   StaffIdBox.Text         = String.Format( "{0} - {1}" , CurrentItem.MedicalStaff.StringId , CurrentItem.MedicalStaff.Details.FullName  );
-            if( CurrentItem.Remark != null          )   RemarkBox.Text          = CurrentItem.Remark;
+            StaffIdBox.Text = SearchStaff != null && SearchStaff.Valid ? SearchStaff.StringId : "";
             
-            // Don't let the date from setting to the current date in find mode.
-            // It's not a proper solution. The date would get reset each time the user search again instead of persisting.
-            if( !IsFind )
+            // Find Mode
+            if( !InEditMode )
             {
-                // Dates are non-nullable, so they can be set without checking.
-                AppointmentDatePicker.SelectedDate = CurrentItem.DateAppointed;
-
-                int hour    = CurrentItem.DateAppointed.Hour;
-                int minutes = CurrentItem.DateAppointed.Minute;
-
-                if( CurrentItem.DateAppointed.Hour >= 12 )
+                if( SelectedDate != DatabaseObject.INVALID_DATETIME )
                 {
-                    TimeHourBox.Text            = ( hour > 12 ? hour - 12 :hour ).ToString();
-                    TimeMinBox.Text             = minutes.ToString();
-                    TimeMPickerHeader.Header    = "P.M.";
+                    DutyDatePicker.SelectedDate = SelectedDate;
                 }
-                else if( CurrentItem.DateAppointed.Hour == 0 )
-                {
-                    TimeHourBox.Text            = "12";
-                    TimeMinBox.Text             = minutes.ToString();
-                    TimeMPickerHeader.Header    = "A.M.";
-                }
-                else
-                {
-                    TimeHourBox.Text            = hour.ToString();
-                    TimeMinBox.Text             = minutes.ToString();
-                    TimeMPickerHeader.Header    = "A.M.";
-                }
-            }
 
-            if( CurrentItem.CreatedOn != DatabaseObject.INVALID_DATETIME )
-            {
-                CreationDatePicker.SelectedDate = CurrentItem.CreatedOn;
-                CreationDatePicker.Foreground   = Brushes.Black;
-            }
-            else if( !IsFind )
-            {
-                CreationDatePicker.Foreground = Brushes.White;
-            }
-            
-            EndButton.IsEnabled                 = IsEdit && CurrentItem.Valid;
-            ClearCreationDateButton.IsEnabled   = IsFind;
-            AppointmentIdBox.IsEnabled          = IsFind;
-            CreationDatePicker.IsEnabled        = IsFind;
-            DateCreatedText.Text                = IsFind ? "Date After:" : "Date Created:";
+                DateText.Visibility         = Visibility.Visible;
+                DutyDatePanel.Visibility    = Visibility.Visible;
+                WorkingDayText.Visibility   = Visibility.Collapsed;
+                WorkingOnText.Visibility    = Visibility.Collapsed;
+                DayPicker.Visibility        = Visibility.Collapsed;
+                IsWorkingPicker.Visibility  = Visibility.Collapsed;
+                
+                ModeButtonImg.Source = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
+                ModeButtonText.Text  = "Edit";
 
-            EndText.Foreground  = EndButton.IsEnabled ? Brushes.Black : Brushes.Gray;
-        }
-
-        private void StartFindMedstaff( object o , RoutedEventArgs e )
-        {
-            if( IsView )
-            {
-                EditStaff.OnCancel  = () => App.GoToPage( this );
-                App.GoToEditStaffPage( CurrentItem.MedicalStaff , EditStaff.View );
+                ConfirmButtonImg.Source = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/search.png" ) );
+                ConfirmButtonText.Text  = "Find";
             }
+            // Edit Mode
             else
             {
-                RecordFields();
-                FindStaff.OnSelect  = OnSelectStaff;
-                FindStaff.OnFind    = OnFindStaff;
-                FindStaff.OnFound   = OnConfirmStaff;
-                FindStaff.OnCancel  = () => App.GoToPage( this );
-                App.GoToEditStaffPage( ProtoMedStaff , EditStaff.Find | EditStaff.Restricted );
+                switch( SelectedDay )
+                {
+                    case( WorkingDays.Day.SUNDAY    ):  DayPickerHeader.Header = "Sunday";      break;
+                    case( WorkingDays.Day.MONDAY    ):  DayPickerHeader.Header = "Monday";      break;
+                    case( WorkingDays.Day.TUESDAY   ):  DayPickerHeader.Header = "Tuesday";     break;
+                    case( WorkingDays.Day.WEDNESDAY ):  DayPickerHeader.Header = "Wednesday";   break;
+                    case( WorkingDays.Day.THURSDAY  ):  DayPickerHeader.Header = "Thursday";    break;
+                    case( WorkingDays.Day.FRIDAY    ):  DayPickerHeader.Header = "Friday";      break;
+                    case( WorkingDays.Day.SATURDAY  ):  DayPickerHeader.Header = "Saturday";    break;
+                };
+                
+                IsWorkingPickerHeader.Header = SelectedWorkingDays == null || SelectedWorkingDays.WorkingOn( SelectedDay ) ? "Yes" : "No";
+                
+                DateText.Visibility         = Visibility.Collapsed;
+                DutyDatePanel.Visibility    = Visibility.Collapsed;
+                WorkingDayText.Visibility   = Visibility.Visible;
+                WorkingOnText.Visibility    = Visibility.Visible;
+                DayPicker.Visibility        = Visibility.Visible;
+                IsWorkingPicker.Visibility  = Visibility.Visible;
+                
+                ModeButtonImg.Source = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/cross.png" ) );
+                ModeButtonText.Text  = "Cancel";
+
+                ConfirmButtonImg.Source = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/save.png" ) );
+                ConfirmButtonText.Text  = "Save";
             }
         }
 
-        private void StartFindPatient( object o , EventArgs e )
+        private void StartFindStaff( object o , RoutedEventArgs e )
         {
-            if( IsView )
-            {
-                EditStaff.OnCancel  = () => App.GoToPage( this );
-                App.GoToEditPatientPage( CurrentItem.Patient , EditStaff.View );
-            }
-            else
-            {
-                RecordFields();
-                FindPatient.OnSelect    = OnSelectPatient;
-                FindPatient.OnFind      = OnFindPatient;
-                FindPatient.OnFound     = OnConfirmPatient;
-                FindPatient.OnCancel    = () => App.GoToPage( this );
-                App.GoToFindPatientPage();
-            }
-        }
-
-        public void OnFindPatient( Patient patient )
-        {
-            List<Patient> list = FindPatient.FindFromPrototype( patient );
-            if( list.Count != 1 )
-            {
-                App.GoToFindPatientResultPage();
-                EditPatient.OnConfirm   = OnConfirmPatient;
-                EditPatient.OnCancel   = () => App.GoToFindPatientResultPage();;
-            }
-            else
-            {
-                OnSelectPatient( list[0] );
-                EditPatient.OnConfirm = OnConfirmPatient;
-            }
+            RecordFields();
+            FindStaff.OnSelect              = OnSelectStaff;
+            FindStaff.OnFind                = OnFindStaff;
+            FindStaff.OnFound               = OnConfirmStaff;
+            FindStaff.OnCancel              = () => App.GoToPage( this );
+            EditStaff.RestrictActive        = true;
+            EditStaff.RestrictAdmin         = true;
+            EditStaff.RestrictReceptionist  = true;
+            App.GoToEditStaffPage( FindStaff.LastPrototype , EditStaff.Find | EditStaff.Restricted );
         }
 
         public void OnFindStaff( Staff staff )
@@ -226,73 +197,36 @@ namespace OverSurgerySystem.UI.Pages.Appointments
             App.GoToEditStaffPage( staff , EditStaff.View );
         }
 
-        public void OnSelectPatient( Patient patient )
-        {
-            App.GoToEditPatientPage( patient , EditPatient.View );
-        }
-
-        public void OnConfirmPatient( Patient patient )
-        {
-            CurrentItem.Patient = patient;
-            App.GoToPage( this );
-        }
-
         public void OnConfirmStaff( Staff staff )
         {
-            CurrentItem.MedicalStaff = ( MedicalStaff )( staff );
+            SelectedWorkingDays = ( ( MedicalStaff ) staff ).WorkingDays;
+            SearchStaff         = SelectedWorkingDays.Owner;
             App.GoToPage( this );
         }
 
-        private bool RecordFields()
+        public void OnSelectWorkingDays( WorkingDays workingDays )
         {
-            CurrentItem.Remark          = RemarkBox.Text;
-            DateAfter                   = CreationDatePicker.SelectedDate != null ? CreationDatePicker.SelectedDate.Value : DatabaseObject.INVALID_DATETIME;
-            DateTime appointmentDate    = DateTime.MinValue;
+            SelectedWorkingDays = workingDays;
+            SearchStaff         = workingDays.Owner;
+            LoadDetails();
+        }
 
-            if( AppointmentDatePicker.SelectedDate != null )
+        private void RecordFields()
+        {
+            if( DutyDatePicker.SelectedDate != null )
             {
-                appointmentDate = AppointmentDatePicker.SelectedDate.Value;
-                try
+                SelectedDate = DutyDatePicker.SelectedDate.Value;
+                switch( SelectedDate.DayOfWeek )
                 {
-                    int hour    = Int32.Parse( TimeHourBox.Text );
-                    int minutes = Int32.Parse( TimeMinBox.Text  );
-                    TimeSpan ts;
-
-                    if( TimeMPickerHeader.Header.Equals( "P.M." ) )
-                    {
-                        ts = new TimeSpan( hour < 12 ? hour + 12 : hour , minutes , 0 );
-                    }
-                    else
-                    {
-                        ts = new TimeSpan( hour == 0 ? 12 : hour , minutes , 0 );
-                    }
-
-                    appointmentDate = appointmentDate.Date + ts;
-                }
-                catch
-                {
-                    ShowMessage( "Please enter a valid time." );
-                    return false;
-                }
-
-                if( IsEdit && appointmentDate < DateTime.Now )
-                {
-                    ShowMessage( "Appointment cannot be earlier than the current date & time." );
-                    return false;
+                    case( DayOfWeek.Sunday       ): SelectedDay = WorkingDays.Day.SUNDAY;       break;
+                    case( DayOfWeek.Monday       ): SelectedDay = WorkingDays.Day.MONDAY;       break;
+                    case( DayOfWeek.Tuesday      ): SelectedDay = WorkingDays.Day.TUESDAY;      break;
+                    case( DayOfWeek.Wednesday    ): SelectedDay = WorkingDays.Day.WEDNESDAY;    break;
+                    case( DayOfWeek.Thursday     ): SelectedDay = WorkingDays.Day.THURSDAY;     break;
+                    case( DayOfWeek.Friday       ): SelectedDay = WorkingDays.Day.FRIDAY;       break;
+                    case( DayOfWeek.Saturday     ): SelectedDay = WorkingDays.Day.SATURDAY;     break;
                 }
             }
-            else
-            {
-                DateSelected = DatabaseObject.INVALID_DATETIME;
-                if( !IsFind )
-                {
-                    ShowMessage( "Please select a date." );
-                    return false;
-                }
-            }
-
-            DateSelected = CurrentItem.DateAppointed = appointmentDate;
-            return true;
         }
 
         public void HideMessage()
@@ -306,34 +240,100 @@ namespace OverSurgerySystem.UI.Pages.Appointments
             MsgBox.Text       = error_message;
         }
 
-        private void DoConfirm()
+        private void DoChangeMode()
         {
-            if( !IsView && !RecordFields() )
-                return;
-
-            if( IsEdit )
+            // Swap the modes 
+            InEditMode = !InEditMode;
+            
+            // Reload the selected day when we switch modes because we don't want to persist the changes.
+            if( SelectedWorkingDays != null )
             {
+                try
+                {
+                    SelectedWorkingDays.Load();
+                }
+                catch
+                {
+                    ShowMessage( "Failed to load data. Please check your connection." );
+                }
+            }
 
-                if( CurrentItem.Patient      == null ) { ShowMessage( "Please select a patient." ); return; }
-                if( CurrentItem.MedicalStaff == null ) { ShowMessage( "Please select a staff."   ); return; }
+            // Enable/Disable selecting further staffs.
+            if( SearchResult.Count > 0 )
+            {
+                foreach( UIElement element in ResultsList.Children )
+                {
+                    element.IsEnabled = !InEditMode;
+                }
+            }
 
-                CurrentItem.Save();
-                ShowMessage( "Appointment saved." );
+            LoadDetails();
+        }
+
+        private void PerformSearch()
+        {
+            try
+            {
+                List<MedicalStaff> availableStaffs = StaffsManager.GetAllMedicalStaffs();
+
+                SearchResult.Clear();
+                foreach( MedicalStaff staff in availableStaffs )
+                    SearchResult.Add( staff.WorkingDays );
+
+                if( SearchStaff != null && SearchStaff.Valid    ) SearchResult = ManagerHelper.Filter( SearchResult , e => e.Owner.Id == SearchStaff.Id             );
+                if( DutyDatePicker.SelectedDate != null         ) SearchResult = ManagerHelper.Filter( SearchResult , e => e.Owner.IsFullyAvailable( SelectedDate ) );
+
+                SearchResult.Sort( (c,o) => c.Owner.Details.FullName.ToUpper().CompareTo( o.Owner.Details.FullName.ToUpper() ) );
+
+                Populate( ResultsList );
+            }
+            catch
+            {
+                ShowMessage( "Failed to load data. Please check your connection." );
+            }
+        }
+
+        private void DoConfiirm()
+        {
+            // Edit Mode
+            RecordFields();
+            if( InEditMode )
+            {
+                if( SelectedWorkingDays == null )
+                {
+                    ShowMessage( "Please select a staff." );
+                    return;
+                }
+                
+                try
+                {
+                    SelectedWorkingDays.Save();
+                }
+                catch
+                {
+                    ShowMessage( "Failed to save data. Please check your connection." );
+                }
+
+                ShowMessage( "Duty information saved." );
+            }
+            // Find Mode
+            else
+            {
+                if( DutyDatePicker.SelectedDate != null && DutyDatePicker.SelectedDate.Value < DateTime.Now.Date )
+                {
+                    ShowMessage( "Please select a future date." );
+                    return;
+                }
+                
+                SelectedWorkingDays = null;
                 LoadDetails();
+                PerformSearch();
             }
-            else if( IsFind )
-            {
-                CurrentItem.Id = Appointment.GetIdFromString( AppointmentIdBox.Text );
-            }
-
-            OnConfirm?.Invoke( CurrentItem );
         }
 
         private void DoCancel()
         {
-            if( CurrentItem.Valid ) CurrentItem.Load();
             App.GoToMainMenu();
-            MainMenu.Instance.Loaded += (object sender, RoutedEventArgs e) => App.GoToManageAppointments();
             OnCancel?.Invoke();
         }
     }

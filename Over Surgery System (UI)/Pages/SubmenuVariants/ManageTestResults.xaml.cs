@@ -1,4 +1,6 @@
 ﻿using OverSurgerySystem.Core.Patients;
+using OverSurgerySystem.Core.Staffs;
+using OverSurgerySystem.UI.Core;
 using OverSurgerySystem.UI.Pages.TestResults;
 using System;
 using System.Collections.Generic;
@@ -25,28 +27,60 @@ namespace OverSurgerySystem.UI.Pages
         public ManageTestResults()
         {
             InitializeComponent();
-            MainMenuButton.Click        += ( object sender , RoutedEventArgs e ) => App.GoToMainMenu();
-            AddTestResultButton.Click   += ( object sender , RoutedEventArgs e ) =>
+            Loaded                     += OnLoad;
+            MainMenuButton.Click       += ( object sender , RoutedEventArgs e ) => App.GoToMainMenu();
+            AddTestResultButton.Click  += ( object sender , RoutedEventArgs e ) =>
             {
-                App.GoToAddTestResultPage();
-                EditTestResult.OnConfirm   = null;
-                EditTestResult.OnCancel    = OnCancel;
+                App.GoToEditTestResultPage( null , EditTestResult.Edit | EditTestResult.Restricted );
+                EditTestResult.OnConfirm    = null;
+                EditTestResult.OnCancel     = OnCancel;
             };
 
-            FindTestResultButton.Click += ( object sender , RoutedEventArgs e ) =>
+            FindTestResultButton.Click += HandleFindTest;
+        }
+
+        public void OnLoad( object sender , EventArgs e )
+        {
+            if( !Permission.CanAddTestResults )
             {
-                App.GoToFindTestResultPage();
-                FindTestResult.OnFind   = OnFindTestResult;
-                FindTestResult.OnFound  = null;
-                FindTestResult.OnCancel = OnCancel;
-                FindTestResult.OnSelect = ( TestResult test ) => App.GoToEditTestResultPage( test , EditTestResult.View );
-            };
+                HandleFindTest( null , null );
+            }
+        }
+
+        public static void HandleFindTest( object sender , RoutedEventArgs e )
+        {
+            App.GoToFindTestResultPage();
+            FindTestResult.OnFind   = OnFindTestResult;
+            FindTestResult.OnFound  = null;
+            FindTestResult.OnCancel = OnCancel;
+            FindTestResult.OnSelect = HandleSelectTestResult;
+        }
+        
+        public static void HandleSelectTestResult( TestResult test )
+        {
+            if( Permission.CanEditTestResults || ( MedicalStaff.IsGP( App.LoggedInStaff ) && test.MedicalLicenseNo == ( ( MedicalStaff ) App.LoggedInStaff ).LicenseNo ) )
+            {
+                App.GoToEditTestResultPage( test , EditTestResult.Edit | EditTestResult.Restricted );
+            }
+            else
+            {
+                App.GoToEditTestResultPage( test , EditTestResult.View | EditTestResult.BackOnly );
+            }
         }
         
         public static void OnCancel()
         {
             App.GoToMainMenu();
-            MainMenu.Instance.Loaded += ( object i , RoutedEventArgs a ) => App.GoToManageTestResults();
+            if( Permission.CanAddTestResults )
+            {
+                MainMenu.Instance.Loaded += NavigateToMenu;
+            }
+        }
+
+        public static void NavigateToMenu( object i , RoutedEventArgs a )
+        { 
+            App.GoToManageTestResults();
+            MainMenu.Instance.Loaded -= NavigateToMenu;
         }
         
         public static void OnFindTestResult( TestResult test )

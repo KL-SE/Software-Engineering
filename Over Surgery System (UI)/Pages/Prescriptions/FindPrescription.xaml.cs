@@ -33,15 +33,17 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
             BackButton.Click   += (object o, RoutedEventArgs e) => OnCancel?.Invoke();
             ResetButton.Click  += (object o, RoutedEventArgs e) =>
             {
-                App.GoToFindPrescriptionPage( LastPrototype );
+                App.GoToEditPrescriptionPage( LastPrototype , LastEditMode );
                 EditPrescription.OnConfirm   = OnFind;
                 EditPrescription.OnCancel    = () => App.GoToPage( this );
             };
+            
+            LastEditMode = EditPrescription.Mode;
         }
         
         public override string[] GetData( Prescription prescription )
         {
-            return new string[4]
+            return new string[]
             {
                 prescription.StringId,
                 prescription.Patient.StringId,
@@ -63,44 +65,54 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
 
         public static List<Prescription> FindFromPrototype( Prescription protoPrescription )
         {
-            LastPrototype = protoPrescription;
-            if( protoPrescription.Valid )
+            try
             {
-                SearchResult.Clear();
-                Prescription prescription = PatientsManager.GetPrescription( protoPrescription.Id );
-
-                if( prescription != null && prescription.Valid )
+                if( protoPrescription.Valid )
                 {
-                    SearchResult.Add( prescription );
+                    SearchResult.Clear();
+                    Prescription prescription = PatientsManager.GetPrescription( protoPrescription.Id );
+
+                    if( prescription != null && prescription.Valid )
+                    {
+                        SearchResult.Add( prescription );
+                    }
+
+                    return SearchResult;
                 }
-
-                return SearchResult;
-            }
             
-            SearchResult = PatientsManager.GetAllPrescriptions();
-            if( protoPrescription.Name.Length > 0                               ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Name.ToUpper().Contains( protoPrescription.Name.ToUpper()     ) );
-            if( protoPrescription.Remark.Length > 0                             ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Remark.ToUpper().Contains( protoPrescription.Remark.ToUpper() ) );
-            if( protoPrescription.Patient != null                               ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Patient.Id == protoPrescription.Patient.Id                    );
-            if( protoPrescription.Prescriber != null                            ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Prescriber.Id == protoPrescription.Prescriber.Id              );
-            if( EditPrescription.EndBefore != DatabaseObject.INVALID_DATETIME   ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.EndDate.Date < EditPrescription.EndBefore.Date                );
-            if( EditPrescription.StartAfter != DatabaseObject.INVALID_DATETIME  ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.StartDate.Date > EditPrescription.StartAfter.Date             );
-            if( protoPrescription.Medications.Count > 0 )
-            {
-                // Make sure that all medications are in the target
-                IList<Medication> medications = protoPrescription.Medications;
-                SearchResult  = ManagerHelper.Filter( SearchResult , e =>
+                SearchResult = PatientsManager.GetAllPrescriptions();
+                if( protoPrescription.Name.Length > 0                               ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Name.ToUpper().Contains( protoPrescription.Name.ToUpper()     ) );
+                if( protoPrescription.Remark.Length > 0                             ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Remark.ToUpper().Contains( protoPrescription.Remark.ToUpper() ) );
+                if( protoPrescription.Patient != null                               ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Patient.Id == protoPrescription.Patient.Id                    );
+                if( protoPrescription.Prescriber != null                            ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Prescriber.Id == protoPrescription.Prescriber.Id              );
+                if( EditPrescription.EndBefore != DatabaseObject.INVALID_DATETIME   ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.EndDate.Date < EditPrescription.EndBefore.Date                );
+                if( EditPrescription.StartAfter != DatabaseObject.INVALID_DATETIME  ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.StartDate.Date > EditPrescription.StartAfter.Date             );
+                if( protoPrescription.Medications.Count > 0 )
                 {
-                    int found = 0;
+                    // Make sure that all medications are in the target
+                    IList<Medication> medications = protoPrescription.Medications;
+                    SearchResult  = ManagerHelper.Filter( SearchResult , e =>
+                    {
+                        int found = 0;
 
-                    foreach( Medication protoMed in medications )
-                        foreach( Medication med in e.Medications )
-                            if( protoMed.Id == med.Id )
-                                found++;
+                        foreach( Medication protoMed in medications )
+                            foreach( Medication med in e.Medications )
+                                if( protoMed.Id == med.Id )
+                                    found++;
 
-                    return found == medications.Count;
-                });
-            };
+                        return found == medications.Count;
+                    });
+                };
+            
+                SearchResult.Sort( (c,o) => c.EndDate.CompareTo( o.EndDate ) );
+                LastSearchError = false;
+            }
+            catch
+            {
+                LastSearchError = true;
+            }
 
+            LastPrototype = protoPrescription;
             return SearchResult;
         }
     }

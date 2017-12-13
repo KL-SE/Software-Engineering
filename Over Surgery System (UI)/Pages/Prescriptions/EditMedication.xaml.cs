@@ -45,8 +45,11 @@ namespace OverSurgerySystem.UI.Pages.Patients
             {
                 CodeBox.Visibility          = Visibility.Collapsed;
                 NameBox.Visibility          = Visibility.Collapsed;
-                ConfirmButton.Visibility    = Visibility.Collapsed;
+            }
 
+            if( IsBackOnly )
+            {
+                ConfirmButton.Visibility    = Visibility.Collapsed;
                 CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
                 CancelButtonText.Text       = "Back";
             }

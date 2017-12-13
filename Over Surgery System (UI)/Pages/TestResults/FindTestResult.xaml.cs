@@ -32,15 +32,17 @@ namespace OverSurgerySystem.UI.Pages.TestResults
             BackButton.Click   += (object o, RoutedEventArgs e) => OnCancel?.Invoke();
             ResetButton.Click  += (object o, RoutedEventArgs e) =>
             {
-                App.GoToFindTestResultPage( LastPrototype );
+                App.GoToEditTestResultPage( LastPrototype , LastEditMode );
                 EditTestResult.OnConfirm    = OnFind;
                 EditTestResult.OnCancel     = () => App.GoToPage( this );
             };
+
+            LastEditMode = EditTestResult.Mode;
         }
 
         public override string[] GetData( TestResult test )
         {
-            return new string[4]
+            return new string[]
             {
                 test.StringId,
                 test.Name,
@@ -62,29 +64,39 @@ namespace OverSurgerySystem.UI.Pages.TestResults
 
         public static List<TestResult> FindFromPrototype( TestResult protoTestResult )
         {
-            LastPrototype = protoTestResult;
-            if( protoTestResult.Valid )
-            {
-                SearchResult.Clear();
-                TestResult TestResult = PatientsManager.GetTestResult( protoTestResult.Id );
-
-                if( TestResult != null && TestResult.Valid )
+            try
+            { 
+                if( protoTestResult.Valid )
                 {
-                    SearchResult.Add( TestResult );
+                    SearchResult.Clear();
+                    TestResult TestResult = PatientsManager.GetTestResult( protoTestResult.Id );
+
+                    if( TestResult != null && TestResult.Valid )
+                    {
+                        SearchResult.Add( TestResult );
+                    }
+
+                    return SearchResult;
                 }
-
-                return SearchResult;
-            }
             
-            SearchResult = PatientsManager.GetAllTestResults();
-            if( protoTestResult.Patient != null                                 ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Patient.Id == protoTestResult.Patient.Id                                          );
-            if( protoTestResult.MedicalLicenseNo.Length > 0                     ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.MedicalLicenseNo.ToUpper().Contains(  protoTestResult.MedicalLicenseNo.ToUpper()  ) );
-            if( protoTestResult.Name.Length > 0                                 ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Name.ToUpper().Contains(              protoTestResult.Name.ToUpper()              ) );
-            if( protoTestResult.Description.Length > 0                          ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Description.ToUpper().Contains(       protoTestResult.Description.ToUpper()       ) );
-            if( protoTestResult.Result.Length > 0                               ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Result.ToUpper().Contains(            protoTestResult.Result.ToUpper()            ) );
-            if( protoTestResult.Remark.Length > 0                               ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Remark.ToUpper().Contains(            protoTestResult.Remark.ToUpper()            ) );
-            if( EditTestResult.DateBefore != DatabaseObject.INVALID_DATETIME    ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.CreatedOn.Date <= EditTestResult.DateBefore                                       );
+                SearchResult = PatientsManager.GetAllTestResults();
+                if( protoTestResult.Patient != null                                 ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Patient.Id == protoTestResult.Patient.Id                                          );
+                if( protoTestResult.MedicalLicenseNo.Length > 0                     ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.MedicalLicenseNo.ToUpper().Contains(  protoTestResult.MedicalLicenseNo.ToUpper()  ) );
+                if( protoTestResult.Name.Length > 0                                 ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Name.ToUpper().Contains(              protoTestResult.Name.ToUpper()              ) );
+                if( protoTestResult.Description.Length > 0                          ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Description.ToUpper().Contains(       protoTestResult.Description.ToUpper()       ) );
+                if( protoTestResult.Result.Length > 0                               ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Result.ToUpper().Contains(            protoTestResult.Result.ToUpper()            ) );
+                if( protoTestResult.Remark.Length > 0                               ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Remark.ToUpper().Contains(            protoTestResult.Remark.ToUpper()            ) );
+                if( EditTestResult.DateBefore != DatabaseObject.INVALID_DATETIME    ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.CreatedOn.Date <= EditTestResult.DateBefore                                       );
+            
+                SearchResult.Sort( (c,o) => c.CreatedOn.CompareTo( o.CreatedOn ) );
+                LastSearchError = false;
+            }
+            catch
+            {
+                LastSearchError = true;
+            }
 
+            LastPrototype = protoTestResult;
             return SearchResult;
         }
     }
