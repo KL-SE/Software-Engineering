@@ -11,32 +11,41 @@ namespace OverSurgerySystem_Test
         public static City city;
         public static State state;
         public static Country country;
+        private static bool Initialized;
 
         public static void SetupAddresses()
         {
-            // Create a full test address...
-            postcode    = new PostalCode();
-            city        = new City();
-            state       = new State();
-            country     = new Country();
+            if( !Initialized )
+            {
+                // Create a full test address...
+                postcode    = new PostalCode();
+                city        = new City();
+                state       = new State();
+                country     = new Country();
             
-            country.Name        = "Test Country";
-            state.Name          = "Test State";
-            city.Name           = "Test City";
-            postcode.Postcode   = "00000";
+                country.Name        = "Test Country";
+                state.Name          = "Test State";
+                city.Name           = "Test City";
+                postcode.Postcode   = "00000";
 
-            postcode.City       = city;
-            postcode.State      = state;
-            postcode.Country    = country;
+                postcode.City       = city;
+                postcode.State      = state;
+                postcode.Country    = country;
+                Initialized         = true;
+            }
         }
 
         public static void CleanupAddresses()
         {
-            // Delete the newly added data...
-            postcode.Delete();
-            city.Delete();
-            state.Delete();
-            country.Delete();
+            if( Initialized )
+            {
+                // Delete the newly added data...
+                postcode.Delete();
+                city.Delete();
+                state.Delete();
+                country.Delete();
+                Initialized = false;
+            }
         }
         
         [TestInitialize]

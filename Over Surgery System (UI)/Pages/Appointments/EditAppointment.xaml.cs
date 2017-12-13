@@ -85,6 +85,7 @@ namespace OverSurgerySystem.UI.Pages.Appointments
                 TimeHourBox.IsEnabled                   = false;
                 TimeMinBox.IsEnabled                    = false;
                 TimeMPicker.IsEnabled                   = false;
+                ClearStaffButton.IsEnabled              = false;
                 ClearPatientButton.IsEnabled            = false;
 
                 PatientIdButton.Content     = "View";
@@ -96,7 +97,7 @@ namespace OverSurgerySystem.UI.Pages.Appointments
                 EndImg.Visibility   = Visibility.Collapsed;
                 EndText.Text        = "Cancelled";
             }
-            else if( CurrentItem.DateAppointed < DateTime.Now )
+            else if( CurrentItem.Ended )
             {
                 EndImg.Visibility   = Visibility.Collapsed;
                 EndText.Text        = "Completed";

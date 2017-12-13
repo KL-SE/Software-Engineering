@@ -155,8 +155,8 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
             PopulateMedications();
             
             EndButton.IsEnabled                 = IsEdit && CurrentItem.Valid;
-            StartDatePicker.IsEnabled           = !IsView && ( CurrentItem.StartDate > DateTime.Now.Date || !CurrentItem.Valid );
-            EndDatePicker.IsEnabled             = !IsView && CurrentItem.EndDate >= DateTime.Now.Date;
+            StartDatePicker.IsEnabled           = !IsView && ( !CurrentItem.Started || !CurrentItem.Valid );
+            EndDatePicker.IsEnabled             = !IsView && !CurrentItem.Ended;
             PrescriptionIdBox.IsEnabled         = IsFind;
 
             EndText.Foreground = EndButton.IsEnabled ? Brushes.Black : Brushes.Gray;
@@ -397,7 +397,7 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
                 EndPrescription.OnConfirm   = () =>
                 {
                     CurrentItem.Load();
-                    CurrentItem.EndDate = DateTime.Now.Date;
+                    CurrentItem.Ended = true;
                     CurrentItem.Save();
 
                     Mode = View | BackOnly;

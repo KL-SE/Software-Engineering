@@ -13,6 +13,8 @@ namespace OverSurgerySystem.Core.Patients
         {
             Prescription    = prescription;
             Base            = medication;
+            Name            = medication.Name;
+            Code            = medication.Code;
         }
         
         // Inherited Functions

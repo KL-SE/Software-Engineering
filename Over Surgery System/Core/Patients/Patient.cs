@@ -8,7 +8,7 @@ namespace OverSurgerySystem.Core.Patients
 {
     public class Patient : DatabaseObject
     {
-        public PersonalDetails Details { private set; get; }
+        public PersonalDetails Details { set; get; }
 
         public string StringId
         {

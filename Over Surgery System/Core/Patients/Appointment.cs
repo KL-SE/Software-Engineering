@@ -55,6 +55,15 @@ namespace OverSurgerySystem.Core.Patients
             }
         }
         
+        // Appointment's date & time.
+        public bool Ended
+        {
+            get
+            {
+                return !Cancelled && dateAppointed < DateTime.Now;
+            }
+        }
+        
         // Returns whether the appointment is active, i.e: it is not cancelled or passed it's date & time.
         public bool Active
         {

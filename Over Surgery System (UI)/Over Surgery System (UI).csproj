@@ -75,6 +75,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Pages\Appointments\EndAppointment.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Pages\Appointments\FindAppointment.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -91,6 +95,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\MainMenuButtons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Pages\MedicalStaffs\EditAvailableDate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -98,10 +106,6 @@
     <Page Include="Pages\MedicalStaffs\EditWorkingDay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\MainMenuButtons.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Pages\Patients\EditPatient.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -116,6 +120,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Pages\Prescriptions\EditPrescription.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\Prescriptions\EndPrescription.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -191,6 +199,9 @@
     <Compile Include="Pages\Appointments\EditAppointment.xaml.cs">
       <DependentUpon>EditAppointment.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\Appointments\EndAppointment.xaml.cs">
+      <DependentUpon>EndAppointment.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Appointments\FindAppointment.xaml.cs">
       <DependentUpon>FindAppointment.xaml</DependentUpon>
     </Compile>
@@ -206,14 +217,14 @@
     <Compile Include="Pages\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\MainMenuButtons.xaml.cs">
+      <DependentUpon>MainMenuButtons.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\MedicalStaffs\EditAvailableDate.xaml.cs">
       <DependentUpon>EditAvailableDate.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\MedicalStaffs\EditWorkingDay.xaml.cs">
       <DependentUpon>EditWorkingDay.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\MainMenuButtons.xaml.cs">
-      <DependentUpon>MainMenuButtons.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\Patients\EditPatient.xaml.cs">
       <DependentUpon>EditPatient.xaml</DependentUpon>
@@ -226,6 +237,9 @@
     </Compile>
     <Compile Include="Pages\Prescriptions\EditPrescription.xaml.cs">
       <DependentUpon>EditPrescription.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Prescriptions\EndPrescription.xaml.cs">
+      <DependentUpon>EndPrescription.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\Prescriptions\FindPrescription.xaml.cs">
       <DependentUpon>FindPrescription.xaml</DependentUpon>

@@ -20,7 +20,7 @@ namespace OverSurgerySystem.Core.Staffs
         protected string passwordSalt;
         protected string passwordHash;
 
-        public DateTime DateJoined      { set; get; }
+        public DateTime dateJoined;
         public PersonalDetails Details  { set; get; }
         public bool Active              { set; get; }
 
@@ -55,6 +55,19 @@ namespace OverSurgerySystem.Core.Staffs
             Details = new PersonalDetails();
             if( !( this is MedicalStaff || this is Receptionist ) )
                 throw new UnknownStaffTypeError();
+        }
+
+        // Date Joined
+        public DateTime DateJoined
+        {
+            set
+            {
+                dateJoined = value.Date;
+            }
+            get
+            {
+                return dateJoined;
+            }
         }
 
         // Password Generation
@@ -133,7 +146,7 @@ namespace OverSurgerySystem.Core.Staffs
             {
                 passwordHash    = reader.GetString( 0 );
                 passwordSalt    = reader.GetString( 1 );
-                DateJoined      = reader.GetDateTime( 2 );
+                dateJoined      = reader.GetDateTime( 2 );
                 detailsId       = reader.GetInt32( 3 );
                 Active          = reader.GetByte( 4 ) > 0 ? true : false;
                 StaffsManager.Add( this );

@@ -6,7 +6,7 @@
         private const string DATABASE_NAME          = "oversurgerysystem";
         private const string DATABASE_ADDRESS       = "localhost";
         private const string DATABASE_USER          = "root";
-        private const string DATABASE_PASSWORD      = "root";
+        private const string DATABASE_PASSWORD      = "";
         private const int DATABASE_PORT             = 3306;
 
         // Static class containing all the names of the tables in use, for reference and to avoid magic strings.

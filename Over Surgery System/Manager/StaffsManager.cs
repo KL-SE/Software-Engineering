@@ -106,7 +106,7 @@ namespace OverSurgerySystem.Manager
 
                 return staff;
             }
-            catch( UnknownStaffTypeError e )
+            catch( UnknownStaffTypeError )
             {
                 return null;
             }

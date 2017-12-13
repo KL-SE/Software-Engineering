@@ -29,7 +29,7 @@ namespace OverSurgerySystem_Test
                 Identification identification   = new Identification();
                 identification.Value            = "112233-10-111" + i;
                 identification.Owner            = details;
-                details.Identifications.Add( identification );
+                details.AddIdentification( identification );
             }
 
             for( int i = 0 ; i < 5 ; i++ )
@@ -37,7 +37,7 @@ namespace OverSurgerySystem_Test
                 ContactNumber contactNumber = new ContactNumber();
                 contactNumber.Number        = "012-345678" + i;
                 contactNumber.Owner         = details;
-                details.ContactNumbers.Add( contactNumber );
+                details.AddContactNumber( contactNumber );
             }
         }
 

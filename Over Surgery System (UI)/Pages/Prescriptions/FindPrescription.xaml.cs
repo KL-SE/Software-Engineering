@@ -47,7 +47,7 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
             {
                 prescription.StringId,
                 prescription.Patient.StringId,
-                prescription.Name == null ? "No Name" : prescription.Name,
+                ( prescription.Name == null ? "No Name" : prescription.Name ) + ( prescription.Ended ? " (Ended)" : "" ),
                 prescription.EndDate.ToString()
             };
         }

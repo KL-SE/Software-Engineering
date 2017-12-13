@@ -52,6 +52,14 @@
   <ItemGroup>
     <Compile Include="Core\Base\AddressTest.cs" />
     <Compile Include="Core\Base\PersonalDetailsTest.cs" />
+    <Compile Include="Core\Patients\TestResultTest.cs" />
+    <Compile Include="Core\Patients\AppointmentTest.cs" />
+    <Compile Include="Core\Patients\PrescriptionTest.cs" />
+    <Compile Include="Core\Patients\MedicationTest.cs" />
+    <Compile Include="Core\Staffs\LeaveDateTest.cs" />
+    <Compile Include="Core\Staffs\WorkingDaysTest.cs" />
+    <Compile Include="Core\Staffs\StaffTest.cs" />
+    <Compile Include="Core\Patients\PatientTest.cs" />
     <Compile Include="Database\DatabaseObjectTest.cs" />
     <Compile Include="Database\DatabaseTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
