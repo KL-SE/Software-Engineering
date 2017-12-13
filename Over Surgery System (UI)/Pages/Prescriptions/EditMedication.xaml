@@ -28,12 +28,12 @@
 
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <core:LookupTextBox x:Name="CodeBox" Width="700"/>
+                    <core:LookupTextBox x:Name="CodeBox" Width="700" MaxLength="20"/>
                     <Button Name="CodeClearButton" Content="Clear"/>
                 </StackPanel>
                 
                 <StackPanel Orientation="Horizontal">
-                    <core:LookupTextBox x:Name="NameBox" Width="700"/>
+                    <core:LookupTextBox x:Name="NameBox" Width="700" MaxLength="50"/>
                     <Button Name="NameClearButton" Content="Clear"/>
                 </StackPanel>
 

@@ -130,30 +130,31 @@ namespace OverSurgerySystem.UI.Pages.MedicalStaffs
 
         private void ShowStaffsInResult()
         {
+
             try
             {
                 RecordFields();
+                FindStaff.SearchResult.Clear();
                 List<Staff> results = StaffsManager.GetAllStaffs();
 
                 results = ManagerHelper.Filter( results , e =>
                 {
                     return e is MedicalStaff && !( ( MedicalStaff ) e ).IsOnLeave( SelectedDate );
                 });
-
-                FindStaff.AcquireList( results  );
-                FindStaff.NoResetButton = true;
-                FindStaff.OnSelect      = OnViewStaff;
-                FindStaff.OnCancel      = () => { App.GoToPage( this ); FindStaff.NoResetButton = false; };
-
+                
+                FindStaff.AcquireList( results );
                 results.Sort( (c,o) => c.Details.FullName.ToUpper().CompareTo( o.Details.FullName.ToUpper() ) );
-
-                App.GoToFindStaffResultPage();
             }
             catch
             {
-                ShowMessage( "Failed to load data. Please check your connection." );
+                FindStaff.LastSearchError = true;
             }
 
+            FindStaff.NoResetButton = true;
+            FindStaff.OnSelect      = OnViewStaff;
+            FindStaff.OnCancel      = () => { App.GoToPage( this ); FindStaff.NoResetButton = false; };
+            App.GoToFindStaffResultPage();
+            App.SetTitle( "Check Staff Availability | Available" );
         }
 
         private void OnViewStaff( Staff staff )
@@ -163,15 +164,23 @@ namespace OverSurgerySystem.UI.Pages.MedicalStaffs
 
         private void StartFindStaff( object o , RoutedEventArgs e )
         {
-            RecordFields();
-            FindStaff.OnSelect              = OnSelectStaff;
-            FindStaff.OnFind                = OnFindStaff;
-            FindStaff.OnFound               = OnConfirmStaff;
-            FindStaff.OnCancel              = () => App.GoToPage( this );
-            EditStaff.RestrictActive        = true;
-            EditStaff.RestrictAdmin         = true;
-            EditStaff.RestrictReceptionist  = true;
-            App.GoToEditStaffPage( FindStaff.LastPrototype , EditStaff.Find | EditStaff.Restricted );
+            if( SelectedLeaveDate != null )
+            {
+                EditStaff.OnCancel  = () => App.GoToPage( this );
+                App.GoToEditStaffPage( SelectedLeaveDate.Owner , EditStaff.View | EditStaff.BackOnly );
+            }
+            else
+            {
+                RecordFields();
+                FindStaff.OnSelect              = OnSelectStaff;
+                FindStaff.OnFind                = OnFindStaff;
+                FindStaff.OnFound               = OnConfirmStaff;
+                FindStaff.OnCancel              = () => App.GoToPage( this );
+                EditStaff.RestrictActive        = true;
+                EditStaff.RestrictAdmin         = true;
+                EditStaff.RestrictReceptionist  = true;
+                App.GoToEditStaffPage( FindStaff.LastPrototype , EditStaff.Find | EditStaff.Restricted );
+            }
         }
 
         public void OnFindStaff( Staff staff )

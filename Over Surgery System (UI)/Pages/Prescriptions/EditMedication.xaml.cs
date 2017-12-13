@@ -53,6 +53,11 @@ namespace OverSurgerySystem.UI.Pages.Patients
                 CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
                 CancelButtonText.Text       = "Back";
             }
+
+            if( IsNoBack )
+            {
+                CancelButton.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void OnLoad( object o , EventArgs e )

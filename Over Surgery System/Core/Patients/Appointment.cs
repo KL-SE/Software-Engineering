@@ -30,7 +30,10 @@ namespace OverSurgerySystem.Core.Patients
         {
             try
             {
-                return Int32.Parse( StrId.Substring( 2 ) );
+                if( StrId.ToUpper().StartsWith( "AP" ) )
+                    return Int32.Parse( StrId.Substring( 2 ) );
+
+                return INVALID_ID;
             }
             catch
             {
@@ -87,7 +90,7 @@ namespace OverSurgerySystem.Core.Patients
                 staffId         = reader.GetInt32( 0 );
                 patientId       = reader.GetInt32( 1 );
                 Remark          = reader.GetString( 2 );
-                DateAppointed   = reader.GetDateTime( 3 );
+                dateAppointed   = reader.GetDateTime( 3 );
                 Cancelled       = reader.GetByte( 4 ) > 0 ? true : false;
                 PatientsManager.Add( this );
             }

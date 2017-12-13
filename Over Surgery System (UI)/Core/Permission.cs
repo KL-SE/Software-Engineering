@@ -9,19 +9,20 @@ namespace OverSurgerySystem.UI.Core
 {
     public abstract class Permission
     {
-        public static bool HaveReceptionistPrivilege    { get => App.LoggedInStaff is Receptionist;             }
-        public static bool HaveMedicalPrivilege         { get => App.LoggedInStaff is MedicalStaff;             }
-        public static bool HaveAdminPrivilege           { get => Receptionist.IsAdmin(  App.LoggedInStaff );    }
-        public static bool HaveGPPrivilege              { get => MedicalStaff.IsGP(     App.LoggedInStaff );    }
-        public static bool HaveNursePrivilege           { get => MedicalStaff.IsNurse(  App.LoggedInStaff );    }
+        public static bool HaveReceptionistPrivilege    { get { return App.LoggedInStaff is Receptionist;           } }
+        public static bool HaveMedicalPrivilege         { get { return App.LoggedInStaff is MedicalStaff;           } }
+        public static bool HaveAdminPrivilege           { get { return Receptionist.IsAdmin(  App.LoggedInStaff );  } }
+        public static bool HaveGPPrivilege              { get { return MedicalStaff.IsGP(     App.LoggedInStaff );  } }
+        public static bool HaveNursePrivilege           { get { return MedicalStaff.IsNurse(  App.LoggedInStaff );  } }
         
-        public static bool CanAddStaffs                 { get => HaveAdminPrivilege;                                }
-        public static bool CanEditOtherStaffs           { get => HaveAdminPrivilege;                                }
-        public static bool CanEditTestResults           { get => HaveGPPrivilege;                                   }
-        public static bool CanAddTestResults            { get => HaveGPPrivilege;                                   }
-        public static bool CanPrescribePatients         { get => HaveGPPrivilege;                                   }
-        public static bool CanEditLeaveDates            { get => HaveAdminPrivilege || HaveReceptionistPrivilege;   }
-        public static bool CanAppointOtherStaffs        { get => HaveAdminPrivilege || HaveReceptionistPrivilege;   }
-        public static bool CanEditOtherStaffWorkingDays { get => HaveAdminPrivilege || HaveReceptionistPrivilege;   }
+        public static bool CanAddStaffs                 { get { return HaveAdminPrivilege;                              } }
+        public static bool CanEditOtherStaffs           { get { return HaveAdminPrivilege;                              } }
+        public static bool CanEditTestResults           { get { return HaveAdminPrivilege;                              } }
+        public static bool CanAddTestResults            { get { return HaveGPPrivilege;                                 } }
+        public static bool CanAddPrescription           { get { return HaveGPPrivilege;                                 } }
+        public static bool CanEditPrescription          { get { return HaveAdminPrivilege || HaveGPPrivilege;           } }
+        public static bool CanEditLeaveDates            { get { return HaveAdminPrivilege || HaveReceptionistPrivilege; } }
+        public static bool CanAppointOtherStaffs        { get { return HaveAdminPrivilege || HaveReceptionistPrivilege; } }
+        public static bool CanEditStaffWorkingDays      { get { return HaveAdminPrivilege || HaveReceptionistPrivilege; } }
     }
 }

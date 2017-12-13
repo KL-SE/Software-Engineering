@@ -22,7 +22,10 @@ namespace OverSurgerySystem.Core.Patients
         {
             try
             {
-                return Int32.Parse( StrId.Substring( 1 ) );
+                if( StrId.ToUpper().StartsWith( "P" ) )
+                    return Int32.Parse( StrId.Substring( 2 ) );
+
+                return INVALID_ID;
             }
             catch
             {
@@ -44,6 +47,7 @@ namespace OverSurgerySystem.Core.Patients
         {
             DatabaseQuery query = new DatabaseQuery( Database.Tables.PATIENTS );
             DoDelete( query );
+            Details.Delete();
             PatientsManager.Remove( this );
         }
 

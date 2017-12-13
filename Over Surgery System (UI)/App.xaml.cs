@@ -20,11 +20,12 @@ using OverSurgerySystem.UI.Pages.Appointments;
 using OverSurgerySystem.UI.Pages.Prescriptions;
 using OverSurgerySystem.UI.Pages.MedicalStaffs;
 using OverSurgerySystem.UI.Core;
+using OverSurgerySystem.Manager;
 
 namespace OverSurgerySystem.UI
 {
     /// <summary>
-    /// Interaction logic for App.xaml
+    /// Interaction logic for xaml
     /// </summary>
     public partial class App : Application
     {
@@ -112,21 +113,16 @@ namespace OverSurgerySystem.UI
         public static void GoToEditTestResultPage( TestResult test , int mode )
         {
             // For test, appointments and prescriptions, the staff field will be auto filled with the current staff ID.
-            TestResult arg = test;
-            if( test == null )
-            {
-                arg = new TestResult();
-                if( !Permission.HaveAdminPrivilege && LoggedInStaff is MedicalStaff )
-                {
-                    arg.MedicalLicenseNo = ( ( MedicalStaff ) LoggedInStaff ).LicenseNo;
-                }
-            }
-
+            TestResult arg = test == null ? new TestResult() : test;
             EditTestResult.Setup( arg , mode );
             if( EditTestResult.IsFind )
             {
                 EditTestResult.OnConfirm    = FindTestResult.OnInitialFind;
                 EditTestResult.OnCancel     = FindTestResult.OnInitialCancel;
+            }
+            else if( !arg.Valid && !Permission.HaveAdminPrivilege && LoggedInStaff is MedicalStaff )
+            {
+                arg.MedicalLicenseNo = ( ( MedicalStaff ) LoggedInStaff ).LicenseNo;
             }
             GoToPage( new EditTestResult() );
         }
@@ -140,11 +136,6 @@ namespace OverSurgerySystem.UI
             {
                 arg                 = new Appointment();
                 arg.DateAppointed   = DateTime.Now + new TimeSpan( 1 , 0 , 0 );
-
-                if( !Permission.HaveAdminPrivilege && LoggedInStaff is MedicalStaff )
-                {
-                    arg.MedicalStaff = ( MedicalStaff )( LoggedInStaff );
-                }
             }
 
             EditAppointment.Setup( arg , mode );
@@ -152,6 +143,10 @@ namespace OverSurgerySystem.UI
             {
                 EditAppointment.OnConfirm   = FindAppointment.OnInitialFind;
                 EditAppointment.OnCancel    = FindAppointment.OnInitialCancel;
+            }
+            else if( !arg.Valid && !Permission.HaveAdminPrivilege && LoggedInStaff is MedicalStaff )
+            {
+                arg.MedicalStaff = ( MedicalStaff )( LoggedInStaff );
             }
             GoToPage( new EditAppointment() );
         }
@@ -165,11 +160,6 @@ namespace OverSurgerySystem.UI
                 arg             = new Prescription();
                 arg.StartDate   = DateTime.Now.Date;
                 arg.EndDate     = DateTime.Now.Date.AddDays( 1 );
-
-                if( !Permission.HaveAdminPrivilege && LoggedInStaff is MedicalStaff )
-                {
-                    arg.Prescriber = ( MedicalStaff )( LoggedInStaff );
-                }
             }
 
             EditPrescription.Setup( arg , mode );
@@ -178,19 +168,23 @@ namespace OverSurgerySystem.UI
                 EditPrescription.OnConfirm   = FindPrescription.OnInitialFind;
                 EditPrescription.OnCancel    = FindPrescription.OnInitialCancel;
             }
+            else if ( !arg.Valid && !Permission.HaveAdminPrivilege && LoggedInStaff is MedicalStaff )
+            {
+                arg.Prescriber = ( MedicalStaff )( LoggedInStaff );
+            }
             GoToPage( new EditPrescription() );
         }
 
         public static void GoToMainMenu()
         {
             GoToPage( MainMenu.Instance );
-            if( App.LoggedInStaff != null )
+            if( LoggedInStaff != null )
             {
                 MainMenu.Instance.MenuButtons.Navigate( new MainMenuButtons() );
             }
             else
             {
-                App.DoLogout();
+                DoLogout();
             }
         }
         
@@ -200,52 +194,51 @@ namespace OverSurgerySystem.UI
             CurrentWindow.Title                 = title;
         }
 
-        public static void DoLogin( string username , string password )
+        public static void DoLogin( string str_id , string password )
         {
-            DoFakeLogin( username );
+            Staff staff = StaffsManager.GetStaffWithIdAndPassword( str_id , password );
+            DoLogin( staff );
+        }
+
+        public static void DoLogin( Staff staff )
+        {
+            LoggedInStaff = staff;
             GoToMainMenu();
             MenuBanner.Instance.UpdateLoginText();
+        }
+
+        public static bool HaveAdminAcount()
+        {
+            List<Receptionist> adminStaffs = StaffsManager.GetAdminReceptionists();
+            return adminStaffs.Count > 0;
         }
 
         public static void DoLogout()
         {
             GoToPage( new LoginPage() );
             
-            App.LoggedInStaff = null;
+            LoggedInStaff = null;
             MenuBanner.Instance.UpdateLoginText();
         }
 
-        private static void DoFakeLogin( string parameter )
+        // There is no staff in the system. Allow the user to create a staff.
+        public static void DoLastResortLogin()
         {
-            if( parameter != null )
+            Receptionist newAdmin = new Receptionist() { Admin = true };
+            
+            EditStaff.RestrictGP            = true;
+            EditStaff.RestrictNurse         = true;
+            EditStaff.RestrictReceptionist  = true;
+            EditStaff.OnCancel              = null;
+            EditStaff.OnConfirm             = (Staff staff) =>
             {
-                if( parameter.ToLower().Equals("nurse") )
-                {
-                    App.LoggedInStaff                   = new MedicalStaff();
-                    App.LoggedInStaff.Details.FirstName = "Nurse";
-                    App.LoggedInStaff.Details.LastName  = "Joy";
-                }
-                else if( parameter.ToLower().Equals("gp") )
-                {
-                    App.LoggedInStaff                   = new MedicalStaff();
-                    App.LoggedInStaff.Details.FirstName = "John";
-                    App.LoggedInStaff.Details.LastName  = "Row";
-                }
-                else if( parameter.ToLower().Equals("receptionist") )
-                {
-                    App.LoggedInStaff                   = new Receptionist();
-                    App.LoggedInStaff.Details.FirstName = "Mr.";
-                    App.LoggedInStaff.Details.LastName  = "Moderator";
-                }
-                else if( parameter.ToLower().Equals("admin") )
-                {
-                    Receptionist AdminReceptionist      = new Receptionist();
-                    App.LoggedInStaff                   = AdminReceptionist;
-                    AdminReceptionist.Details.FirstName = "God";
-                    AdminReceptionist.Details.LastName  = "Himself";
-                    AdminReceptionist.Admin             = true;
-                }
-            }
+                DoLogin( staff );
+                EditStaff.RestrictGP            = false;
+                EditStaff.RestrictNurse         = false;
+                EditStaff.RestrictReceptionist  = false;
+            };
+
+            GoToEditStaffPage( newAdmin , EditStaff.Edit | EditStaff.Restricted | EditStaff.NoBack );
         }
 
         public static void Close()      { CurrentWindow.Close();                            }

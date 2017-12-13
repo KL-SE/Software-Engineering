@@ -29,7 +29,10 @@ namespace OverSurgerySystem.Core.Patients
         {
             try
             {
-                return Int32.Parse( StrId.Substring( 3 ) );
+                if( StrId.ToUpper().StartsWith( "PRE" ) )
+                    return Int32.Parse( StrId.Substring( 3 ) );
+
+                return INVALID_ID;
             }
             catch
             {

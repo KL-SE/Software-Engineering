@@ -24,10 +24,10 @@ namespace OverSurgerySystem.UI.Pages.Address
     /// </summary>
     public partial class EditAddress : EditorPage<PostalCode>
     {
-        public static PostalCode        CurrentPostcode { set { CurrentItem = value; } get => CurrentItem;  }
-        public static City              CurrentCity     { set; get;                                         }
-        public static State             CurrentState    { set; get;                                         }
-        public static Country           CurrentCountry  { set; get;                                         }
+        public static PostalCode        CurrentPostcode { set { CurrentItem = value; } get { return CurrentItem;    } }
+        public static City              CurrentCity     { set; get;                                                 }
+        public static State             CurrentState    { set; get;                                                 }
+        public static Country           CurrentCountry  { set; get;                                                 }
 
         public static List<PostalCode>  PostcodesList   = new List<PostalCode>();
         public static List<City>        CitiesList      = new List<City>();
@@ -75,6 +75,18 @@ namespace OverSurgerySystem.UI.Pages.Address
                 ConfirmButton.Visibility    = Visibility.Collapsed;
                 CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
                 CancelButtonText.Text       = "Back";
+            }
+
+            if( IsBackOnly )
+            {
+                ConfirmButton.Visibility    = Visibility.Collapsed;
+                CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
+                CancelButtonText.Text       = "Back";
+            }
+
+            if( IsNoBack )
+            {
+                CancelButton.Visibility = Visibility.Collapsed;
             }
         }
 

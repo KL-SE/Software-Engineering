@@ -69,8 +69,8 @@ namespace OverSurgerySystem.UI.Pages.Patients
                 try
                 {
                     CurrentItem.Save();
-                    CurrentEditor.ShowMessage( "Patient saved." );
                     LoadDetails();
+                    CurrentEditor.ShowMessage( "Patient saved." );
                 }
                 catch
                 {

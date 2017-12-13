@@ -2,6 +2,8 @@
 using MySql.Data.MySqlClient;
 using OverSurgerySystem.Core.Base;
 using OverSurgerySystem.Manager;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace OverSurgerySystem.Core.Staffs
 {
@@ -15,11 +17,14 @@ namespace OverSurgerySystem.Core.Staffs
 
     public class Staff : DatabaseObject
     {
-        public string Password          { set; get; }
+        protected string passwordSalt;
+        protected string passwordHash;
+
         public DateTime DateJoined      { set; get; }
         public PersonalDetails Details  { set; get; }
         public bool Active              { set; get; }
 
+        // String ID for human readability.
         public string StringId
         {
             get
@@ -32,7 +37,10 @@ namespace OverSurgerySystem.Core.Staffs
         {
             try
             {
-                return Int32.Parse( StrId.Substring( 1 ) );
+                if( StrId.ToUpper().StartsWith( "S" ) )
+                    return Int32.Parse( StrId.Substring( 1 ) );
+
+                return INVALID_ID;
             }
             catch
             {
@@ -48,18 +56,72 @@ namespace OverSurgerySystem.Core.Staffs
             if( !( this is MedicalStaff || this is Receptionist ) )
                 throw new UnknownStaffTypeError();
         }
+
+        // Password Generation
+        // We will be generating more or less a one-way encryption by merging the user's password with a randomly generated number.
+        public string Password
+        {
+            set
+            {
+                passwordSalt    = GenerateSalt();
+                passwordHash    = GetPasswordHash( value , passwordSalt );
+            }
+        }
+        
+        // Generate a random salt of a length matching the database column's maximum length
+        public static string GenerateSalt()
+        {
+            byte[] buffer = new byte[Database.Tables.Staffs.PasswordSaltMaxLength];
+            new RNGCryptoServiceProvider().GetBytes( buffer );
+            return Convert.ToBase64String( buffer );
+        }
+
+        // Merge the salt and the password together and hash it with a suitable algorithm.
+        public static string GetPasswordHash( string password , string salt )
+        {
+            HashAlgorithm algorithm = new SHA256Managed();
+            byte[] bytesToHash      = Encoding.UTF8.GetBytes( password + salt );
+            byte[] hashedPassword   = algorithm.ComputeHash( bytesToHash );
+
+            // Of course everything is converted to string at the end of the day.
+            return Convert.ToBase64String( hashedPassword );            
+        }
+
+        // Lastly, a function to compare an incoming string with the hashed password.
+        // To do so, we combine the incoming string with the existing hash.
+        public bool IsPasswordCorrect( string inPassword )
+        {
+            string incomingHash = GetPasswordHash( inPassword , passwordSalt );
+            return passwordHash.Equals( incomingHash );
+        }
+
+        // And now a simple copy function because the password will be inacccessible outside of the class.
+        public void CopyPassword( Staff other )
+        {
+            passwordHash    = other.passwordHash;
+            passwordSalt    = other.passwordSalt;
+        }
+
+        // Also something to tell whether the staff have a password.
+        public bool HavePassword()
+        {
+            return passwordSalt != null && passwordHash != null;
+        }
         
         // Inherited Functions
         public override void Delete()
         {
             DatabaseQuery query = new DatabaseQuery( Database.Tables.STAFFS );
             DoDelete( query );
+            Details.Delete();
+            StaffsManager.Remove( this );
         }
 
         public override void Load()
         {
             DatabaseQuery query = new DatabaseQuery( Database.Tables.STAFFS );
-            query.Add( Database.Tables.Staffs.Password      );
+            query.Add( Database.Tables.Staffs.PasswordHash  );
+            query.Add( Database.Tables.Staffs.PasswordSalt  );
             query.Add( Database.Tables.Staffs.DateJoined    );
             query.Add( Database.Tables.Staffs.DetailsId     );
             query.Add( Database.Tables.Staffs.Active        );
@@ -67,12 +129,14 @@ namespace OverSurgerySystem.Core.Staffs
             MySqlDataReader reader  = DoLoad( query );
             int detailsId           = INVALID_ID;
             
-            if( reader.HasRows )
+            if( Loaded )
             {
-                Password    = reader.GetString( 0 );
-                DateJoined  = reader.GetDateTime( 1 );
-                detailsId   = reader.GetInt32( 2 );
-                Active      = reader.GetByte( 3 ) > 0 ? true : false;
+                passwordHash    = reader.GetString( 0 );
+                passwordSalt    = reader.GetString( 1 );
+                DateJoined      = reader.GetDateTime( 2 );
+                detailsId       = reader.GetInt32( 3 );
+                Active          = reader.GetByte( 4 ) > 0 ? true : false;
+                StaffsManager.Add( this );
             }
             
             reader.Close();
@@ -87,11 +151,14 @@ namespace OverSurgerySystem.Core.Staffs
 
             DatabaseQuery query = new DatabaseQuery( Database.Tables.STAFFS );
             query.Add( Database.Tables.Staffs.Type          , staffType         );
-            query.Add( Database.Tables.Staffs.Password      , Password          );
+            query.Add( Database.Tables.Staffs.PasswordHash  , passwordHash      );
+            query.Add( Database.Tables.Staffs.PasswordSalt  , passwordSalt      );
             query.Add( Database.Tables.Staffs.DateJoined    , DateJoined        );
             query.Add( Database.Tables.Staffs.DetailsId     , Details           );
             query.Add( Database.Tables.Staffs.Active        , Active ? 1 : 0    );
             DoSave( query );
+
+            StaffsManager.Add( this );
         }
     }
 }

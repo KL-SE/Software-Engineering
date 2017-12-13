@@ -46,15 +46,15 @@
                 <StackPanel>
                     <TextBlock Text="Staff:"/>
                     <TextBlock Name="DateText" Text="Working On:"/>
-                    <TextBlock Name="WorkingDayText" Text="Day:" Visibility="Collapsed"/>
-                    <TextBlock Name="WorkingOnText" Text="Working:" Visibility="Collapsed"/>
+                    <TextBlock Name="WorkingDayText" Text="Day:"/>
+                    <TextBlock Name="WorkingOnText" Text="Working:"/>
                 </StackPanel>
 
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBox Name="StaffIdBox" IsEnabled="False" Width="500"/>
-                        <Button Name="ClearStaffButton" Content="Clear"/>
                         <Button Name="StaffIdButton" Content="Find"/>
+                        <Button Name="ClearStaffButton" Content="Clear"/>
                     </StackPanel>
                 
                     <StackPanel Name="DutyDatePanel" Orientation="Horizontal">
@@ -62,7 +62,7 @@
                         <Button Name="ClearDutyDateButton" Content="Clear"/>
                     </StackPanel>
                     
-                    <Menu Name="DayPicker" Visibility="Collapsed">
+                    <Menu Name="DayPicker">
                         <MenuItem Name="DayPickerHeader" Header="- Select -">
                             <MenuItem Name="SetAsSunday"    Header="Sunday"/>
                             <MenuItem Name="SetAsMonday"    Header="Monday"/>
@@ -74,7 +74,7 @@
                         </MenuItem>
                     </Menu>
                     
-                    <Menu Name="IsWorkingPicker" Visibility="Collapsed">
+                    <Menu Name="IsWorkingPicker">
                         <MenuItem Name="IsWorkingPickerHeader" Header="Yes">
                             <MenuItem Name="SetAsWorking"    Header="Yes"/>
                             <MenuItem Name="SetAsNotWorking" Header="No"/>

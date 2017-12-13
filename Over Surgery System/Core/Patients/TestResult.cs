@@ -25,7 +25,10 @@ namespace OverSurgerySystem.Core.Patients
         {
             try
             {
-                return Int32.Parse( StrId.Substring( 4 ) );
+                if( StrId.ToUpper().StartsWith( "TEST" ) )
+                    return Int32.Parse( StrId.Substring( 4 ) );
+
+                return INVALID_ID;
             }
             catch
             {

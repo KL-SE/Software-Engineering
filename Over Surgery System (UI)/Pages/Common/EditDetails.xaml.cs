@@ -84,6 +84,11 @@ namespace OverSurgerySystem.UI.Pages.Common
                 CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
                 CancelButtonText.Text       = "Back";
             }
+
+            if( IsNoBack )
+            {
+                CancelButton.Visibility = Visibility.Collapsed;
+            }
         }
 
         public void OnLoad( object o , RoutedEventArgs e )
@@ -156,7 +161,7 @@ namespace OverSurgerySystem.UI.Pages.Common
                     deleteItem.Content      = "Delete";
                     deleteItem.Click       += ( object i , RoutedEventArgs a ) =>
                     {
-                        CurrentItem.Identifications.Remove( iden );
+                        CurrentItem.RemoveIdentification( iden );
                         IdentificationsList.Children.Remove( itemRow );
                     };
                 
@@ -194,7 +199,7 @@ namespace OverSurgerySystem.UI.Pages.Common
                     deleteItem.Content      = "Delete";
                     deleteItem.Click       += ( object i , RoutedEventArgs a ) =>
                     {
-                        CurrentItem.ContactNumbers.Remove( contactNo );
+                        CurrentItem.RemoveContactNumber( contactNo );
                         ContactNoList.Children.Remove( itemRow );
                     };
                 

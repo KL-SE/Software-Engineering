@@ -92,6 +92,26 @@ namespace OverSurgerySystem.Manager
         public static List<LeaveDate>   GetLeaveDatesByStaff( int id )  { return LeaveDateManager.Merge( Database.Tables.LEAVE_DATES    , ManagerHelper.GetEqualComparator( Database.Tables.LeaveDates.StaffId  , id    ) ); }
         public static List<WorkingDays> GetWorkingDaysByStaff( int id ) { return WorkingDaysManager.Merge( Database.Tables.WORKING_DAYS , ManagerHelper.GetEqualComparator( Database.Tables.WorkingDays.StaffId , id    ) ); }
         
+        // Getting whether an id and password combination leads to a staff.
+        public static Staff GetStaffWithIdAndPassword( string in_id , string password )
+        {
+            try
+            {
+                int id      = Staff.GetIdFromString( in_id );
+                Staff staff = GetStaff( id );
+                if( !staff.IsPasswordCorrect( password ) )
+                {
+                    throw new StaffNotFoundError();
+                }
+
+                return staff;
+            }
+            catch( UnknownStaffTypeError e )
+            {
+                return null;
+            }
+        }
+
         // Getting admin status through the staff ID.
         public static List<Receptionist> GetReceptionistsWithAdminStatus( bool admin )
         {
@@ -237,11 +257,11 @@ namespace OverSurgerySystem.Manager
     }
 
     [Serializable]
-    public class UnknownStaffTypeError: Exception
+    public class StaffNotFoundError: Exception
     {
-        public UnknownStaffTypeError() {}
-        public UnknownStaffTypeError( string message ) : base( message ) { }
-        public UnknownStaffTypeError( string message , Exception inner ) : base( message , inner ) { }
+        public StaffNotFoundError() {}
+        public StaffNotFoundError( string message ) : base( message ) { }
+        public StaffNotFoundError( string message , Exception inner ) : base( message , inner ) { }
     }
 
     public class StaffManagerBase<T> : Manager<T> where T: Staff, new()
@@ -249,6 +269,9 @@ namespace OverSurgerySystem.Manager
         // Custom load method for staffs because there are 2 types of staffs.
         public override T Load( int id )
         {
+            if( id == DatabaseObject.INVALID_ID )
+                throw new StaffNotFoundError();
+
             DatabaseQuery query = new DatabaseQuery( Database.Tables.STAFFS );
             query.Comparator    = new QueryComparator()
             {
@@ -278,7 +301,12 @@ namespace OverSurgerySystem.Manager
 
                 obj.Id = id;
             }
-
+            else
+            {
+                reader.Close();
+                throw new StaffNotFoundError();
+            }
+            
             reader.Close();
             if( obj != null )
                 obj.Load();

@@ -34,7 +34,7 @@ namespace OverSurgerySystem
                     sqlBuilder.Server                       = DATABASE_ADDRESS;
                     sqlBuilder.Port                         = DATABASE_PORT;
                     sqlBuilder.UserID                       = DATABASE_USER;
-                    //sqlBuilder.Password                     = DATABASE_PASSWORD;
+                    sqlBuilder.Password                     = DATABASE_PASSWORD;
             
                     try
                     {

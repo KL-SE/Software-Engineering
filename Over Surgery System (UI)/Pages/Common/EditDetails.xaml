@@ -35,9 +35,9 @@
             </StackPanel>
 
             <StackPanel>
-                <TextBox Name="FirstNameBox"/>
-                <TextBox Name="LastNameBox"/>
-                <TextBox Name="AddressBox"/>
+                <TextBox Name="FirstNameBox" MaxLength="30"/>
+                <TextBox Name="LastNameBox" MaxLength="30"/>
+                <TextBox Name="AddressBox" MaxLength="50"/>
                 <StackPanel Orientation="Horizontal">
                     <core:LookupTextBox x:Name="PostcodeBox" Width="700"/>
                     <Button Name="PostcodeButton" Content="Edit"/>

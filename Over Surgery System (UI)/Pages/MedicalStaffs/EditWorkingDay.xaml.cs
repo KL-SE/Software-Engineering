@@ -111,6 +111,19 @@ namespace OverSurgerySystem.UI.Pages.MedicalStaffs
         {
             StaffIdBox.Text = SearchStaff != null && SearchStaff.Valid ? SearchStaff.StringId : "";
             
+            switch( SelectedDay )
+            {
+                case( WorkingDays.Day.SUNDAY    ):  DayPickerHeader.Header = "Sunday";      break;
+                case( WorkingDays.Day.MONDAY    ):  DayPickerHeader.Header = "Monday";      break;
+                case( WorkingDays.Day.TUESDAY   ):  DayPickerHeader.Header = "Tuesday";     break;
+                case( WorkingDays.Day.WEDNESDAY ):  DayPickerHeader.Header = "Wednesday";   break;
+                case( WorkingDays.Day.THURSDAY  ):  DayPickerHeader.Header = "Thursday";    break;
+                case( WorkingDays.Day.FRIDAY    ):  DayPickerHeader.Header = "Friday";      break;
+                case( WorkingDays.Day.SATURDAY  ):  DayPickerHeader.Header = "Saturday";    break;
+            };
+                
+            IsWorkingPickerHeader.Header = SelectedWorkingDays == null || SelectedWorkingDays.WorkingOn( SelectedDay ) ? "Yes" : "No";
+
             // Find Mode
             if( !InEditMode )
             {
@@ -121,10 +134,22 @@ namespace OverSurgerySystem.UI.Pages.MedicalStaffs
 
                 DateText.Visibility         = Visibility.Visible;
                 DutyDatePanel.Visibility    = Visibility.Visible;
-                WorkingDayText.Visibility   = Visibility.Collapsed;
-                WorkingOnText.Visibility    = Visibility.Collapsed;
-                DayPicker.Visibility        = Visibility.Collapsed;
-                IsWorkingPicker.Visibility  = Visibility.Collapsed;
+
+                if( Permission.CanEditStaffWorkingDays )
+                {
+                    WorkingDayText.Visibility   = Visibility.Collapsed;
+                    WorkingOnText.Visibility    = Visibility.Collapsed;
+                    DayPicker.Visibility        = Visibility.Collapsed;
+                    IsWorkingPicker.Visibility  = Visibility.Collapsed;
+                    ModeButton.IsEnabled        = true;
+                    ModeButtonText.Foreground   = Brushes.Black;
+                }
+                else
+                {
+                    IsWorkingPicker.IsEnabled   = false;
+                    ModeButton.IsEnabled        = false;
+                    ModeButtonText.Foreground   = Brushes.Gray;
+                }
                 
                 ModeButtonImg.Source = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
                 ModeButtonText.Text  = "Edit";
@@ -135,25 +160,29 @@ namespace OverSurgerySystem.UI.Pages.MedicalStaffs
             // Edit Mode
             else
             {
-                switch( SelectedDay )
-                {
-                    case( WorkingDays.Day.SUNDAY    ):  DayPickerHeader.Header = "Sunday";      break;
-                    case( WorkingDays.Day.MONDAY    ):  DayPickerHeader.Header = "Monday";      break;
-                    case( WorkingDays.Day.TUESDAY   ):  DayPickerHeader.Header = "Tuesday";     break;
-                    case( WorkingDays.Day.WEDNESDAY ):  DayPickerHeader.Header = "Wednesday";   break;
-                    case( WorkingDays.Day.THURSDAY  ):  DayPickerHeader.Header = "Thursday";    break;
-                    case( WorkingDays.Day.FRIDAY    ):  DayPickerHeader.Header = "Friday";      break;
-                    case( WorkingDays.Day.SATURDAY  ):  DayPickerHeader.Header = "Saturday";    break;
-                };
-                
-                IsWorkingPickerHeader.Header = SelectedWorkingDays == null || SelectedWorkingDays.WorkingOn( SelectedDay ) ? "Yes" : "No";
-                
-                DateText.Visibility         = Visibility.Collapsed;
-                DutyDatePanel.Visibility    = Visibility.Collapsed;
                 WorkingDayText.Visibility   = Visibility.Visible;
                 WorkingOnText.Visibility    = Visibility.Visible;
                 DayPicker.Visibility        = Visibility.Visible;
                 IsWorkingPicker.Visibility  = Visibility.Visible;
+                
+                if( !Permission.CanEditStaffWorkingDays )
+                {
+                    DateText.Visibility         = Visibility.Visible;
+                    DutyDatePanel.Visibility    = Visibility.Visible;
+                    DayPicker.IsEnabled         = true;
+                    IsWorkingPicker.IsEnabled   = false;
+                    ModeButton.IsEnabled        = false;
+                    ModeButtonText.Foreground   = Brushes.Gray;
+                }
+                else
+                {
+                    DateText.Visibility         = Visibility.Collapsed;
+                    DutyDatePanel.Visibility    = Visibility.Collapsed;
+                    DayPicker.IsEnabled         = true;
+                    IsWorkingPicker.IsEnabled   = true;
+                    ModeButton.IsEnabled        = true;
+                    ModeButtonText.Foreground   = Brushes.Black;
+                }
                 
                 ModeButtonImg.Source = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/cross.png" ) );
                 ModeButtonText.Text  = "Cancel";
@@ -216,15 +245,20 @@ namespace OverSurgerySystem.UI.Pages.MedicalStaffs
             if( DutyDatePicker.SelectedDate != null )
             {
                 SelectedDate = DutyDatePicker.SelectedDate.Value;
-                switch( SelectedDate.DayOfWeek )
+                if( !Permission.CanEditStaffWorkingDays )
                 {
-                    case( DayOfWeek.Sunday       ): SelectedDay = WorkingDays.Day.SUNDAY;       break;
-                    case( DayOfWeek.Monday       ): SelectedDay = WorkingDays.Day.MONDAY;       break;
-                    case( DayOfWeek.Tuesday      ): SelectedDay = WorkingDays.Day.TUESDAY;      break;
-                    case( DayOfWeek.Wednesday    ): SelectedDay = WorkingDays.Day.WEDNESDAY;    break;
-                    case( DayOfWeek.Thursday     ): SelectedDay = WorkingDays.Day.THURSDAY;     break;
-                    case( DayOfWeek.Friday       ): SelectedDay = WorkingDays.Day.FRIDAY;       break;
-                    case( DayOfWeek.Saturday     ): SelectedDay = WorkingDays.Day.SATURDAY;     break;
+                    // User without global edit permission will see both date and days together.
+                    // So, in this case, we will not change the day of week.
+                    switch( SelectedDate.DayOfWeek )
+                    {
+                        case( DayOfWeek.Sunday       ): SelectedDay = WorkingDays.Day.SUNDAY;       break;
+                        case( DayOfWeek.Monday       ): SelectedDay = WorkingDays.Day.MONDAY;       break;
+                        case( DayOfWeek.Tuesday      ): SelectedDay = WorkingDays.Day.TUESDAY;      break;
+                        case( DayOfWeek.Wednesday    ): SelectedDay = WorkingDays.Day.WEDNESDAY;    break;
+                        case( DayOfWeek.Thursday     ): SelectedDay = WorkingDays.Day.THURSDAY;     break;
+                        case( DayOfWeek.Friday       ): SelectedDay = WorkingDays.Day.FRIDAY;       break;
+                        case( DayOfWeek.Saturday     ): SelectedDay = WorkingDays.Day.SATURDAY;     break;
+                    }
                 }
             }
         }
@@ -251,6 +285,19 @@ namespace OverSurgerySystem.UI.Pages.MedicalStaffs
                 try
                 {
                     SelectedWorkingDays.Load();
+
+                    // Check permission and reset to find mode if the user have on permission to edit.
+                    if( InEditMode && !Permission.CanEditStaffWorkingDays )
+                    {
+                        InEditMode                  = false;
+                        ModeButton.IsEnabled        = false;
+                        ModeButtonText.Foreground   = Brushes.Gray;
+                    }
+                    else
+                    {
+                        ModeButton.IsEnabled        = true;
+                        ModeButtonText.Foreground   = Brushes.Black;
+                    }
                 }
                 catch
                 {

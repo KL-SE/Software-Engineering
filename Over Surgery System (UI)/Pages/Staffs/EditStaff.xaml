@@ -29,6 +29,7 @@
                 <TextBlock Text="Active:"/>
                 <TextBlock Name="PasswordText" Text="Password:"/>
                 <TextBlock Text="Medical Licence Number:"/>
+                <TextBlock Text="Date Joined:"/>
             </StackPanel>
 
             <StackPanel>
@@ -48,7 +49,11 @@
                     </MenuItem>
                 </Menu>
                 <PasswordBox Name="PasswordField"/>
-                <TextBox Name="MedicalLicenceBox"/>
+                <TextBox Name="MedicalLicenceBox" MaxLength="20"/>
+                <StackPanel Orientation="Horizontal">
+                    <DatePicker Name="DateJoinedPicker" CalendarStyle="{StaticResource BiggerCalendar}"/>
+                    <Button Name="ClearDateJoinedButton" Content="Clear"/>
+                </StackPanel>
             </StackPanel>
         </StackPanel>
 

@@ -45,15 +45,16 @@
             <StackPanel>
                 <TextBox Name="TestIdBox"/>
                 <StackPanel Orientation="Horizontal">
-                    <TextBox Name="PatientIdBox" IsEnabled="False" Width="700"/>
+                    <TextBox Name="PatientIdBox" IsEnabled="False" Width="500"/>
+                    <Button Name="ClearPatientButton" Content="Clear"/>
                     <Button Name="PatientIdButton" Content="Find"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <core:LookupTextBox x:Name="LicenseNoBox" Width="700"/>
+                    <core:LookupTextBox x:Name="LicenseNoBox" Width="700" MaxLength="30"/>
                     <Button Name="LicenseNoButton" Content="Find"/>
                 </StackPanel>
                 <TextBox Name="MedStaffBox" IsEnabled="False"/>
-                <TextBox Name="TestNameBox"/>
+                <TextBox Name="TestNameBox" TextWrapping="Wrap" MaxLength="50"/>
             </StackPanel>
         </StackPanel>
                 

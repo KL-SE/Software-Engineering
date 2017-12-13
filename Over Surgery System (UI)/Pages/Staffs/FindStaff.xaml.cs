@@ -92,6 +92,7 @@ namespace OverSurgerySystem.UI.Pages.Staffs
                 if( protoStaff.Details.LastName.Length > 0                              ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.LastName.ToUpper().Contains(  protoStaff.Details.LastName.ToUpper()   ) );
                 if( protoStaff.Details.Address.Length > 0                               ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.Address.ToUpper().Contains(   protoStaff.Details.Address.ToUpper()    ) );
                 if( protoStaff.Details.DateOfBirth != DatabaseObject.INVALID_DATETIME   ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Details.DateOfBirth.Equals(           protoStaff.Details.DateOfBirth          ) );
+                if( protoStaff.DateJoined != DatabaseObject.INVALID_DATETIME            ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.DateJoined.Equals(                    protoStaff.DateJoined                   ) );
 
                 // Match the identifications
                 if( protoStaff.Details.Identifications.Count > 0 )

@@ -34,9 +34,11 @@ namespace OverSurgerySystem.UI.Pages
                 App.GoToEditTestResultPage( null , EditTestResult.Edit | EditTestResult.Restricted );
                 EditTestResult.OnConfirm    = null;
                 EditTestResult.OnCancel     = OnCancel;
+                App.SetTitle( "Manage Test Results | Add" );
             };
 
             FindTestResultButton.Click += HandleFindTest;
+            App.SetTitle( "Manage Test Results" );
         }
 
         public void OnLoad( object sender , EventArgs e )
@@ -54,22 +56,26 @@ namespace OverSurgerySystem.UI.Pages
             FindTestResult.OnFound  = null;
             FindTestResult.OnCancel = OnCancel;
             FindTestResult.OnSelect = HandleSelectTestResult;
+            App.SetTitle( "Manage Test Results | Find" );
         }
         
         public static void HandleSelectTestResult( TestResult test )
         {
-            if( Permission.CanEditTestResults || ( MedicalStaff.IsGP( App.LoggedInStaff ) && test.MedicalLicenseNo == ( ( MedicalStaff ) App.LoggedInStaff ).LicenseNo ) )
+            if( Permission.CanEditTestResults )
             {
+                App.SetTitle( "Manage Test Results | Edit" );
                 App.GoToEditTestResultPage( test , EditTestResult.Edit | EditTestResult.Restricted );
             }
             else
             {
+                App.SetTitle( "Manage Test Results | View" );
                 App.GoToEditTestResultPage( test , EditTestResult.View | EditTestResult.BackOnly );
             }
         }
         
         public static void OnCancel()
         {
+            EditTestResult.Reset();
             App.GoToMainMenu();
             if( Permission.CanAddTestResults )
             {

@@ -23,7 +23,7 @@
         
         <Button Name="EndButton" Height="90" Width="575" HorizontalAlignment="Right">
             <StackPanel Orientation="Horizontal">
-                <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/cross.png"/>
+                <Image Name="EndImg" Source="pack://application:,,,/Over Surgery System (UI);component/Resources/cross.png"/>
                 <TextBlock
                     Name="EndText"
                     Text="End Prescription"
@@ -44,19 +44,21 @@
 
             <StackPanel>
                 <TextBox Name="PrescriptionIdBox"/>
-                
+
                 <StackPanel Orientation="Horizontal">
-                    <TextBox Name="PatientIdBox" IsEnabled="False" Width="700"/>
+                    <TextBox Name="PatientIdBox" IsEnabled="False" Width="500"/>
+                    <Button Name="ClearPatientButton" Content="Clear"/>
                     <Button Name="PatientIdButton" Content="Find"/>
                 </StackPanel>
                 
                 <StackPanel Orientation="Horizontal">
-                    <core:LookupTextBox x:Name="PrescriberIdBox" IsEnabled="False" Width="700"/>
+                    <core:LookupTextBox x:Name="PrescriberIdBox" IsEnabled="False" Width="500"/>
+                    <Button Name="ClearPrescriberButton" Content="Clear"/>
                     <Button Name="PrescriberIdButton" Content="Find"/>
                 </StackPanel>
                 
-                <TextBox Name="NameBox"/>
-                <TextBox Name="RemarkBox" TextWrapping="Wrap" MaxLength="100"/>
+                <TextBox Name="NameBox" MaxLength="50"/>
+                <TextBox Name="RemarkBox" TextWrapping="Wrap"/>
             </StackPanel>
         </StackPanel>
         

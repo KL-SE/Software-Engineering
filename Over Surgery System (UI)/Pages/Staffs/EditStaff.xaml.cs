@@ -18,6 +18,7 @@ using OverSurgerySystem.Manager;
 using OverSurgerySystem.UI.Pages.Common;
 using OverSurgerySystem.UI.Pages.Address;
 using OverSurgerySystem.UI.Pages.Core;
+using OverSurgerySystem.UI.Core;
 
 namespace OverSurgerySystem.UI.Pages.Staffs
 {
@@ -69,12 +70,14 @@ namespace OverSurgerySystem.UI.Pages.Staffs
 
             if( IsView )
             {
-                StaffIdBox.IsEnabled        = false;
-                StaffType.IsEnabled         = false;
-                StaffTypeHeader.IsEnabled   = false;
-                StaffMode.IsEnabled         = false;
-                PasswordField.IsEnabled     = false;
-                MedicalLicenceBox.IsEnabled = false;
+                StaffIdBox.IsEnabled            = false;
+                StaffType.IsEnabled             = false;
+                StaffTypeHeader.IsEnabled       = false;
+                StaffMode.IsEnabled             = false;
+                PasswordField.IsEnabled         = false;
+                MedicalLicenceBox.IsEnabled     = false;
+                DateJoinedPicker.IsEnabled      = false;
+                ClearDateJoinedButton.IsEnabled = false;
             }
         }
 
@@ -82,7 +85,7 @@ namespace OverSurgerySystem.UI.Pages.Staffs
         {
             if( !CurrentItem.Valid )
             {
-                newStaff.Password   = CurrentItem.Password;
+                newStaff.CopyPassword( CurrentItem );
                 newStaff.Details    = CurrentItem.Details;
                 newStaff.DateJoined = CurrentItem.DateJoined;
                 newStaff.Active     = CurrentItem.Active;
@@ -133,8 +136,15 @@ namespace OverSurgerySystem.UI.Pages.Staffs
             if( CurrentItem.Valid )
                 StaffIdBox.Text = CurrentItem.StringId;
 
-            PasswordField.Password  = CurrentItem.Password;
-            StaffModeHeader.Header  = CurrentItem.Active ? "Yes" : "No";
+            PasswordField.Password          = "";
+            StaffModeHeader.Header          = CurrentItem.Active ? "Yes" : "No";
+
+            if( CurrentItem.DateJoined != DatabaseObject.INVALID_DATETIME )
+            {
+                DateJoinedPicker.SelectedDate   = CurrentItem.DateJoined;
+                DateJoinedPicker.IsEnabled      = IsFind || Permission.HaveAdminPrivilege;
+                ClearDateJoinedButton.IsEnabled = IsFind || Permission.HaveAdminPrivilege;
+            }
 
             if( CurrentItem is Receptionist )
             {
@@ -150,14 +160,24 @@ namespace OverSurgerySystem.UI.Pages.Staffs
             }
 
             EditDetails.Setup( CurrentDetail , Mode );
-            StaffIdBox.IsEnabled    = IsFind;
-            StaffType.IsEnabled     = ( IsFind || !CurrentItem.Valid ) && !IsView;
-            StaffMode.IsEnabled     = ( IsFind ||  CurrentItem.Valid ) && !IsView && !( IsRestricted && RestrictActive );
+            StaffIdBox.IsEnabled        = IsFind;
+            StaffType.IsEnabled         = ( IsFind || !CurrentItem.Valid ) && !IsView;
+            StaffMode.IsEnabled         = ( IsFind ||  CurrentItem.Valid ) && !IsView && !( IsRestricted && RestrictActive );
         }
 
         private void RecordFields()
         {
-            CurrentItem.Password = PasswordField.Password;
+            // Replace the password only if present.
+            if( PasswordField.Password.Length > 0 )
+            {
+                CurrentItem.Password = PasswordField.Password;
+            }
+
+            if( DateJoinedPicker.SelectedDate != null )
+            {
+                CurrentItem.DateJoined = DateJoinedPicker.SelectedDate.Value;
+            }
+
             if( CurrentItem is MedicalStaff )
             {
                 MedicalStaff staff  = ( MedicalStaff )( CurrentItem );
@@ -172,9 +192,21 @@ namespace OverSurgerySystem.UI.Pages.Staffs
 
             if( IsEdit )
             {
-                if( CurrentItem.Password.Length == 0 )
+                if( !CurrentItem.HavePassword() )
                 {
                     CurrentEditor.ShowMessage( "Enter a password." );
+                    return 0;
+                }
+
+                if( CurrentItem.DateJoined == DatabaseObject.INVALID_DATETIME )
+                {
+                    CurrentEditor.ShowMessage( "Enter the date joined." );
+                    return 0;
+                }
+
+                if( CurrentItem.DateJoined > DateTime.Now )
+                {
+                    CurrentEditor.ShowMessage( "Enter a valid join date." );
                     return 0;
                 }
 
@@ -201,8 +233,8 @@ namespace OverSurgerySystem.UI.Pages.Staffs
                 try
                 {
                     CurrentItem.Save();
-                    CurrentEditor.ShowMessage( "Staff saved." );
                     LoadDetails();
+                    CurrentEditor.ShowMessage( "Staff saved." );
                 }
                 catch
                 {

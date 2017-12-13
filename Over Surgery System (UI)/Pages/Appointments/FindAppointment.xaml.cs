@@ -47,7 +47,7 @@ namespace OverSurgerySystem.UI.Pages.Appointments
             {
                 appointment.StringId,
                 appointment.Patient.StringId,
-                appointment.Remark == null ? "No Remark" : appointment.Remark,
+                ( appointment.Remark == null ? "No Remark" : appointment.Remark ) + ( appointment.Cancelled ? " (Cancelled)" : "" ),
                 appointment.DateAppointed.ToString()
             };
         }
@@ -84,7 +84,6 @@ namespace OverSurgerySystem.UI.Pages.Appointments
                 if( protoAppointment.Remark.Length > 0                              ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Remark.ToUpper().Contains(   protoAppointment.Remark.ToUpper()    ) );
                 if( protoAppointment.Patient != null                                ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.Patient.Id == protoAppointment.Patient.Id                         );
                 if( protoAppointment.MedicalStaff != null                           ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.MedicalStaff.Id == protoAppointment.MedicalStaff.Id               );
-                if( !protoAppointment.Cancelled                                     ) SearchResult  = ManagerHelper.Filter( SearchResult , e => !e.Cancelled                                                        );
                 if( EditAppointment.SelectedDate != DatabaseObject.INVALID_DATETIME ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.DateAppointed.Date == EditAppointment.SelectedDate.Date           );
                 if( EditAppointment.DateAfter != DatabaseObject.INVALID_DATETIME    ) SearchResult  = ManagerHelper.Filter( SearchResult , e => e.DateAppointed.Date > EditAppointment.DateAfter.Date               );
 

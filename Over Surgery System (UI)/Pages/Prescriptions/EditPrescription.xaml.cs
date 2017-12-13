@@ -42,10 +42,13 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
             PatientIdButton.Click          += StartFindPatient;
             PrescriberIdButton.Click       += StartFindMedstaff;
             AddMedicationButton.Click      += StartFindMedication;
+            EndButton.Click                += (object o, RoutedEventArgs a) => DoEndPrescription();
             ConfirmButton.Click            += (object o, RoutedEventArgs a) => DoConfirm();
             CancelButton.Click             += (object o, RoutedEventArgs a) => DoCancel();
             ClearStartDateButton.Click     += (object o, RoutedEventArgs a) => StartDatePicker.SelectedDate = null;
             ClearEndDateButton.Click       += (object o, RoutedEventArgs a) => EndDatePicker.SelectedDate = null;
+            ClearPatientButton.Click       += (object o, RoutedEventArgs a) => { PatientIdBox.Text      = ""; CurrentItem.Patient       = null; HideMessage(); };
+            ClearPrescriberButton.Click    += (object o, RoutedEventArgs a) => { PrescriberIdBox.Text   = ""; CurrentItem.Prescriber    = null; HideMessage(); };
             ProtoMedStaff                   = new MedicalStaff();
             FindPatient.Reset();
 
@@ -77,6 +80,8 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
                 EndDatePicker.IsEnabled         = false;
                 ClearEndDateButton.IsEnabled    = false;
                 AddMedicationButton.IsEnabled   = false;
+                ClearPrescriberButton.IsEnabled = false;
+                ClearPatientButton.IsEnabled    = false;
 
                 PatientIdButton.Content         = "View";
                 PrescriberIdButton.Content      = "View";
@@ -86,12 +91,22 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
             {
                 PrescriptionIdBox.IsEnabled     = false;
                 PatientIdBox.IsEnabled          = false;
-                PrescriberIdBox.IsEnabled       = false;
                 DateCreatedBox.IsEnabled        = false;
+                PrescriberIdBox.IsEnabled       = false;
                 PrescriberIdButton.Content      = "View";
+                ClearPrescriberButton.IsEnabled = false;
 
                 if( CurrentItem.Valid )
-                    PatientIdButton.Content = "View";
+                {
+                    PatientIdButton.Content         = "View";
+                    ClearPatientButton.IsEnabled    = false;
+                }
+            }
+
+            if( CurrentItem.Ended )
+            {
+                EndImg.Visibility   = Visibility.Collapsed;
+                EndText.Text        = "Ended";
             }
 
             if( IsBackOnly )
@@ -99,6 +114,11 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
                 ConfirmButton.Visibility    = Visibility.Collapsed;
                 CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
                 CancelButtonText.Text       = "Back";
+            }
+
+            if( IsNoBack )
+            {
+                CancelButton.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -144,7 +164,7 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
 
         private void StartFindMedstaff( object o , RoutedEventArgs e )
         {
-            if( IsView || !IsRestricted )
+            if( IsView || IsRestricted )
             {
                 EditStaff.OnCancel  = () => App.GoToPage( this );
                 App.GoToEditStaffPage( CurrentItem.Prescriber , EditStaff.View | EditStaff.BackOnly );
@@ -271,6 +291,7 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
                 itemContent.Text        = med.Name;
                 itemContent.Width       = 700;
                 itemContent.IsEnabled   = false;
+                deleteItem.IsEnabled    = !IsView;
                 deleteItem.Content      = "Delete";
                 deleteItem.Click       += ( object i , RoutedEventArgs a ) =>
                 {
@@ -300,8 +321,8 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
         {
             CurrentItem.Name    = NameBox.Text;
             CurrentItem.Remark  = RemarkBox.Text;
-            EndBefore           = StartDatePicker.SelectedDate != null ? StartDatePicker.SelectedDate.Value : DatabaseObject.INVALID_DATETIME;
-            StartAfter          = EndDatePicker.SelectedDate != null ? EndDatePicker.SelectedDate.Value : DatabaseObject.INVALID_DATETIME;
+            StartAfter          = StartDatePicker.SelectedDate != null ? StartDatePicker.SelectedDate.Value : DatabaseObject.INVALID_DATETIME;
+            EndBefore           = EndDatePicker.SelectedDate != null ? EndDatePicker.SelectedDate.Value : DatabaseObject.INVALID_DATETIME;
             
             if( IsEdit && StartAfter < DateTime.Now.Date )
             {
@@ -309,7 +330,7 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
                 return false;
             }
             
-            if( IsEdit && ( EndBefore < DateTime.Now.Date || EndBefore < StartAfter ) )
+            if( IsEdit && EndBefore < StartAfter )
             {
                 ShowMessage( "Select a valid end date" );
                 return false;
@@ -333,8 +354,8 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
                 try
                 {
                     CurrentItem.Save();
-                    ShowMessage( "Prescription saved." );
                     LoadDetails();
+                    ShowMessage( "Prescription saved." );
                 }
                 catch
                 {
@@ -364,6 +385,29 @@ namespace OverSurgerySystem.UI.Pages.Prescriptions
             }
             
             OnCancel?.Invoke();
+        }
+
+        private void DoEndPrescription()
+        {
+            try
+            {
+                // Refresh the current item so we don't save a faulty item.
+                App.GoToPage( new EndPrescription() );
+                EndPrescription.OnCancel    = () => App.GoToPage( this );
+                EndPrescription.OnConfirm   = () =>
+                {
+                    CurrentItem.Load();
+                    CurrentItem.EndDate = DateTime.Now.Date;
+                    CurrentItem.Save();
+
+                    Mode = View | BackOnly;
+                    App.GoToPage( new EditPrescription() );
+                };
+            }
+            catch
+            {
+                ShowMessage( "Failed to load data. Please check your connection." );
+            }
         }
     }
 }

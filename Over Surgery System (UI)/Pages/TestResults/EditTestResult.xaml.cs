@@ -49,6 +49,7 @@ namespace OverSurgerySystem.UI.Pages.TestResults
             TestResultBox.TextChanged          += (object o, TextChangedEventArgs e) => HideMessage();
             TestRemarkBox.TextChanged          += (object o, TextChangedEventArgs e) => HideMessage();
             TestDatePicker.SelectedDateChanged += (object o, SelectionChangedEventArgs e) => HideMessage();
+            ClearPatientButton.Click           += (object o, RoutedEventArgs a) => { PatientIdBox.Text = ""; CurrentItem.Patient = null; HideMessage(); };
 
             ConfirmButton.Click            += (object o, RoutedEventArgs a) => DoConfirm();
             CancelButton.Click             += (object o, RoutedEventArgs a) => DoCancel();
@@ -74,6 +75,7 @@ namespace OverSurgerySystem.UI.Pages.TestResults
                 TestResultBox.IsEnabled         = false;
                 TestRemarkBox.IsEnabled         = false;
                 ClearTestDateButton.IsEnabled   = false;
+                ClearPatientButton.IsEnabled    = false;
 
                 PatientIdButton.Content     = "View";
                 LicenseNoButton.Content     = "View";
@@ -81,14 +83,13 @@ namespace OverSurgerySystem.UI.Pages.TestResults
 
             if( IsRestricted )
             {
-                TestIdBox.IsEnabled         = false;
-                PatientIdBox.IsEnabled      = false;
-                LicenseNoBox.IsEnabled      = false;
-                MedStaffBox.IsEnabled       = false;
-                PatientIdButton.Content     = "View";
-                
-                if( CurrentItem.Valid )
-                    LicenseNoButton.Content = "View";
+                TestIdBox.IsEnabled             = false;
+                PatientIdBox.IsEnabled          = false;
+                LicenseNoBox.IsEnabled          = false;
+                MedStaffBox.IsEnabled           = false;
+                ClearPatientButton.IsEnabled    = false;
+                PatientIdButton.Content         = "View";
+                LicenseNoButton.Content         = "View";
             }
 
             if( IsBackOnly )
@@ -96,6 +97,11 @@ namespace OverSurgerySystem.UI.Pages.TestResults
                 ConfirmButton.Visibility    = Visibility.Collapsed;
                 CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
                 CancelButtonText.Text       = "Back";
+            }
+
+            if( IsNoBack )
+            {
+                CancelButton.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -118,12 +124,12 @@ namespace OverSurgerySystem.UI.Pages.TestResults
             {
                 // This should NEVER be true.
                 MedStaffBox.Text            = "- Multiple Found -";
-                LicenseNoButton.IsEnabled   = !IsView;
+                LicenseNoButton.IsEnabled   = !IsView && !IsRestricted;
             }
             else
             {
                 MedStaffBox.Text            = "- External Examiner -";
-                LicenseNoButton.IsEnabled   = !IsView;
+                LicenseNoButton.IsEnabled   = !IsView && !IsRestricted;
             }
         }
 
@@ -291,8 +297,8 @@ namespace OverSurgerySystem.UI.Pages.TestResults
                 try
                 {
                     CurrentItem.Save();
-                    ShowMessage( "Test saved." );
                     LoadDetails();
+                    ShowMessage( "Test saved." );
                 }
                 catch
                 {

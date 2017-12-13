@@ -63,8 +63,8 @@
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBox Name="StaffIdBox" IsEnabled="False" Width="500"/>
-                        <Button Name="ClearStaffButton" Content="Clear"/>
                         <Button Name="StaffIdButton" Content="Find"/>
+                        <Button Name="ClearStaffButton" Content="Clear"/>
                     </StackPanel>
                 
                     <StackPanel Orientation="Horizontal">
@@ -72,7 +72,7 @@
                         <Button Name="ClearLeaveDateButton" Content="Clear"/>
                     </StackPanel>
                     
-                    <TextBox Name="RemarkBox" TextWrapping="Wrap" MaxLength="100"/>
+                    <TextBox Name="RemarkBox" TextWrapping="Wrap" MaxLength="250"/>
                 </StackPanel>
             </StackPanel>
 

@@ -23,7 +23,7 @@
         
         <Button Name="EndButton" Height="90" Width="575" HorizontalAlignment="Right">
             <StackPanel Orientation="Horizontal">
-                <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/cross.png"/>
+                <Image Name="EndImg" Source="pack://application:,,,/Over Surgery System (UI);component/Resources/cross.png"/>
                 <TextBlock
                     Name="EndText"
                     Text="Cancel Appointment"
@@ -39,6 +39,31 @@
                 <TextBlock Text="Patient:"/>
                 <TextBlock Text="Staff:"/>
                 <TextBlock Text="Remark:"/>
+            </StackPanel>
+
+            <StackPanel>
+                <TextBox Name="AppointmentIdBox"/>
+                
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Name="PatientIdBox" IsEnabled="False" Width="500"/>
+                    <Button Name="ClearPatientButton" Content="Clear"/>
+                    <Button Name="PatientIdButton" Content="Find"/>
+                </StackPanel>
+                
+                <StackPanel Orientation="Horizontal">
+                    <core:LookupTextBox x:Name="StaffIdBox" IsEnabled="False" Width="500"/>
+                    <Button Name="ClearStaffButton" Content="Clear"/>
+                    <Button Name="StaffIdButton" Content="Find"/>
+                </StackPanel>
+                
+                <TextBox Name="RemarkBox" TextWrapping="Wrap" MaxLength="500"/>
+            </StackPanel>
+        </StackPanel>
+                
+        <StackPanel
+            Orientation         = "Horizontal"
+            HorizontalAlignment = "Right">
+            <StackPanel>
                 <TextBlock Name="IncludeCancelledText" Text="Include Cancelled:" Visibility="Collapsed"/>
                 <TextBlock Name="DateCreatedText" Text="Date Created:"/>
                 <TextBlock Name="AppointmentDateText" Text="Appointment Date:"/>
@@ -46,20 +71,6 @@
             </StackPanel>
 
             <StackPanel>
-                <TextBox Name="AppointmentIdBox"/>
-                
-                <StackPanel Orientation="Horizontal">
-                    <TextBox Name="PatientIdBox" IsEnabled="False" Width="700"/>
-                    <Button Name="PatientIdButton" Content="Find"/>
-                </StackPanel>
-                
-                <StackPanel Orientation="Horizontal">
-                    <core:LookupTextBox x:Name="StaffIdBox" IsEnabled="False" Width="700"/>
-                    <Button Name="StaffIdButton" Content="Find"/>
-                </StackPanel>
-                
-                <TextBox Name="RemarkBox" TextWrapping="Wrap" MaxLength="100"/>
-                
                 <Menu Name="IncludeCancelled" Visibility="Collapsed">
                     <MenuItem Name="IncludeCancelledHeader" Header="No">
                         <MenuItem Name="SetIncludeCancelled" Header="Yes"/>

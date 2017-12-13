@@ -36,12 +36,15 @@ namespace OverSurgerySystem.UI.Pages
                 FindStaff.OnFound   = null;
                 FindStaff.OnCancel  = OnCancel;
                 FindStaff.OnSelect  = HandleSelectStaff;
+                App.SetTitle( "Manage Staffs | Find" );
             };
 
             if( !Receptionist.IsAdmin( App.LoggedInStaff ) )
             {
                 AddStaffText.Text = "Edit Your Detail";
             }
+
+            App.SetTitle( "Manage Staffs" );
         }
 
         public static void HandleAddStaff( object sender , RoutedEventArgs e )
@@ -52,6 +55,7 @@ namespace OverSurgerySystem.UI.Pages
                 App.GoToAddStaffPage();
                 EditStaff.OnConfirm = null;
                 EditStaff.OnCancel  = OnCancel;
+                App.SetTitle( "Manage Staffs | Add" );
             }
             else
             {
@@ -59,6 +63,7 @@ namespace OverSurgerySystem.UI.Pages
                 EditStaff.OnConfirm = null;
                 EditStaff.OnCancel  = () => App.GoToMainMenu();
                 App.GoToEditStaffPage( App.LoggedInStaff , EditStaff.Edit | EditStaff.Restricted );
+                App.SetTitle( "Manage Staffs | Edit" );
             }
         }
 
@@ -68,10 +73,12 @@ namespace OverSurgerySystem.UI.Pages
         {
             if( staff.Id == App.LoggedInStaff.Id || Permission.CanEditOtherStaffs )
             {
+                App.SetTitle( "Manage Staffs | Edit" );
                 App.GoToEditStaffPage( staff , EditStaff.Edit | EditStaff.Restricted );
             }
             else
             {
+                App.SetTitle( "Manage Staffs | View" );
                 App.GoToEditStaffPage( staff , EditStaff.View | EditStaff.BackOnly );
             }
         }
@@ -79,6 +86,7 @@ namespace OverSurgerySystem.UI.Pages
         // Go back to main menu if the action is cancelled 
         public static void OnCancel()
         {
+            EditStaff.Reset();
             App.GoToMainMenu();
             MainMenu.Instance.Loaded += NavigateToMenu;
         }

@@ -44,10 +44,13 @@ namespace OverSurgerySystem.UI.Pages.Appointments
             StaffIdButton.Click                += StartFindMedstaff;
             ConfirmButton.Click                += (object o, RoutedEventArgs a) => DoConfirm();
             CancelButton.Click                 += (object o, RoutedEventArgs a) => DoCancel();
+            EndButton.Click                    += (object o, RoutedEventArgs a) => DoCancelAppointment();
             ClearCreationDateButton.Click      += (object o, RoutedEventArgs a) => CreationDatePicker.SelectedDate = null;
             ClearAppointmentDateButton.Click   += (object o, RoutedEventArgs a) => AppointmentDatePicker.SelectedDate = null;
-            SetIncludeCancelled.Click          += (object o, RoutedEventArgs a) => { IncludeCancelledHeader.Header = "Yes"; CurrentItem.Cancelled = true;  HideMessage(); };
-            SetExcludeCancelled.Click          += (object o, RoutedEventArgs a) => { IncludeCancelledHeader.Header = "No";  CurrentItem.Cancelled = false; HideMessage(); };
+            SetIncludeCancelled.Click          += (object o, RoutedEventArgs a) => { IncludeCancelledHeader.Header = "Yes"; CurrentItem.Cancelled = true;  HideMessage();   };
+            SetExcludeCancelled.Click          += (object o, RoutedEventArgs a) => { IncludeCancelledHeader.Header = "No";  CurrentItem.Cancelled = false; HideMessage();   };
+            ClearPatientButton.Click           += (object o, RoutedEventArgs a) => { PatientIdBox.Text  = ""; CurrentItem.Patient       = null; HideMessage();              };
+            ClearStaffButton.Click             += (object o, RoutedEventArgs a) => { StaffIdBox.Text    = ""; CurrentItem.MedicalStaff  = null; HideMessage();              };
             ProtoMedStaff                       = new MedicalStaff();
             FindPatient.Reset();
             
@@ -82,9 +85,21 @@ namespace OverSurgerySystem.UI.Pages.Appointments
                 TimeHourBox.IsEnabled                   = false;
                 TimeMinBox.IsEnabled                    = false;
                 TimeMPicker.IsEnabled                   = false;
+                ClearPatientButton.IsEnabled            = false;
 
                 PatientIdButton.Content     = "View";
                 StaffIdButton.Content       = "View";
+            }
+
+            if( CurrentItem.Cancelled )
+            {
+                EndImg.Visibility   = Visibility.Collapsed;
+                EndText.Text        = "Cancelled";
+            }
+            else if( CurrentItem.DateAppointed < DateTime.Now )
+            {
+                EndImg.Visibility   = Visibility.Collapsed;
+                EndText.Text        = "Completed";
             }
 
             if( IsRestricted )
@@ -95,10 +110,16 @@ namespace OverSurgerySystem.UI.Pages.Appointments
                 ClearCreationDateButton.IsEnabled   = false;
 
                 if( !Permission.CanAppointOtherStaffs )
-                    StaffIdButton.Content = "View";
+                {
+                    StaffIdButton.Content       = "View";
+                    ClearStaffButton.IsEnabled  = false;
+                }
                 
                 if( CurrentItem.Valid )
-                    PatientIdButton.Content = "View";
+                {
+                    PatientIdButton.Content         = "View";
+                    ClearPatientButton.IsEnabled    = false;
+                }
             }
 
             if( IsBackOnly )
@@ -106,6 +127,11 @@ namespace OverSurgerySystem.UI.Pages.Appointments
                 ConfirmButton.Visibility    = Visibility.Collapsed;
                 CancelButtonImg.Source      = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/main_menu.png" ) );
                 CancelButtonText.Text       = "Back";
+            }
+
+            if( IsNoBack )
+            {
+                CancelButton.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -162,7 +188,7 @@ namespace OverSurgerySystem.UI.Pages.Appointments
                 CreationDatePicker.Foreground = Brushes.White;
             }
             
-            EndButton.IsEnabled                 = IsEdit && CurrentItem.Valid;
+            EndButton.IsEnabled                 = IsEdit && CurrentItem.Valid && ( CurrentItem.MedicalStaff.Id == App.LoggedInStaff.Id || Permission.CanAppointOtherStaffs );
             ClearCreationDateButton.IsEnabled   = IsFind;
             AppointmentIdBox.IsEnabled          = IsFind;
             CreationDatePicker.IsEnabled        = IsFind;
@@ -173,7 +199,7 @@ namespace OverSurgerySystem.UI.Pages.Appointments
 
         private void StartFindMedstaff( object o , RoutedEventArgs e )
         {
-            if( IsView || ( IsRestricted && !CurrentItem.Valid && !Permission.CanAppointOtherStaffs ) )
+            if( IsView || ( IsRestricted && ( CurrentItem.Valid || !Permission.CanAppointOtherStaffs ) ) )
             {
                 EditStaff.OnCancel  = () => App.GoToPage( this );
                 App.GoToEditStaffPage( CurrentItem.MedicalStaff , EditStaff.View | EditStaff.BackOnly );
@@ -196,7 +222,7 @@ namespace OverSurgerySystem.UI.Pages.Appointments
         {
             if( IsView || ( IsRestricted && CurrentItem.Valid ) )
             {
-                EditStaff.OnCancel  = () => App.GoToPage( this );
+                EditPatient.OnCancel = () => App.GoToPage( this );
                 App.GoToEditPatientPage( CurrentItem.Patient , EditPatient.View | EditPatient.BackOnly );
             }
             else
@@ -350,8 +376,8 @@ namespace OverSurgerySystem.UI.Pages.Appointments
                     }
 
                     CurrentItem.Save();
-                    ShowMessage( "Appointment saved." );
                     LoadDetails();
+                    ShowMessage( "Appointment saved." );
                 }
                 catch
                 {
@@ -380,6 +406,29 @@ namespace OverSurgerySystem.UI.Pages.Appointments
                 ShowMessage( "Failed to load data. Please check your connection." );
             }
             OnCancel?.Invoke();
+        }
+
+        private void DoCancelAppointment()
+        {
+            try
+            {
+                // Refresh the current item so we don't save a faulty item.
+                App.GoToPage( new EndAppointment() );
+                EndAppointment.OnCancel     = () => App.GoToPage( this );
+                EndAppointment.OnConfirm    = () =>
+                {
+                    CurrentItem.Load();
+                    CurrentItem.Cancelled = true;
+                    CurrentItem.Save();
+
+                    Mode = View | BackOnly;
+                    App.GoToPage( new EditAppointment() );
+                };
+            }
+            catch
+            {
+                ShowMessage( "Failed to load data. Please check your connection." );
+            }
         }
     }
 }

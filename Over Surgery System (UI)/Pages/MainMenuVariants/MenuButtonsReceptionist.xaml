@@ -1,0 +1,63 @@
+﻿<Page x:Class="OverSurgerySystem.UI.Pages.MainMenuVariants.MenuButtonsReceptionist"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:OverSurgerySystem.UI.Pages.MainMenuVariants"
+      mc:Ignorable="d" 
+      d:DesignHeight="300"
+      d:DesignWidth="300"
+      Title="MenuButtonsReceptionist">
+
+    <Page.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Over Surgery System (UI);component/Styles/MenuStyles.xaml"/>
+    </Page.Resources>
+
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Name="ManageAppointmentsButton">
+                <StackPanel>
+                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/manage_appointments.png"/>
+                    <TextBlock Text="Manage Appointments"/>
+                </StackPanel>
+            </Button>
+
+            <Button Name="StaffsAvailabilityButton">
+                <StackPanel>
+                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/staffs_availability.png"/>
+                    <TextBlock Text="Check Staff Availability"/>
+                </StackPanel>
+            </Button>
+
+            <Button Name="StaffsOnDutyButton">
+                <StackPanel>
+                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/staffs_on_duty.png"/>
+                    <TextBlock Text="Check On Duty Staffs"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal">
+            <Button Name="ManagePatientsButton">
+                <StackPanel>
+                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/manage_patients.png"/>
+                    <TextBlock Text="Manage Patients"/>
+                </StackPanel>
+            </Button>
+
+            <Button Name="ManagePrescriptionsButton">
+                <StackPanel>
+                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/manage_prescriptions.png"/>
+                    <TextBlock Text="Manage Prescriptions"/>
+                </StackPanel>
+            </Button>
+
+            <Button Name="ManageTestResultsButton">
+                <StackPanel>
+                    <Image Source="pack://application:,,,/Over Surgery System (UI);component/Resources/manage_test_results.png"/>
+                    <TextBlock Text="Manage Test Results"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</Page>

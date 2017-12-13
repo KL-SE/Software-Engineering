@@ -30,7 +30,8 @@ namespace OverSurgerySystem.UI.Pages
             {
                 App.GoToAddPatientPage();
                 EditPatient.OnConfirm   = null;
-                EditPatient.OnCancel   = OnCancel;
+                EditPatient.OnCancel    = OnCancel;
+                App.SetTitle( "Manage Patients | Add" );
             };
 
             FindPatientButton.Click += ( object sender , RoutedEventArgs e ) =>
@@ -39,12 +40,21 @@ namespace OverSurgerySystem.UI.Pages
                 FindPatient.OnFind      = OnFindPatient;
                 FindPatient.OnFound     = null;
                 FindPatient.OnCancel    = OnCancel;
-                FindPatient.OnSelect    = ( Patient patient ) => App.GoToEditPatientPage( patient , EditPatient.Edit );
+                FindPatient.OnSelect    = ( Patient patient ) =>
+                {
+                    App.GoToEditPatientPage( patient , EditPatient.Edit );
+                    App.SetTitle( "Manage Patients | Edit" );
+                };
+
+                App.SetTitle( "Manage Patients | Find" );
             };
+
+            App.SetTitle( "Manage Patients" );
         }
         
         public static void OnCancel()
         {
+            EditPatient.Reset();
             App.GoToMainMenu();
             MainMenu.Instance.Loaded += NavigateToMenu;
         }

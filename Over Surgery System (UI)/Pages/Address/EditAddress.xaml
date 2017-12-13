@@ -33,7 +33,7 @@
 
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <core:LookupTextBox x:Name="CountryBox" Width="700"/>
+                    <core:LookupTextBox x:Name="CountryBox" Width="700" MaxLength="30"/>
                     <Button Name="CountryClearButton" Content="Clear"/>
                 </StackPanel>
 
@@ -42,7 +42,7 @@
                 </Menu>
 
                 <StackPanel Orientation="Horizontal">
-                    <core:LookupTextBox x:Name="StateBox" Width="700"/>
+                    <core:LookupTextBox x:Name="StateBox" Width="700" MaxLength="30"/>
                     <Button Name="StateClearButton" Content="Clear"/>
                 </StackPanel>
 
@@ -51,7 +51,7 @@
                 </Menu>
 
                 <StackPanel Orientation="Horizontal">
-                    <core:LookupTextBox x:Name="CityBox" Width="700"/>
+                    <core:LookupTextBox x:Name="CityBox" Width="700" MaxLength="30"/>
                     <Button Name="CityClearButton" Content="Clear"/>
                 </StackPanel>
 
@@ -60,7 +60,7 @@
                 </Menu>
 
                 <StackPanel Orientation="Horizontal">
-                    <core:LookupTextBox x:Name="PostcodeBox" Width="700"/>
+                    <core:LookupTextBox x:Name="PostcodeBox" Width="700" MaxLength="20"/>
                     <Button Name="PostcodeClearButton" Content="Clear"/>
                 </StackPanel>
                 

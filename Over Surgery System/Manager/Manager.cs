@@ -46,14 +46,17 @@ namespace OverSurgerySystem.Manager
         public virtual T Load( int id )
         {
             T obj = new T();
-            obj.Load( id );
-            if( obj.Loaded )
+            if( id != DatabaseObject.INVALID_ID )
             {
-                Add( obj );
-            }
-            else
-            {
-                obj.Id = DatabaseObject.INVALID_ID;
+                obj.Load( id );
+                if( obj.Loaded )
+                {
+                    Add( obj );
+                }
+                else
+                {
+                    obj.Id = DatabaseObject.INVALID_ID;
+                }
             }
 
             return obj;
@@ -64,10 +67,7 @@ namespace OverSurgerySystem.Manager
         public T Get( int id )
         {
             T obj;
-            if( id == DatabaseObject.INVALID_ID )
-                return new T();
-
-            if( all.TryGetValue( id , out obj ) )
+            if( id != DatabaseObject.INVALID_ID && all.TryGetValue( id , out obj ) )
                 return obj;
 
             return Load( id );

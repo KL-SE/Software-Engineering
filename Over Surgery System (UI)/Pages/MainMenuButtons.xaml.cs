@@ -26,14 +26,25 @@ namespace OverSurgerySystem.UI.Pages
         {
             InitializeComponent();
             ManageAppointmentsButton.Click  += ( object sender , RoutedEventArgs e ) => App.GoToManageAppointments();
-            StaffsAvailabilityButton.Click  += ( object sender , RoutedEventArgs e ) => { EditAvailableDate.SelectedLeaveDate   = null; App.GoToStaffsAvailability();   };
-            StaffsOnDutyButton.Click        += ( object sender , RoutedEventArgs e ) => { EditWorkingDay.InEditMode             = false; App.GoToStaffsOnDuty();        };
             ManageStaffsButton.Click        += ( object sender , RoutedEventArgs e ) => App.GoToManageStaffs();
             ManagePatientsButton.Click      += ( object sender , RoutedEventArgs e ) => App.GoToManagePatients();
             ManagePrescriptionsButton.Click += ( object sender , RoutedEventArgs e ) => App.GoToManagePrescriptions();
             ManageTestResultsButton.Click   += ( object sender , RoutedEventArgs e ) => App.GoToManageTestResults();
+            StaffsAvailabilityButton.Click  += ( object sender , RoutedEventArgs e ) =>
+            {
+                EditAvailableDate.SelectedLeaveDate = null;
+                App.GoToStaffsAvailability();
+                App.SetTitle( "Check Staff Availability | Leave Dates" );
+            };
 
-            if( !Permission.CanPrescribePatients )
+            StaffsOnDutyButton.Click += ( object sender , RoutedEventArgs e ) =>
+            {
+                EditWorkingDay.InEditMode = false;
+                App.GoToStaffsOnDuty();
+                App.SetTitle( "Check On Duty Staffs" );
+            };
+
+            if( !Permission.CanAddPrescription )
             {
                 ManagePrescriptionsImg.Source   = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/find_prescription.png" ) );
                 ManagePrescriptionsText.Text    = "Find Prescription";
@@ -41,9 +52,11 @@ namespace OverSurgerySystem.UI.Pages
             
             if( !Permission.CanAddTestResults )
             {
-                ManageTestResultsImg.Source = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/find_prescription.png" ) );
+                ManageTestResultsImg.Source = new BitmapImage( new Uri( "pack://application:,,,/Over Surgery System (UI);component/Resources/find_test_result.png" ) );
                 ManageTestResultsText.Text  = "Find Test Result";
             }
+
+            App.SetTitle( "Main Menu" );
         }
     }
 }

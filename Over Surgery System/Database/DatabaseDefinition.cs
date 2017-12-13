@@ -94,11 +94,14 @@
             // Column names for staffs
             public static class Staffs
             {
-                public const string Type        = "type";
-                public const string DetailsId   = "personal_details_id";
-                public const string Password    = "password";
-                public const string DateJoined  = "date_joined";
-                public const string Active      = "active";
+                public const string Type            = "type";
+                public const string DetailsId       = "personal_details_id";
+                public const string PasswordSalt    = "password_salt";
+                public const string PasswordHash    = "password_hash";
+                public const string DateJoined      = "date_joined";
+                public const string Active          = "active";
+
+                public const int PasswordSaltMaxLength  = 100;
             }
         
             // Column names for working days

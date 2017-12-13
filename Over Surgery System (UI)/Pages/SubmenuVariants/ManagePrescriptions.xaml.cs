@@ -31,17 +31,19 @@ namespace OverSurgerySystem.UI.Pages
             MainMenuButton.Click        += ( object sender , RoutedEventArgs e ) => App.GoToMainMenu();
             AddPrescriptionButton.Click += ( object sender , RoutedEventArgs e ) =>
             {
-                App.GoToEditAppointmentPage( null , EditPrescription.Edit | EditPrescription.Restricted );
+                App.GoToEditPrescriptionPage( null , EditPrescription.Edit | EditPrescription.Restricted );
                 EditPrescription.OnConfirm   = null;
                 EditPrescription.OnCancel    = OnCancel;
+                App.SetTitle( "Manage Prescriptions | Add" );
             };
 
             FindPrescriptionButton.Click += HandleFindPrescription;
+            App.SetTitle( "Manage Prescriptions" );
         }
 
         public void OnLoad( object sender , EventArgs e )
         {
-            if( !Permission.CanPrescribePatients )
+            if( !Permission.CanAddPrescription )
             {
                 // The user doesn't have any other option than to find prescription.
                 // Thus, redirect them to the find prescriptions page.
@@ -56,24 +58,28 @@ namespace OverSurgerySystem.UI.Pages
             FindPrescription.OnFound  = null;
             FindPrescription.OnCancel = OnCancel;
             FindPrescription.OnSelect = HandlePrescriptionSelect;
+            App.SetTitle( "Manage Prescriptions | Find" );
         }
         
         public static void HandlePrescriptionSelect( Prescription prescription )
         {
-            if( Permission.CanPrescribePatients || ( App.LoggedInStaff is MedicalStaff && prescription.Prescriber.Id == App.LoggedInStaff.Id ) )
+            if( !prescription.Ended && ( Permission.CanEditPrescription || ( App.LoggedInStaff is MedicalStaff && prescription.Prescriber.Id == App.LoggedInStaff.Id ) ) )
             {
+                App.SetTitle( "Manage Prescriptions | Edit" );
                 App.GoToEditPrescriptionPage( prescription , EditPrescription.Edit | EditPrescription.Restricted );
             }
             else
             {
+                App.SetTitle( "Manage Prescriptions | View" );
                 App.GoToEditPrescriptionPage( prescription , EditPrescription.View | EditPrescription.BackOnly );
             }
         }
         
         public static void OnCancel()
         {
+            EditPrescription.Reset();
             App.GoToMainMenu();
-            if( Permission.CanPrescribePatients )
+            if( Permission.CanAddPrescription )
             {
                 MainMenu.Instance.Loaded += NavigateToMenu;
             }

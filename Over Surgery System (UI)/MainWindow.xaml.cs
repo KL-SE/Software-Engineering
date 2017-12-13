@@ -76,6 +76,8 @@ namespace OverSurgerySystem.UI
             {
                 WindowStyle                                     = WindowStyle.SingleBorderWindow;
                 ResizeMode                                      = ResizeMode.CanResizeWithGrip;
+                Topmost                                         = false;
+
                 MenuBanner.Instance.ExitButton.Visibility       = Visibility.Collapsed;
                 MenuBanner.Instance.MaximizeButton.Visibility   = Visibility.Collapsed;
                 MenuBanner.Instance.MinimizeButton.Visibility   = Visibility.Collapsed;
@@ -87,6 +89,8 @@ namespace OverSurgerySystem.UI
                 Visibility                                      = Visibility.Collapsed;
                 WindowStyle                                     = WindowStyle.None;
                 ResizeMode                                      = ResizeMode.NoResize;
+                Topmost                                         = true;
+
                 MenuBanner.Instance.ExitButton.Visibility       = Visibility.Visible;
                 MenuBanner.Instance.MaximizeButton.Visibility   = Visibility.Visible;
                 MenuBanner.Instance.MinimizeButton.Visibility   = Visibility.Visible;

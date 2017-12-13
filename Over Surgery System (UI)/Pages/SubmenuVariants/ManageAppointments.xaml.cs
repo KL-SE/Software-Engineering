@@ -33,7 +33,7 @@ namespace OverSurgerySystem.UI.Pages
             {
                 EditAppointment.OnConfirm   = null;
                 EditAppointment.OnCancel    = OnCancel;
-                if( !Permission.CanAppointOtherStaffs )
+                if( Permission.CanAppointOtherStaffs )
                 {
                     App.GoToEditAppointmentPage( null , EditAppointment.Edit );
                 }
@@ -41,6 +41,8 @@ namespace OverSurgerySystem.UI.Pages
                 {
                     App.GoToEditAppointmentPage( null , EditAppointment.Edit | EditAppointment.Restricted );
                 }
+
+                App.SetTitle( "Manage Appointments | Add" );
             };
 
             FindAppointmentButton.Click += ( object sender , RoutedEventArgs e ) =>
@@ -50,23 +52,29 @@ namespace OverSurgerySystem.UI.Pages
                 FindAppointment.OnFound     = null;
                 FindAppointment.OnCancel    = OnCancel;
                 FindAppointment.OnSelect    = HandleSelectAppointment;
+                App.SetTitle( "Manage Appointments | Find" );
             };
+
+            App.SetTitle( "Manage Appointments" );
         }
         
         public static void HandleSelectAppointment( Appointment appointment )
         {
-            if( Permission.CanAppointOtherStaffs || ( App.LoggedInStaff is MedicalStaff && appointment.MedicalStaff.Id == App.LoggedInStaff.Id ) )
+            if( !appointment.Cancelled && appointment.DateAppointed > DateTime.Now && ( Permission.CanAppointOtherStaffs || ( App.LoggedInStaff is MedicalStaff && appointment.MedicalStaff.Id == App.LoggedInStaff.Id ) ) )
             {
+                App.SetTitle( "Manage Appointments | Edit" );
                 App.GoToEditAppointmentPage( appointment , EditAppointment.Edit | EditAppointment.Restricted );
             }
             else
             {
+                App.SetTitle( "Manage Appointments | View" );
                 App.GoToEditAppointmentPage( appointment , EditAppointment.View | EditAppointment.BackOnly );
             }
         }
         
         public static void OnCancel()
         {
+            EditAppointment.Reset();
             App.GoToMainMenu();
             MainMenu.Instance.Loaded += NavigateToMenu;
         }

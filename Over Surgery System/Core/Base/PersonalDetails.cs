@@ -106,7 +106,8 @@ namespace OverSurgerySystem.Core.Base
                 newIden.Value           = iden;
                 newIden.Owner           = this;
 
-                Identifications.Add( newIden );
+                identifications.Add( newIden );
+                return true;
             }
             return false;
         }
@@ -115,7 +116,8 @@ namespace OverSurgerySystem.Core.Base
         {
             if( !HaveIdentification( iden ) )
             {
-                Identifications.Add( iden );
+                identifications.Add( iden );
+                return true;
             }
             return false;
         }
@@ -124,7 +126,7 @@ namespace OverSurgerySystem.Core.Base
         {
             for( int i = 0 ; i < identifications.Count ; i++ )
             {
-                if( identifications[i].Valid.Equals( iden ) )
+                if( identifications[i].Value.Equals( iden ) )
                 {
                     identifications[i].Delete();
                     identifications.RemoveAt( i );
@@ -164,7 +166,8 @@ namespace OverSurgerySystem.Core.Base
                 newNo.Number        = number;
                 newNo.Owner         = this;
 
-                ContactNumbers.Add( newNo );
+                contactNumbers.Add( newNo );
+                return true;
             }
             return false;
         }
@@ -173,7 +176,8 @@ namespace OverSurgerySystem.Core.Base
         {
             if( !HaveContactNumber( number ) )
             {
-                ContactNumbers.Add( number );
+                contactNumbers.Add( number );
+                return true;
             }
             return false;
         }
@@ -182,7 +186,7 @@ namespace OverSurgerySystem.Core.Base
         {
             for( int i = 0 ; i < contactNumbers.Count ; i++ )
             {
-                if( contactNumbers[i].Valid.Equals( number ) )
+                if( contactNumbers[i].Number.Equals( number ) )
                 {
                     contactNumbers[i].Delete();
                     contactNumbers.RemoveAt( i );
